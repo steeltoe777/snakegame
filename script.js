@@ -241,7 +241,22 @@ const { level, score } = gameState;
 // Implement respawn logic
 if (level > 1) {
 // Preserve new level/score after reset
-resetGame();
+// Clear existing interval
+if (gameState.gameInterval) {
+    // Reset game state but keep level
+    gameState.level = level; // Keep current level
+    gameState.gameRunning = true; // Restart gameplay
+    startGame(); // Start new game cycle with halved snake
+    // Reset game state but keep level
+    gameState.gameInterval = null;
+}
+// Reset direction
+gameState.dx = 0;
+gameState.dy = 0;
+// Reset trail
+gameState.trail = [];
+// Halve the snake's length, minimum 1
+gameState.snake = gameState.snake.slice(0, Math.max(1, Math.floor(gameState.snake.length / 2)));
 gameState.level = level - 1;
 gameState.score = Math.floor(score / 2);
 
@@ -252,7 +267,8 @@ generatePellets();
 
 // Update UI elements to reflect new level and score
 document.getElementById('score').innerText = `Score: ${gameState.score}`;
-document.getElementById('level').innerText = `Level: ${gameState.level}`;
+// Reset snake to single segment when leveling up
+gameState.snake = [{ x: 10, y: 10 }];
 startGame(); // Start game loop after respawn (automatically sets gameRunning = true)
   } else {
     // Keep overlay visible and game state stopped
@@ -263,7 +279,6 @@ startGame(); // Start game loop after respawn (automatically sets gameRunning = 
 function levelUp() {
 gameState.level++;
 document.getElementById('level').innerText = `Level: ${  gameState.level}`;
-gameState.snake = Array.from({length: gameState.snake.length}, () => ({x: 10, y: 10}));
 gameState.dx = 0;
 gameState.dy = 0;
 gameState.trail = [];
