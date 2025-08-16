@@ -227,43 +227,42 @@ drawSnake();
 }
 
 function gameOver() {
-    gameState.gameRunning = false;
-    clearInterval(gameState.gameInterval);
-    finalScoreDisplay.innerText = `Score: ${gameState.score}`;
+gameState.gameRunning = false;
+clearInterval(gameState.gameInterval);
+finalScoreDisplay.innerText = `Score: ${gameState.score}`;
 
-    // Display overlay first to ensure visibility
-    gameOverOverlay.classList.remove('hidden');
-    finalScoreDisplay.innerText = `Score: ${gameState.score}`;
+// Display overlay first to ensure visibility
+gameOverOverlay.classList.remove('hidden');
+finalScoreDisplay.innerText = `Score: ${gameState.score}`;
 
-    // Store level/score before reset
-    const { level, score } = gameState;
+// Store level/score before reset
+const { level, score } = gameState;
 
-    // Implement respawn logic
-        if (level > 1) {
-            clearInterval(gameState.gameInterval); // Clear existing interval
-            gameState.gameInterval = null;
-            gameState.gameRunning = false; // Ensure game is stopped before respawn
-            gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
-            gameState.score = Math.floor(score / 2); // Halve the score
-            gameState.snake = gameState.snake.slice(0, Math.floor(gameState.snake.length / 2)); // Reduce snake length by half
-            gameState.dx = 0; // Reset direction
-            gameState.dy = 0; // Reset direction
-            gameState.trail = []; // Clear trail
-            document.getElementById('score').innerText = `Score: ${gameState.score}`;
-            document.getElementById('level').innerText = `Level: ${gameState.level}`;
-            gameOverOverlay.classList.add('hidden'); // Hide overlay
-            generateMaze(); // Regenerate maze for the new (previous) level
-            generatePellets(); // Regenerate pellets for the new (previous) level
-            drawGame(); // Draw initial state for the respawned level
-            startGame(); // Start game loop after respawn
-        } else {
-            // Game over on level 1, truly end the game
-            gameState.gameRunning = false;
-            // The overlay is already visible from line 235
-        }
-    // REMOVED: startGame(); // Game should not start automatically after levelUp
+// Implement respawn logic
+    if (level > 1) {
+        clearInterval(gameState.gameInterval); // Clear existing interval
+        gameState.gameInterval = null;
+        gameState.gameRunning = false; // Ensure game is stopped before respawn
+        gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
+        gameState.score = Math.floor(score / 2); // Halve the score
+        gameState.snake = [{ x: 10, y: 10 }]; // Respawn at initial position with length 1
+        gameState.dx = 0; // Reset direction
+        gameState.dy = 0; // Reset direction
+        gameState.trail = []; // Clear trail
+        document.getElementById('score').innerText = `Score: ${gameState.score}`;
+        document.getElementById('level').innerText = `Level: ${gameState.level}`;
+        gameOverOverlay.classList.add('hidden'); // Hide overlay
+        generateMaze(); // Regenerate maze for the new (previous) level
+        generatePellets(); // Regenerate pellets for the new (previous) level
+        drawGame(); // Draw initial state for the respawned level
+        startGame(); // Start game loop after respawn
+    } else {
+        // Game over on level 1, truly end the game
+        gameState.gameRunning = false;
+        // The overlay is already visible from line 235
+    }
+// REMOVED: startGame(); // Game should not start automatically after levelUp
 }
-
 function levelUp() {
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
