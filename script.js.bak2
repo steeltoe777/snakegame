@@ -268,11 +268,11 @@ function levelUp() {
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
     gameState.level++;
+
     const newSnake = [];
-    newSnake.push({ x: 10, y: 10 });  // Head
-    newSnake.push({ x: 10, y: 10 });  // Body segment 1
-    newSnake.push({ x: 10, y: 10 });  // Body segment 2
-    // Snake will appear as single segment initially, but body will show as it moves
+    newSnake.push({ x: 10, y: 10 });
+    gameState.snake = newSnake;
+
     gameState.dx = 0; // Reset direction
     gameState.dy = 0; // Reset direction
     gameState.trail = []; // Clear trail
