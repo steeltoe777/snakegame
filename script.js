@@ -346,10 +346,13 @@ function gameOver() {
         gameState.gameRunning = false; // Ensure game is stopped before respawn
         gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
         gameState.score = Math.floor(score / 2); // Halve the score
-        gameState.snake = gameState.snake.slice(0, Math.floor(gameState.snake.length / 2)); // Reduce snake length by half
-        gameState.dx = 0; // Reset direction
-        gameState.dy = 0; // Reset direction
-        gameState.trail = []; // Clear trail
+        gameState.snake = gameState.snake.slice(
+            0,
+            Math.max(1, Math.floor(gameState.snake.length / 2))
+        ); // Reduce snake length by half, minimum 1 segment
+        if (gameState.snake.length === 0) {
+            gameState.snake = [{ x: 10, y: 10 }]; // Reset to initial state if array becomes empty
+        }
         document.getElementById('score').innerText = `Score: ${gameState.score}`;
         document.getElementById('level').innerText = `Level: ${gameState.level}`;
         gameOverOverlay.classList.add('hidden'); // Hide overlay
