@@ -45,19 +45,27 @@ function generateMaze() {
         .fill(0)
         .map(() => Array(gameState.tileCount).fill(0));
 
-    // Create outer walls to define the game area
-    for (let i = 0; i < gameState.tileCount; i++) {
-        gameState.maze[0][i] = 1; // Top wall
-        gameState.maze[gameState.tileCount - 1][i] = 1; // Bottom wall
-        gameState.maze[i][0] = 1; // Left wall
-        gameState.maze[i][gameState.tileCount - 1] = 1; // Right wall
+    if (gameState.level < 1000) {
+        // Create outer walls to define the game area when level is below 1000
+        for (let i = 0; i < gameState.tileCount; i++) {
+            gameState.maze[0][i] = 1; // Top wall
+            gameState.maze[gameState.tileCount - 1][i] = 1; // Bottom wall
+            gameState.maze[i][0] = 1; // Left wall
+            gameState.maze[i][gameState.tileCount - 1] = 1; // Right wall
+        }
     }
 
     // Dynamic internal maze generation based on level
     if (gameState.level >= 4) {
         let numInternalWalls = Math.min(10, gameState.level - 3); // More walls for higher levels, max 10
         if (gameState.level >= 500) {
-            numInternalWalls += Math.min(15, gameState.level - 500); // More walls for higher levels, max 15
+            numInternalWalls += Math.min(15, (gameState.level - 500) / 20); // More walls for higher levels, max 15
+        }
+        if (gameState.level >= 1500) {
+            numInternalWalls += Math.min(15, (gameState.level - 1500) / 1000); // More walls for higher levels, max 15
+        }
+        if (gameState.level >= 5000) {
+            numInternalWalls += Math.min(15, (gameState.level - 5000) / 1000); // More walls for higher levels, max 15
         }
 
         for (let k = 0; k < numInternalWalls; k++) {
@@ -220,14 +228,34 @@ function update() {
 
     const head = { x: gameState.snake[0].x + gameState.dx, y: gameState.snake[0].y + gameState.dy };
 
-    // Collision with walls (maze)
+    // Collision with outer walls
     if (
         head.x < 0 ||
         head.x >= gameState.tileCount ||
         head.y < 0 ||
-        head.y >= gameState.tileCount ||
-        gameState.maze[head.y][head.x] === 1
+        head.y >= gameState.tileCount
     ) {
+        if (gameState.level < 1000) {
+            // Only check for outer wall collisions on level below 1000
+            gameOver();
+            return;
+        }
+        if (head.x < 0) {
+            head.x = gameState.tileCount - 1;
+        }
+        if (head.x >= gameState.tileCount) {
+            head.x = 0;
+        }
+        if (head.y < 0) {
+            head.y = gameState.tileCount - 1;
+        }
+        if (head.y >= gameState.tileCount) {
+            head.y = 0;
+        }
+    }
+
+    // Collision with walls (maze)
+    if (gameState.maze[head.y][head.x] === 1) {
         gameOver();
         return;
     }
@@ -367,7 +395,13 @@ function gameOver() {
         generateMaze(); // Regenerate maze for the new (previous) level
         generatePellets(); // Regenerate pellets for the new (previous) level
         drawGame(); // Draw initial state for the respawned level
-        startGame(); // Start game loop after respawn
+        if (gameState.level >= 100) {
+            // Reset snake direction after death on level 100 and above
+            gameState.dx = 0;
+            gameState.dy = 0;
+        } else {
+            startGame(); // Start game loop after respawn on levels below 100
+        }
     } else {
         // Game over on level 1, truly end the game
         gameState.gameRunning = false;
