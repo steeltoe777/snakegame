@@ -202,14 +202,50 @@ function drawPellets() {
 }
 
 function drawSnake() {
-  gameState.snake.forEach((segment) => {
-    ctx.fillStyle = 'lime';
-    ctx.fillRect(
-      segment.x * gameState.gridSize,
-      segment.y * gameState.gridSize,
-      gameState.gridSize,
-      gameState.gridSize
-    );
+  gameState.snake.forEach((segment, index) => {
+    if (index === 0) {
+      // Draw head with darker green and eye indicator
+      ctx.fillStyle = '#00aa00'; // Darker green for head
+      ctx.fillRect(
+        segment.x * gameState.gridSize,
+        segment.y * gameState.gridSize,
+        gameState.gridSize,
+        gameState.gridSize
+      );
+
+      // Add eye indicator based on direction
+      ctx.fillStyle = 'white';
+      const eyeSize = Math.max(2, gameState.gridSize / 6);
+      let eyeX = segment.x * gameState.gridSize + gameState.gridSize / 2;
+      let eyeY = segment.y * gameState.gridSize + gameState.gridSize / 2;
+
+      // Position eye based on movement direction
+      if (gameState.dx === 1) eyeX += gameState.gridSize / 3; // Moving right
+      else if (gameState.dx === -1) eyeX -= gameState.gridSize / 3; // Moving left
+      else if (gameState.dy === 1) eyeY += gameState.gridSize / 3; // Moving down
+      else if (gameState.dy === -1) eyeY -= gameState.gridSize / 3; // Moving up
+      else {
+        // Default position when not moving - center the eye
+        eyeX = segment.x * gameState.gridSize + gameState.gridSize / 2;
+        eyeY = segment.y * gameState.gridSize + gameState.gridSize / 2;
+      }
+
+      ctx.fillRect(
+        eyeX - eyeSize / 2,
+        eyeY - eyeSize / 2,
+        eyeSize,
+        eyeSize
+      );
+    } else {
+      // Draw body segments with original lime color
+      ctx.fillStyle = 'lime';
+      ctx.fillRect(
+        segment.x * gameState.gridSize,
+        segment.y * gameState.gridSize,
+        gameState.gridSize,
+        gameState.gridSize
+      );
+    }
   });
 }
 
