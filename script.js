@@ -70,10 +70,17 @@ const passwordSystem = {
 
 // Update password display
 function updatePasswordDisplay() {
-  const password = passwordSystem.generatePassword(gameState.level);
   const passwordElement = document.getElementById("password");
-  if (passwordElement) {
+  if (!passwordElement) return;
+
+  // Only show passwords for levels divisible by 10 (and not level 1)
+  if (gameState.level % 10 === 0 && gameState.level > 1) {
+    const password = passwordSystem.generatePassword(gameState.level);
     passwordElement.innerText = `Password: ${password}`;
+    passwordElement.style.display = "block";
+  } else {
+    passwordElement.innerText = "";
+    passwordElement.style.display = "none";
   }
 }
 
@@ -85,12 +92,13 @@ function handlePasswordKey(e) {
   if (validKeys.includes(key)) {
     passwordSystem.addKey(key);
 
-    // Check against passwords for all levels
-    for (let level = 1; level <= 10000; level++) {
+    // Only check passwords for levels divisible by 10 (and not level 1)
+    for (let level = 10; level <= 100000; level += 10) {
       const levelPassword = passwordSystem.generatePassword(level);
       if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
-        // Reset to the specific level with score 0
-        gameState.level = level;
+        // Reset to PREVIOUS level (level - 1)
+        const targetLevel = Math.max(1, level - 1);
+        gameState.level = targetLevel;
         gameState.score = 0;
         document.getElementById("score").innerText = `Score: ${gameState.score}`;
         document.getElementById("level").innerText = `Level: ${gameState.level}`;
