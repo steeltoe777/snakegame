@@ -26,6 +26,109 @@ const gameState = {
   trail: [],
 };
 
+// Password system for level progression
+const passwordSystem = {
+  keySequence: [],
+  maxSequenceLength: 20,
+
+  // Generate deterministic password based on level
+  generatePassword(level) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "";
+    let seed = level;
+
+    // Deterministic pseudo-random generation
+    for (let i = 0; i < 6; i++) {
+      seed = (seed * 9301 + 49297) % 233280;
+      const index = Math.floor((seed / 233280) * chars.length);
+      password += chars[index];
+    }
+
+    return password;
+  },
+
+  // Check if key sequence matches password
+  checkPassword(sequence, password) {
+    const sequenceStr = sequence.join("").toUpperCase();
+    const passwordStr = password.toUpperCase();
+    return sequenceStr === passwordStr;
+  },
+
+  // Reset key sequence
+  resetSequence() {
+    this.keySequence = [];
+  },
+
+  // Add key to sequence
+  addKey(key) {
+    this.keySequence.push(key.toUpperCase());
+    if (this.keySequence.length > this.maxSequenceLength) {
+      this.keySequence.shift();
+    }
+  }
+};
+
+// Update password display
+function updatePasswordDisplay() {
+  const password = passwordSystem.generatePassword(gameState.level);
+  const passwordElement = document.getElementById("password");
+  if (passwordElement) {
+    passwordElement.innerText = `Password: ${password}`;
+  }
+}
+
+// Handle key press for password system
+function handlePasswordKey(e) {
+  const key = e.key.toUpperCase();
+  const validKeys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  if (validKeys.includes(key)) {
+    passwordSystem.addKey(key);
+
+    // Check against passwords for all levels
+    for (let level = 1; level <= 10000; level++) {
+      const levelPassword = passwordSystem.generatePassword(level);
+      if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
+        // Reset to the specific level with score 0
+        gameState.level = level;
+        gameState.score = 0;
+        document.getElementById("score").innerText = `Score: ${gameState.score}`;
+        document.getElementById("level").innerText = `Level: ${gameState.level}`;
+
+        // Reset snake position and clear trail
+        gameState.snake = [{ x: 10, y: 10 }];
+        gameState.dx = 0;
+        gameState.dy = 0;
+        gameState.trail = [];
+
+        // Regenerate maze and pellets for the target level
+        generateMaze();
+        generatePellets();
+
+        // Reset key sequence
+        passwordSystem.resetSequence();
+
+        // Update password display
+        updatePasswordDisplay();
+
+        // Stop current game and restart
+        if (gameState.gameInterval) {
+          clearInterval(gameState.gameInterval);
+          gameState.gameInterval = null;
+        }
+        gameState.gameRunning = false;
+        drawGame();
+
+        break; // Found matching password, exit loop
+      }
+    }
+  }
+}
+
+// Listen for password key presses
+document.addEventListener("keydown", handlePasswordKey);
+
+
 // DOM elements for game over overlay
 const gameOverOverlay = document.getElementById('gameOverOverlay');
 const finalScoreDisplay = document.getElementById('finalScore');
@@ -450,6 +553,7 @@ function levelUp() {
   generatePellets();
   drawGame();
   gameState.gameRunning = false; // Set game to idle after level up
+  updatePasswordDisplay();
 }
 
 function resetGame() {
@@ -477,6 +581,7 @@ function resetGame() {
   // Re-enable keyboard controls
   document.removeEventListener('keydown', handleDirectionChange);
   document.addEventListener('keydown', handleDirectionChange);
+  updatePasswordDisplay();
 }
 
 function handleDirectionChange(e) {
