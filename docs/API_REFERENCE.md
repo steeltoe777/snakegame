@@ -1,0 +1,199 @@
+# API Reference
+
+## Global Functions
+
+### Game Control Functions
+
+#### `startGame()`
+**Purpose**: Initialize and start a new game session  
+**Location**: script.js, line ~450  
+**Parameters**: None  
+**Returns**: void  
+**Side Effects**: 
+- Resets gameState to initial values
+- Generates new maze and pellets
+- Starts game loop interval
+
+#### `resetGame()`
+**Purpose**: Reset game to initial state  
+**Location**: script.js, line ~480  
+**Parameters**: None  
+**Returns**: void  
+**Side Effects**: 
+- Clears game loop interval
+- Resets all game state variables
+- Hides game over overlay
+
+#### `gameOver()`
+**Purpose**: Handle game over state  
+**Location**: script.js, line ~520  
+**Parameters**: None  
+**Returns**: void  
+**Side Effects**: 
+- Sets gameState.gameOver = true
+- Displays game over overlay
+- Shows final score
+
+### Game Loop Functions
+
+#### `update()`
+**Purpose**: Main game loop update function  
+**Location**: script.js, line ~400  
+**Parameters**: None  
+**Returns**: void  
+**Called by**: setInterval() every 16.67ms (60 FPS)  
+**Flow**:
+1. Check if game is over
+2. Update snake position
+3. Check collisions
+4. Handle food collection
+5. Update score and level
+
+#### `drawGame()`
+**Purpose**: Render complete game frame  
+**Location**: script.js, line ~350  
+**Parameters**: None  
+**Returns**: void  
+**Rendering Order**:
+1. Clear canvas
+2. Draw maze
+3. Draw pellets
+4. Draw snake
+5. Draw UI elements
+
+### Rendering Functions
+
+#### `drawSnake()`
+**Purpose**: Render snake on canvas  
+**Location**: script.js, line ~200  
+**Parameters**: None  
+**Accesses**: gameState.snake, gameState.tileCount  
+**Style**: Green rectangles with black border
+
+#### `drawMaze()`
+**Purpose**: Render maze obstacles  
+**Location**: script.js, line ~250  
+**Parameters**: None  
+**Accesses**: gameState.maze, gameState.tileCount  
+**Style**: Gray rectangles
+
+#### `drawPellets()`
+**Purpose**: Render collectible pellets  
+**Location**: script.js, line ~300  
+**Parameters**: None  
+**Accesses**: gameState.pellets, gameState.tileCount  
+**Style**: Yellow circles
+
+#### `drawTrail()`
+**Purpose**: Render snake trail effect  
+**Location**: script.js, line ~220  
+**Parameters**: None  
+**Accesses**: gameState.snake  
+**Style**: Fading green trail
+
+### Generation Functions
+
+#### `generateMaze()`
+**Purpose**: Create maze obstacles for current level  
+**Location**: script.js, line ~150  
+**Parameters**: None  
+**Returns**: 2D array (maze grid)  
+**Algorithm**: Deterministic generation based on level seed  
+**Complexity**: O(n²) where n = tileCount
+
+#### `generatePellets()`
+**Purpose**: Place collectible pellets on valid positions  
+**Location**: script.js, line ~180  
+**Parameters**: None  
+**Returns**: Array of pellet positions  
+**Algorithm**: Random placement avoiding obstacles  
+**Count**: 5 pellets per level
+
+#### `getRandomPosition()`
+**Purpose**: Get valid random position on game grid  
+**Location**: script.js, line ~100  
+**Parameters**: None  
+**Returns**: Object {x, y}  
+**Constraints**: Must be empty space (not snake, food, or obstacle)
+
+### Utility Functions
+
+#### `calculateTileCount()`
+**Purpose**: Calculate optimal tile count based on canvas size  
+**Location**: script.js, line ~80  
+**Parameters**: None  
+**Returns**: Integer (tile count)  
+**Formula**: Math.floor(canvas.width / 30)
+
+#### `levelUp()`
+**Purpose**: Progress to next level  
+**Location**: script.js, line ~540  
+**Parameters**: None  
+**Returns**: void  
+**Effects**: 
+- Increments gameState.level
+- Generates new maze and pellets
+- Updates password display
+
+### Password System Functions
+
+#### `generatePassword(level)`
+**Purpose**: Generate deterministic password for given level  
+**Location**: script.js, line ~50  
+**Parameters**: 
+- `level` (number): Current level number  
+**Returns**: String (6-character password)  
+**Algorithm**: Deterministic pseudo-random generation  
+**Characters**: A-Z, 0-9
+
+#### `updatePasswordDisplay()`
+**Purpose**: Update password display in UI  
+**Location**: script.js, line ~120  
+**Parameters**: None  
+**Returns**: void  
+**Accesses**: gameState.password, DOM element #password
+
+### Input Handling Functions
+
+#### `handleDirectionChange(event)`
+**Purpose**: Process keyboard input for snake movement  
+**Location**: script.js, line ~600  
+**Parameters**: 
+- `event` (KeyboardEvent): Key press event  
+**Returns**: void  
+**Valid Keys**: Arrow keys (Up, Down, Left, Right)  
+**Validation**: Prevents 180-degree turns
+
+#### `handlePasswordKey(event)`
+**Purpose**: Handle password input for level skipping  
+**Location**: script.js, line ~130  
+**Parameters**: 
+- `event` (KeyboardEvent): Key press event  
+**Returns**: void  
+**Functionality**: Validates password and jumps to corresponding level
+
+## Event Listeners
+
+### Keyboard Events
+- **keydown**: `handleDirectionChange()` - Arrow key movement
+- **keydown**: `handlePasswordKey()` - Password input
+
+### DOM Events
+- **load**: Initialize game on page load
+- **click**: Restart button handler
+
+## Global Variables
+
+### Canvas Context
+- **canvas**: HTML5 Canvas element (600x600px)
+- **ctx**: 2D rendering context
+
+### Game State
+- **gameState**: Primary state object (see Architecture.md)
+- **gameLoop**: setInterval reference for game loop
+
+### Styling Constants
+- **SNAKE_COLOR**: "#00FF00" (green)
+- **FOOD_COLOR**: "#FF0000" (red)
+- **MAZE_COLOR**: "#808080" (gray)
+- **PELLET_COLOR**: "#FFFF00" (yellow)
