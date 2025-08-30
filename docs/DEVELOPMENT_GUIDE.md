@@ -1,5 +1,22 @@
 # Development Guide
 
+## 👋 Welcome, Fellow Developer!
+
+Hey there! I'm excited you're interested in contributing to this project. This guide will help you understand how I built this game and how you can extend it.
+
+### My Development Approach
+
+I built this game with a few key principles in mind:
+
+1. **Readability over cleverness** - I'd rather have clear code than "smart" code
+2. **Test as you go** - The test suite has saved me countless times
+3. **Incremental improvements** - Start simple, then add complexity
+4. **Learn through breaking things** - Don't be afraid to experiment!
+
+### A Quick Story
+
+This project started as a weekend experiment and grew organically. The password system was actually the last major feature I added - originally it was just a classic snake game. Sometimes the best features come from late-night "what if" ideas!
+
 ## Quick Start for AI Agents
 
 ### 1. Environment Setup

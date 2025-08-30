@@ -2,6 +2,20 @@
 
 > **Revolutionary Game Design** - The world's first snake game with password-based level progression
 
+
+## 🚀 How This Project Started
+
+I've always loved classic arcade games but wanted to create something fresh that combines the best elements from different genres. The password system was inspired by my childhood memories of writing down game codes from Nintendo Power magazines!
+
+This started as a simple snake game experiment but evolved into a hybrid as I kept adding "what if" features. The Tron trail was actually a happy accident - I was debugging collision detection and left the trail visible, then realized it added a cool strategic element.
+
+## 👨‍💻 Development Philosophy
+
+I believe in building things that are fun first, optimized second. This game prioritizes:
+- **Clean, readable code** over premature optimization
+- **Test-driven development** for maintainability  
+- **Progressive enhancement** - start simple, add complexity gradually
+- **Learning through doing** - every feature taught me something new
 ## 🎯 **What Makes This Game Unique**
 
 This is **not** your traditional snake game. It's a sophisticated hybrid that combines:
@@ -152,6 +166,28 @@ open index.html
 - **Trail**: Blue movement history
 - **Background**: Black canvas
 
+
+## 🐛 Known Issues & TODOs
+
+Every project has its rough edges! Here are some things I'm aware of and planning to improve:
+
+### **High Priority**
+- [ ] **Mobile responsiveness** - Game works but could use better touch controls
+- [ ] **Password input focus** - Sometimes loses focus when typing quickly
+- [ ] **Performance optimization** - Could use requestAnimationFrame instead of setInterval
+
+### **Nice to Have**
+- [ ] **Sound effects** - Would really enhance the gameplay experience
+- [ ] **High score persistence** - Local storage for competitive play
+- [ ] **Level selection menu** - Visual interface for password entry
+- [ ] **Customizable controls** - Let players remap keys
+
+### **Technical Debt**
+- [ ] **Modularize code** - Break script.js into separate modules
+- [ ] **Add more tests** - Especially for edge cases in collision detection
+- [ ] **Improve documentation** - More inline comments and examples
+
+**Note:** Some of these are intentional trade-offs for simplicity's sake. The core gameplay is solid!
 ## 🔗 **Links**
 
 - **📋 Complete Design**: [docs/GAMEPLAY_DESIGN.md](docs/GAMEPLAY_DESIGN.md)
