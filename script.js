@@ -12,6 +12,7 @@ function getRandomPosition() {
 const gameState = {
     gridSize: 20, // Define gridSize here
     tileCount: 0, // Will be calculated in resetGame/levelUp based on canvas dimensions
+  baseSpeed: 100, // Base movement speed in ms
     snake: [{ x: 10, y: 10 }],
     dxPrev: 0,
     dyPrev: 0,
@@ -474,6 +475,9 @@ function update() {
             gameState.score += 10;
             document.getElementById('score').innerText = `Score: ${gameState.score}`;
             atePellet = true;
+            // Update game speed based on increased snake length
+            clearInterval(gameState.gameInterval);
+            gameState.gameInterval = setInterval(update, gameState.baseSpeed + (gameState.snake.length * 2));
             break;
         }
     }
@@ -652,7 +656,7 @@ restartButton.addEventListener('click', resetGame);
 function startGame() {
     if (gameState.gameRunning) return;
     gameState.gameRunning = true;
-    gameState.gameInterval = setInterval(update, 150); // Game speed
+    gameState.gameInterval = setInterval(update, gameState.baseSpeed + (gameState.snake.length * 2)); // Dynamic speed based on snake length
 }
 
 // Initial setup
@@ -675,85 +679,6 @@ window.levelUp = levelUp;
 window.resetGame = resetGame;
 window.startGame = startGame;
 
-// Collision detection function with spatial grid optimization - added by Agent Zero
-function detectCollision(gameState, head, spatialGrid = null) {
-    // Validate input parameters
-    if (!gameState || typeof gameState !== 'object') {
-        throw new TypeError('gameState must be a valid object');
-    }
-
-    if (!head || typeof head.x !== 'number' || typeof head.y !== 'number') {
-        throw new TypeError('head must be an object with numeric x and y properties');
-    }
-
-    if (!gameState.tileCount || typeof gameState.tileCount !== 'number') {
-        throw new TypeError('gameState must have a valid tileCount property');
-    }
-
-    // Check for out of bounds (handles wrap-around for levels >= 1000)
-    const isOutOfBounds =
-        head.x < 0 || head.x >= gameState.tileCount || head.y < 0 || head.y >= gameState.tileCount;
-
-    if (isOutOfBounds) {
-        return gameState.level < 1000; // Collision only for levels below 1000
-    }
-
-    // Use spatial grid for O(1) collision detection if available and valid
-    if (
-        spatialGrid &&
-        Array.isArray(spatialGrid) &&
-        spatialGrid[head.y] &&
-        Array.isArray(spatialGrid[head.y]) &&
-        head.y < spatialGrid.length &&
-        head.x < spatialGrid[head.y].length
-    ) {
-        const gridValue = spatialGrid[head.y][head.x];
-        // 1 = wall, 2 = snake segment, 3 = trail - all indicate collision
-        if (gridValue === 1 || gridValue === 2 || gridValue === 3) {
-            return true;
-        }
-        return false;
-    }
-
-    // Fallback to traditional collision detection if no spatial grid
-
-    // Validate maze array exists and is properly structured
-    if (
-        !gameState.maze ||
-        !Array.isArray(gameState.maze) ||
-        !gameState.maze[head.y] ||
-        !Array.isArray(gameState.maze[head.y])
-    ) {
-        console.error('Invalid maze data structure');
-        return true; // Collision if maze data is invalid
-    }
-
-    // Wall collision check
-    if (gameState.maze[head.y][head.x] === 1) {
-        return true;
-    }
-
-    // Check for self-collision (skip head itself)
-    if (gameState.snake && Array.isArray(gameState.snake)) {
-        for (let i = 1; i < gameState.snake.length; i++) {
-            const segment = gameState.snake[i];
-            if (segment && segment.x === head.x && segment.y === head.y) {
-                return true;
-            }
-        }
-    }
-
-    // Check for trail collision if trail exists
-    if (gameState.trail && Array.isArray(gameState.trail)) {
-        for (const trailPos of gameState.trail) {
-            if (trailPos && trailPos.x === head.x && trailPos.y === head.y) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
 
 // Spatial grid management functions
 function initializeSpatialGrid() {
