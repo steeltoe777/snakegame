@@ -42,6 +42,19 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 - **Snake Reduction**: Halve snake length (minimum 1 segment)
 - **Strategic Reset**: Use regression for skill development
 
+### **⚡ Dynamic Speed System**
+- **Length-Based Speed**: Snake moves faster when shorter, slower when longer
+- **Real-time Adjustment**: Speed updates immediately after eating pellets
+- **Base Speed**: 100ms interval (faster movement)
+- **Length Penalty**: +2ms per snake segment (slower movement as snake grows)
+- **Strategic Balance**: Encourages careful pellet collection decisions
+
+### **🎯 Optimized Collision Detection**
+- **Spatial Grid System**: Advanced collision checking for better performance
+- **Real-time Updates**: Grid updates with every snake movement
+- **Efficient Detection**: Faster wall and self-collision checks
+- **Scalable Design**: Maintains performance at high snake lengths
+
 ### **🚪 Adaptive Boundaries**
 - **Level 1-999**: Traditional walls (game over on collision)
 - **Level 1000+**: Wrap-around boundaries (Pac-Man style)
@@ -84,6 +97,8 @@ snakegame/
 - **Fixed Grid System**: 20x20 tiles (30px each) regardless of window size
 - **60 FPS Rendering**: Optimized canvas drawing
 - **State Management**: Centralized game state object
+- **Dynamic Speed**: Real-time speed adjustment based on snake length
+- **Spatial Grid**: Advanced collision detection system
 - **Testing Ready**: All functions exposed for unit testing
 - **No Storage Required**: Password system eliminates save file needs
 
@@ -146,5 +161,5 @@ open index.html
 ---
 
 **Game Version**: 1.0.0  
-**Last Updated**: 2025-08-25  
+**Last Updated**: 2025-08-30  
 **Grid Size**: Fixed 20x20 tiles (canvas resizes, grid stays constant)

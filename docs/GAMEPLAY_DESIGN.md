@@ -1,7 +1,7 @@
 # 🎮 Snake, Tron, Pac-Man Hybrid - Complete Gameplay Design Document
 
-**Document Version**: 1.0.0  
-**Last Updated**: 2025-08-25  
+**Document Version**: 1.1.0  
+**Last Updated**: 2025-08-30  
 **Game Version**: Current  
 
 ---
