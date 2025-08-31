@@ -8,25 +8,34 @@ function getRandomPosition() {
     const maxAttempts = 100; // Prevent infinite loops
 
     while (attempts < maxAttempts) {
-        let x; let y;
-        
+        let x;
+        let y;
+
         // Get snake's current direction
         const dx = gameState.dx || 0;
         const dy = gameState.dy || 0;
-        
+
         // Bias spawn position based on movement direction
-        if (dx === 1) { // Moving right - spawn more likely on left side
+        if (dx === 1) {
+            // Moving right - spawn more likely on left side
             x = 1 + Math.floor(Math.random() * Math.max(1, tileCount * 0.4)); // Left 40% of board
             y = 1 + Math.floor(Math.random() * (tileCount - 2));
-        } else if (dx === -1) { // Moving left - spawn more likely on right side
-            x = Math.floor(tileCount * 0.6) + Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Right 40% of board
+        } else if (dx === -1) {
+            // Moving left - spawn more likely on right side
+            x =
+                Math.floor(tileCount * 0.6) +
+                Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Right 40% of board
             y = 1 + Math.floor(Math.random() * (tileCount - 2));
-        } else if (dy === 1) { // Moving down - spawn more likely on top
+        } else if (dy === 1) {
+            // Moving down - spawn more likely on top
             x = 1 + Math.floor(Math.random() * (tileCount - 2));
             y = 1 + Math.floor(Math.random() * Math.max(1, tileCount * 0.4)); // Top 40% of board
-        } else if (dy === -1) { // Moving up - spawn more likely on bottom
+        } else if (dy === -1) {
+            // Moving up - spawn more likely on bottom
             x = 1 + Math.floor(Math.random() * (tileCount - 2));
-            y = Math.floor(tileCount * 0.6) + Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Bottom 40% of board
+            y =
+                Math.floor(tileCount * 0.6) +
+                Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Bottom 40% of board
         } else {
             // No direction or stationary - use original random logic
             x = 1 + Math.floor(Math.random() * (tileCount - 2));
@@ -44,7 +53,15 @@ function getRandomPosition() {
         attempts++;
     }
 
-    // Fallback: return a safe position if all attempts fail
+    // Fallback: find a safe position if all attempts fail
+    for (let y = 1; y < tileCount - 1; y++) {
+        for (let x = 1; x < tileCount - 1; x++) {
+            if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                return { x, y };
+            }
+        }
+    }
+    // Ultimate fallback: center position (should be safe in most cases)
     return { x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) };
 }
 const gameState = {
@@ -619,7 +636,7 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-gameState.level = 1;
+    gameState.level = 1;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
