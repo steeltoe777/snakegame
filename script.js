@@ -609,8 +609,9 @@ function update() {
     // Collision with trail
     for (let i = 0; i < gameState.trail.length; i++) {
         if (head.x === gameState.trail[i].x && head.y === gameState.trail[i].y) {
-            gameOver();
-            return;
+            if (!gameState.mushroomPowerupActive) {
+                gameOver();
+            }
         }
     }
 
