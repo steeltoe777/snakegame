@@ -12,7 +12,7 @@ function getRandomPosition() {
 const gameState = {
     gridSize: 20, // Define gridSize here
     tileCount: 0, // Will be calculated in resetGame/levelUp based on canvas dimensions
-  baseSpeed: 100, // Base movement speed in ms
+    baseSpeed: 100, // Base movement speed in ms
     snake: [{ x: 10, y: 10 }],
     dxPrev: 0,
     dyPrev: 0,
@@ -477,7 +477,7 @@ function update() {
             atePellet = true;
             // Update game speed based on increased snake length
             clearInterval(gameState.gameInterval);
-            gameState.gameInterval = setInterval(update, gameState.baseSpeed + (gameState.snake.length * 2));
+            gameState.gameInterval = setInterval(update, calculateGameSpeed());
             break;
         }
     }
@@ -653,10 +653,43 @@ document.addEventListener('keydown', handleDirectionChange);
 
 restartButton.addEventListener('click', resetGame);
 
+// Calculate speed based on level and snake length with reasonable limits
+// Level-based speed limits: Higher levels have slower maximum speeds for better navigation
+// on cluttered maps. This prevents the snake from becoming too fast on difficult levels.
+
+function calculateGameSpeed() {
+    const {baseSpeed} = gameState;
+    const snakeLength = gameState.snake.length;
+    const {level} = gameState;
+
+    // Base calculation: speed decreases with snake length
+    const speed = baseSpeed + snakeLength * 2;
+
+    // Level-based speed limits - higher levels get slower maximum speeds
+    let maxSpeed = baseSpeed;
+
+    if (level >= 20) {
+        // Very high levels: slowest speed for careful navigation
+        maxSpeed = baseSpeed + 80; // 180ms interval minimum
+    } else if (level >= 15) {
+        // High levels: moderately slow
+        maxSpeed = baseSpeed + 60; // 160ms interval minimum
+    } else if (level >= 10) {
+        // Medium-high levels: reasonable speed
+        maxSpeed = baseSpeed + 40; // 140ms interval minimum
+    } else if (level >= 5) {
+        // Medium levels: slightly slower
+        maxSpeed = baseSpeed + 20; // 120ms interval minimum
+    }
+
+    // Apply the maximum speed limit
+    return Math.max(speed, maxSpeed);
+}
+
 function startGame() {
     if (gameState.gameRunning) return;
     gameState.gameRunning = true;
-    gameState.gameInterval = setInterval(update, gameState.baseSpeed + (gameState.snake.length * 2)); // Dynamic speed based on snake length
+    gameState.gameInterval = setInterval(update, calculateGameSpeed()); // Dynamic speed based on snake length
 }
 
 // Initial setup
@@ -678,7 +711,6 @@ window.gameOver = gameOver;
 window.levelUp = levelUp;
 window.resetGame = resetGame;
 window.startGame = startGame;
-
 
 // Spatial grid management functions
 function initializeSpatialGrid() {
