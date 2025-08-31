@@ -6,7 +6,7 @@ function generateMushrooms() {
     gameState.mushrooms = [];
 
     // Only spawn mushrooms on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.3) {
+    if (gameState.level >= 5 && Math.random() < 0.6) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets)
@@ -45,7 +45,7 @@ function generateMushrooms() {
 
         // Spawn 1-2 mushrooms if available tiles exist
         if (availableTiles.length > 0) {
-            const mushroomCount = Math.min(1 + Math.floor(gameState.level / 10), 2);
+            const mushroomCount = Math.min(1 + Math.floor(gameState.level / 5), 4);
             for (let i = 0; i < mushroomCount; i++) {
                 const randomIndex = Math.floor(Math.random() * availableTiles.length);
                 gameState.mushrooms.push(availableTiles[randomIndex]);
@@ -646,7 +646,7 @@ function update() {
 
         // Update mushroom timer if powerup is active
         if (gameState.mushroomPowerupActive) {
-            gameState.mushroomTimer -= calculateGameSpeed();
+            gameState.mushroomTimer -= 16.67; // ~16.67ms per frame at 60fps
             if (gameState.mushroomTimer <= 0) {
                 gameState.mushroomPowerupActive = false;
                 gameState.mushroomTimer = 0;
