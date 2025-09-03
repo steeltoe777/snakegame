@@ -137,6 +137,7 @@ const gameState = {
     spatialGrid: [],
     mushroomPowerupActive: false,
     mushroomTimer: 0,
+    mushroomLastUpdate: 0, // Track last update time for accurate timer
     mushrooms: [],
 };
 
@@ -641,13 +642,19 @@ function update() {
                 // Activate mushroom powerup for 8 seconds (8000ms)
                 gameState.mushroomPowerupActive = true;
                 gameState.mushroomTimer = 8000;
+                gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
         }
 
         // Update mushroom timer if powerup is active
         if (gameState.mushroomPowerupActive) {
-            gameState.mushroomTimer -= 16.67; // ~16.67ms per frame at 60fps
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.mushroomLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.mushroomTimer -= deltaTime;
+            gameState.mushroomLastUpdate = currentTime;
             if (gameState.mushroomTimer <= 0) {
                 gameState.mushroomPowerupActive = false;
                 gameState.mushroomTimer = 0;
