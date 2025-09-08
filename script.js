@@ -539,8 +539,8 @@ function update() {
         head.y < 0 ||
         head.y >= gameState.tileCount
     ) {
-        if (gameState.level < 1000) {
-            // Only check for outer wall collisions on level below 1000
+        if (gameState.level < 1000 && !gameState.mushroomPowerupActive) {
+            // Only check for outer wall collisions on level below 1000 and without mushroom
             gameOver();
             return;
         }
