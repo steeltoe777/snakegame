@@ -6,7 +6,7 @@ function generateMushrooms() {
     gameState.mushrooms = [];
 
     // Only spawn mushrooms on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.6) {
+    if (gameState.level >= 5 && Math.random() < 0.3) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets)
@@ -52,6 +52,66 @@ function generateMushrooms() {
                 // Remove from available to avoid duplicate positions
                 availableTiles.splice(randomIndex, 1);
             }
+        }
+    }
+}
+
+// Random mushroom spawning during gameplay
+function spawnRandomMushroom() {
+    // Only spawn mushrooms on higher levels and with low probability
+    if (gameState.level >= 5 && Math.random() < 0.005) {
+        // 1% chance per update
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, or existing mushrooms
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 mushroom if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.mushrooms.push(availableTiles[randomIndex]);
         }
     }
 }
@@ -670,6 +730,7 @@ function update() {
         levelUp();
     }
 
+    spawnRandomMushroom(); // Random mushroom spawning during gameplay
     drawGame();
 }
 
