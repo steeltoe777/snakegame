@@ -57,17 +57,23 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 - **Strategic Reset**: Use regression for skill development
 
 ### **⚡ Dynamic Speed System**
-- **Length-Based Speed**: Snake moves faster when shorter, slower when longer
-- **Real-time Adjustment**: Speed updates immediately after eating pellets
+- **Length + Level Based Speed**: Snake movement speed adjusts based on both snake length and current level
 - **Base Speed**: 100ms interval (faster movement)
 - **Length Penalty**: +2ms per snake segment (slower movement as snake grows)
-- **Strategic Balance**: Encourages careful pellet collection decisions
+- **Level-Based Speed Limits**: Higher levels have slower maximum speeds for better navigation
+  - Level 5+: 120ms minimum
+  - Level 10+: 140ms minimum  
+  - Level 15+: 160ms minimum
+  - Level 20+: 180ms minimum
+- **Real-time Adjustment**: Speed updates immediately after eating pellets or level changes
+- **Strategic Balance**: Encourages careful pellet collection and level progression decisions
 
 ### **🎯 Optimized Collision Detection**
-- **Spatial Grid System**: Advanced collision checking for better performance
-- **Real-time Updates**: Grid updates with every snake movement
-- **Efficient Detection**: Faster wall and self-collision checks
-- **Scalable Design**: Maintains performance at high snake lengths
+- **Spatial Grid System**: Advanced 2D grid-based collision checking for optimal performance
+- **Real-time Updates**: Grid updates with every snake movement for accurate detection
+- **Efficient Detection**: Faster wall, self, and pellet collision checks using grid coordinates
+- **Scalable Design**: Maintains consistent performance even at high snake lengths and complex mazes
+- **Grid Initialization**: Automatic grid setup during level changes and game reset
 
 ### **🚪 Adaptive Boundaries**
 - **Level 1-999**: Traditional walls (game over on collision)
@@ -100,7 +106,7 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 ```
 snakegame/
 ├── index.html          # Game interface
-├── script.js          # 672 lines of core game logic
+├── script.js          # 1037 lines of core game logic
 ├── style.css          # 80 lines of styling
 ├── script.test.js     # 501 lines of comprehensive tests
 └── docs/
@@ -197,5 +203,5 @@ Every project has its rough edges! Here are some things I'm aware of and plannin
 ---
 
 **Game Version**: 1.0.0  
-**Last Updated**: 2025-08-30  
+**Last Updated**: 2025-09-09  
 **Grid Size**: Fixed 20x20 tiles (canvas resizes, grid stays constant)
