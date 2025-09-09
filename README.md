@@ -126,9 +126,6 @@ snakegame/
 
 ### **Quick Start**
 ```bash
-# Navigate to project
-cd /a0/projects/snakegame/
-
 # Run tests
 npm test
 
