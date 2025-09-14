@@ -700,7 +700,7 @@ function update() {
             if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
                 gameState.mushrooms.splice(i, 1);
                 atePellet = true;
-                // Activate mushroom powerup for 8 seconds (8000ms)
+                // Activate mushroom powerup for 8 seconds and make snake grow
                 gameState.mushroomPowerupActive = true;
                 gameState.mushroomTimer = 8000;
                 gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
