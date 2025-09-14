@@ -699,6 +699,7 @@ function update() {
         for (let i = 0; i < gameState.mushrooms.length; i++) {
             if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
                 gameState.mushrooms.splice(i, 1);
+                atePellet = true;
                 // Activate mushroom powerup for 8 seconds (8000ms)
                 gameState.mushroomPowerupActive = true;
                 gameState.mushroomTimer = 8000;
