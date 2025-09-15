@@ -19,5 +19,8 @@
     "jest-environment-jsdom": "^30.1.2",
     "jsdom": "^27.0.0",
     "prettier": "^3.6.2"
+  },
+  "dependencies": {
+    "strip-ansi": "^6.0.1"
   }
 }
