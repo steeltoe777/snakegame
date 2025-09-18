@@ -777,24 +777,24 @@ function update() {
             if (gameState.speedBoostTimer <= 0) {
                 gameState.speedBoostActive = false;
                 gameState.speedBoostTimer = 0;
+            }
+        }
 
-                // Update time slow timer if powerup is active
-                if (gameState.timeSlowActive) {
-                    const currentTime = performance.now();
-                    const deltaTime = currentTime - gameState.timeSlowLastUpdate;
+        // Update time slow timer if powerup is active
+        if (gameState.timeSlowActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.timeSlowLastUpdate;
 
-                    // Decrement timer by actual elapsed time
-                    gameState.timeSlowTimer -= deltaTime;
-                    gameState.timeSlowLastUpdate = currentTime;
-                    if (gameState.timeSlowTimer <= 0) {
-                        gameState.timeSlowActive = false;
-                        gameState.timeSlowTimer = 0;
+            // Decrement timer by actual elapsed time
+            gameState.timeSlowTimer -= deltaTime;
+            gameState.timeSlowLastUpdate = currentTime;
+            if (gameState.timeSlowTimer <= 0) {
+                gameState.timeSlowActive = false;
+                gameState.timeSlowTimer = 0;
 
-                        // Update game speed when time slow ends
-                        clearInterval(gameState.gameInterval);
-                        gameState.gameInterval = setInterval(update, calculateGameSpeed());
-                    }
-                }
+                // Update game speed when time slow ends
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
             }
         }
     }
