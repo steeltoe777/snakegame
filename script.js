@@ -6,7 +6,7 @@ function generateMushrooms() {
     gameState.mushrooms = [];
 
     // Only spawn mushrooms on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.3) {
+    if (gameState.level >= 5 && Math.random() < 0.15) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets)
@@ -45,7 +45,9 @@ function generateMushrooms() {
 
         // Spawn 1-2 mushrooms if available tiles exist
         if (availableTiles.length > 0) {
-            const mushroomCount = Math.min(1 + Math.floor(gameState.level / 5), 4);
+            const mushroomCount = Math.floor(
+                Math.random() * Math.min(1 + Math.floor(gameState.level / 5), 4)
+            );
             for (let i = 0; i < mushroomCount; i++) {
                 const randomIndex = Math.floor(Math.random() * availableTiles.length);
                 gameState.mushrooms.push(availableTiles[randomIndex]);
@@ -198,6 +200,10 @@ const gameState = {
     mushroomPowerupActive: false,
     mushroomTimer: 0,
     mushroomLastUpdate: 0, // Track last update time for accurate timer
+    speedBoostActive: false,
+    speedBoostTimer: 0,
+    speedBoostLastUpdate: 0, // Track last update time for accurate speed boost timer
+    lightningBolts: [],
     mushrooms: [],
 };
 
@@ -708,6 +714,24 @@ function update() {
             }
         }
 
+        // Check for lightning bolt eating
+        for (let i = 0; i < gameState.lightningBolts.length; i++) {
+            if (
+                head.x === gameState.lightningBolts[i].x &&
+                head.y === gameState.lightningBolts[i].y
+            ) {
+                gameState.lightningBolts.splice(i, 1);
+                atePellet = true;
+                // Activate speed boost powerup for 6 seconds
+                gameState.speedBoostActive = true;
+                // Immediately update game speed for instant boost effect
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
+                gameState.speedBoostTimer = 6000;
+                gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
+                break;
+            }
+        }
         // Update mushroom timer if powerup is active
         if (gameState.mushroomPowerupActive) {
             const currentTime = performance.now();
@@ -721,6 +745,19 @@ function update() {
                 gameState.mushroomTimer = 0;
             }
         }
+        // Update speed boost timer if powerup is active
+        if (gameState.speedBoostActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.speedBoostLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.speedBoostTimer -= deltaTime;
+            gameState.speedBoostLastUpdate = currentTime;
+            if (gameState.speedBoostTimer <= 0) {
+                gameState.speedBoostActive = false;
+                gameState.speedBoostTimer = 0;
+            }
+        }
     }
 
     if (!atePellet) {
@@ -732,6 +769,7 @@ function update() {
     }
 
     spawnRandomMushroom(); // Random mushroom spawning during gameplay
+    spawnRandomLightningBolt(); // Random lightning bolt spawning during gameplay
     drawGame();
 }
 
@@ -741,6 +779,7 @@ function drawGame() {
     drawPellets();
     drawTrail();
     drawMushrooms(); // Draw mushroom powerups
+    drawLightningBolts(); // Draw lightning bolt powerups
     drawSnake();
 
     // Draw mushroom powerup indicator if active
@@ -753,6 +792,18 @@ function drawGame() {
         const timerWidth = (gameState.mushroomTimer / 8000) * 100;
         ctx.fillStyle = 'red';
         ctx.fillRect(10, 25, timerWidth, 5);
+    }
+
+    // Draw speed boost powerup indicator if active
+    if (gameState.speedBoostActive) {
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+        ctx.font = '12px Arial';
+        ctx.fillText('SPEED BOOST!', 10, 45);
+
+        // Draw timer bar
+        const timerWidth = (gameState.speedBoostTimer / 6000) * 100;
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(10, 50, timerWidth, 5);
     }
 }
 
@@ -822,6 +873,7 @@ function levelUp() {
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
     generatePellets();
     generateMushrooms(); // Generate mushrooms for powerups
+    generateLightningBolts(); // Generate lightning bolts for speed boost powerups
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
     updatePasswordDisplay();
@@ -846,6 +898,7 @@ function resetGame() {
     generateMaze();
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
     generatePellets();
+    generateLightningBolts(); // Generate lightning bolts for speed boost powerups
     generateMushrooms(); // Generate mushrooms for powerups
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
@@ -920,7 +973,7 @@ function calculateGameSpeed() {
     const { level } = gameState;
 
     // Base calculation: speed decreases with snake length
-    const speed = baseSpeed + snakeLength * 2;
+    let speed = baseSpeed + snakeLength * 2;
 
     // Level-based speed limits - higher levels get slower maximum speeds
     let maxSpeed = baseSpeed;
@@ -939,7 +992,12 @@ function calculateGameSpeed() {
         maxSpeed = baseSpeed + 20; // 120ms interval minimum
     }
 
-    // Apply the maximum speed limit
+    // Apply speed boost if active
+    if (gameState.speedBoostActive) {
+        speed *= 0.75;
+        maxSpeed *= 0.75;
+    }
+
     return Math.max(speed, maxSpeed);
 }
 
@@ -1035,4 +1093,175 @@ function updateSpatialGrid() {
             }
         });
     }
+}
+
+// Lightning bolt generation for speed boost powerups
+function generateLightningBolts() {
+    gameState.lightningBolts = [];
+
+    // Only spawn lightning bolts on level 3+ with some probability
+    if (gameState.level >= 3 && Math.random() < 0.2) {
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, or existing lightning bolts
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 lightning bolt if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.lightningBolts.push(availableTiles[randomIndex]);
+        }
+    }
+}
+
+// Random lightning bolt spawning during gameplay
+function spawnRandomLightningBolt() {
+    // Only spawn lightning bolts on level 3+ with low probability
+    if (gameState.level >= 3 && Math.random() < 0.008) {
+        // 0.8% chance per update
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, or existing lightning bolts
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 lightning bolt if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.lightningBolts.push(availableTiles[randomIndex]);
+        }
+    }
+}
+
+// Draw lightning bolts on the canvas
+function drawLightningBolts() {
+    gameState.lightningBolts.forEach((bolt) => {
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.moveTo(
+            bolt.x * gameState.gridSize + gameState.gridSize / 2,
+            bolt.y * gameState.gridSize
+        );
+        ctx.lineTo(
+            bolt.x * gameState.gridSize + gameState.gridSize / 4,
+            bolt.y * gameState.gridSize + gameState.gridSize / 2
+        );
+        ctx.lineTo(
+            bolt.x * gameState.gridSize + (gameState.gridSize * 3) / 4,
+            bolt.y * gameState.gridSize + gameState.gridSize / 2
+        );
+        ctx.lineTo(
+            bolt.x * gameState.gridSize + gameState.gridSize / 2,
+            bolt.y * gameState.gridSize + gameState.gridSize
+        );
+        ctx.strokeStyle = 'orange';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fill();
+    });
 }
