@@ -209,6 +209,10 @@ const gameState = {
     timeSlowActive: false, // Activation state
     timeSlowTimer: 0, // Remaining time in milliseconds
     timeSlowLastUpdate: 0, // Timestamp reference for accurate timer
+    stars: [],                 // Array of {x, y} positions
+    scoreMultiplierActive: false, // Activation state
+    scoreMultiplierTimer: 0,      // Remaining time in milliseconds
+    scoreMultiplierLastUpdate: 0, // Timestamp reference
 };
 
 // Password system for level progression
@@ -696,7 +700,8 @@ function update() {
     for (let i = 0; i < gameState.pellets.length; i++) {
         if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
             gameState.pellets.splice(i, 1);
-            gameState.score += 10;
+            const points = gameState.scoreMultiplierActive ? 20 : 10;
+            gameState.score += points;
             document.getElementById('score').innerText = `Score: ${gameState.score}`;
             atePellet = true;
             // Update game speed based on increased snake length
@@ -753,6 +758,19 @@ function update() {
                 break;
             }
         }
+        // Check for star eating
+        for (let i = 0; i < gameState.stars.length; i++) {
+            if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
+                gameState.stars.splice(i, 1);
+                atePellet = true;
+                // Activate score multiplier powerup for 10 seconds
+                gameState.scoreMultiplierActive = true;
+                gameState.scoreMultiplierTimer = 10000;
+                gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
+                break;
+            }
+        }
+
         // Update mushroom timer if powerup is active
         if (gameState.mushroomPowerupActive) {
             const currentTime = performance.now();
@@ -795,6 +813,20 @@ function update() {
                 // Update game speed when time slow ends
                 clearInterval(gameState.gameInterval);
                 gameState.gameInterval = setInterval(update, calculateGameSpeed());
+        // Update score multiplier timer if powerup is active
+        if (gameState.scoreMultiplierActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.scoreMultiplierLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.scoreMultiplierTimer -= deltaTime;
+            gameState.scoreMultiplierLastUpdate = currentTime;
+            if (gameState.scoreMultiplierTimer <= 0) {
+                gameState.scoreMultiplierActive = false;
+                gameState.scoreMultiplierTimer = 0;
+            }
+        }
+
             }
         }
     }
@@ -810,6 +842,7 @@ function update() {
     spawnRandomMushroom(); // Random mushroom spawning during gameplay
     spawnRandomLightningBolt(); // Random lightning bolt spawning during gameplay
     spawnRandomHourglass();
+    spawnRandomStar();
     drawGame();
 }
 
@@ -821,6 +854,7 @@ function drawGame() {
     drawMushrooms(); // Draw mushroom powerups
     drawLightningBolts(); // Draw lightning bolt powerups
     drawHourglasses();
+    drawStars();
     drawSnake();
 
     // Draw mushroom powerup indicator if active
@@ -857,6 +891,18 @@ function drawGame() {
         const timerWidth = (gameState.timeSlowTimer / 8000) * 100;
         ctx.fillStyle = '#800080';
         ctx.fillRect(10, 50, timerWidth, 5);
+    }
+
+    // Draw score multiplier powerup indicator if active
+    if (gameState.scoreMultiplierActive) {
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Gold color with transparency
+        ctx.font = '12px Arial';
+        ctx.fillText('SCORE X2', 10, 65);
+
+        // Draw timer bar
+        const timerWidth = (gameState.scoreMultiplierTimer / 10000) * 100;
+        ctx.fillStyle = '#FFD700'; // Gold color
+        ctx.fillRect(10, 70, timerWidth, 5);
     }
 }
 
@@ -928,6 +974,7 @@ function levelUp() {
     generateMushrooms(); // Generate mushrooms for powerups
     generateLightningBolts(); // Generate lightning bolts for speed boost powerups
     generateHourglasses();
+    generateStars();
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
     updatePasswordDisplay();
@@ -1310,6 +1357,99 @@ function generateHourglasses() {
     }
 }
 
+function generateStars() {
+    gameState.stars = [];
+
+    // Only spawn stars on level 4+ with 2% probability
+    if (gameState.level >= 4 && Math.random() < 0.02) {
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, hourglasses, or existing stars
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check hourglasses
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.hourglasses.length; j++) {
+                            const hourglass = gameState.hourglasses[j];
+                            if (hourglass.x === x && hourglass.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing stars
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.stars.length; j++) {
+                            const star = gameState.stars[j];
+                            if (star.x === x && star.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 star if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.stars.push(availableTiles[randomIndex]);
+        }
+    }
+}
+
 // Random lightning bolt spawning during gameplay
 function spawnRandomLightningBolt() {
     // Only spawn lightning bolts on level 3+ with low probability
@@ -1461,6 +1601,97 @@ function spawnRandomHourglass() {
     }
 }
 
+function spawnRandomStar() {
+    // Only spawn stars on level 4+ with 2% probability
+    if (gameState.level >= 4 && Math.random() < 0.02) {
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, hourglasses, or existing stars
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check hourglasses
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.hourglasses.length; j++) {
+                            const hourglass = gameState.hourglasses[j];
+                            if (hourglass.x === x && hourglass.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing stars
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.stars.length; j++) {
+                            const star = gameState.stars[j];
+                            if (star.x === x && star.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 star if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.stars.push(availableTiles[randomIndex]);
+        }
+    }
+}
+
 // Draw lightning bolts on the canvas
 function drawLightningBolts() {
     gameState.lightningBolts.forEach((bolt) => {
@@ -1509,6 +1740,46 @@ function drawHourglasses() {
         ctx.closePath();
         ctx.fill();
 
+        // Add subtle pulsing effect
+        const pulse = Math.sin(Date.now() / 200) * 0.1 + 0.9;
+        ctx.globalAlpha = pulse;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+}
+
+function drawStars() {
+    const { gridSize } = gameState;
+    ctx.fillStyle = '#FFD700'; // Gold color for stars
+
+    for (let i = 0; i < gameState.stars.length; i++) {
+        const star = gameState.stars[i];
+        const x = star.x * gridSize;
+        const y = star.y * gridSize;
+
+        // Draw five-pointed star
+        ctx.beginPath();
+        const centerX = x + gridSize / 2;
+        const centerY = y + gridSize / 2;
+        const outerRadius = gridSize / 3;
+        const innerRadius = outerRadius / 2;
+        
+        for (let j = 0; j < 10; j++) {
+            const radius = j % 2 === 0 ? outerRadius : innerRadius;
+            const angle = (Math.PI / 5) * j - Math.PI / 2;
+            const pointX = centerX + radius * Math.cos(angle);
+            const pointY = centerY + radius * Math.sin(angle);
+            
+            if (j === 0) {
+                ctx.moveTo(pointX, pointY);
+            } else {
+                ctx.lineTo(pointX, pointY);
+            }
+        }
+        
+        ctx.closePath();
+        ctx.fill();
+        
         // Add subtle pulsing effect
         const pulse = Math.sin(Date.now() / 200) * 0.1 + 0.9;
         ctx.globalAlpha = pulse;
