@@ -107,7 +107,7 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 ```
 snakegame/
 ├── index.html          # Game interface
-├── script.js          # 1037 lines of core game logic
+├── script.js          # 1861 lines of core game logic
 ├── style.css          # 80 lines of styling
 ├── script.test.js     # 501 lines of comprehensive tests
 └── docs/
@@ -167,7 +167,7 @@ open index.html
 - **Snake Body**: Lime green segments
 - **Pellets**: Yellow circular collectibles
 - **Walls**: Grey obstacles
-- **Trail**: Blue movement history
+- **Trail**: Blue movement history (rainbow during mushroom power-up)
 - **Background**: Black canvas
 
 
