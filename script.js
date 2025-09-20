@@ -934,6 +934,18 @@ function gameOver() {
             Math.max(1, Math.floor(gameState.snake.length / 2))
         ); // Reduce snake length by half, minimum 1 segment
         gameState.trail = []; // Clear trail
+        // Clear all powerups when respawning
+        gameState.lightningBolts = [];
+        gameState.mushrooms = [];
+        gameState.hourglasses = [];
+        gameState.stars = [];
+        // Reset all powerup timers and active states
+        gameState.mushroomPowerupActive = false;
+        gameState.mushroomTimer = 0;
+        gameState.speedBoostTimer = 0;
+        gameState.timeSlowTimer = 0;
+        gameState.scoreMultiplierTimer = 0;
+
         if (gameState.snake.length <= 1) {
             gameState.snake = [{ x: getRandomPosition().x, y: getRandomPosition().y }]; // Randomized start position
         }
