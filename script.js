@@ -2,6 +2,36 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Group game state into a single object for easier management and testing
+
+// Helper function to convert HSL to RGB
+function hslToRgb(h, s, l) {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+    let r; let g; let b;
+
+    if (s === 0) {
+        r = g = b = l; // achromatic
+    } else {
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
 function generateMushrooms() {
     gameState.mushrooms = [];
 
@@ -213,6 +243,7 @@ const gameState = {
     scoreMultiplierActive: false, // Activation state
     scoreMultiplierTimer: 0, // Remaining time in milliseconds
     scoreMultiplierLastUpdate: 0, // Timestamp reference
+    rainbowHue: 0, // Current hue value for rainbow trail effect
 };
 
 // Password system for level progression
@@ -589,19 +620,44 @@ function drawSnake() {
 }
 
 function drawTrail() {
-    ctx.fillStyle = 'blue';
-    gameState.trail.forEach((segment) => {
-        ctx.fillRect(
-            segment.x * gameState.gridSize,
-            segment.y * gameState.gridSize,
-            gameState.gridSize,
-            gameState.gridSize
-        );
-    });
+    // Draw trail with conditional rainbow effect
+    // Rainbow effect only active during mushroom powerup
+    if (gameState.mushroomPowerupActive) {
+        // Draw with rainbow effect
+        gameState.trail.forEach((segment, index) => {
+            // Calculate hue for this segment based on its position and time
+            const hue = (gameState.rainbowHue + index * 3) % 360;
+            const [r, g, b] = hslToRgb(Math.floor(hue), 100, 50);
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            
+            ctx.fillRect(
+                segment.x * gameState.gridSize,
+                segment.y * gameState.gridSize,
+                gameState.gridSize,
+                gameState.gridSize
+            );
+        });
+    } else {
+        // Draw with original blue trail
+        ctx.fillStyle = 'blue';
+        gameState.trail.forEach((segment) => {
+            ctx.fillRect(
+                segment.x * gameState.gridSize,
+                segment.y * gameState.gridSize,
+                gameState.gridSize,
+                gameState.gridSize
+            );
+        });
+    }
 }
+
+
 
 function update() {
     if (!gameState.gameRunning) return;
+    // Update rainbow trail hue for animation effect
+    gameState.rainbowHue = (gameState.rainbowHue + 0.5) % 360;
+    
 
     updateSpatialGrid(); // Update spatial grid for accurate collision detection
     const head = { x: gameState.snake[0].x + gameState.dx, y: gameState.snake[0].y + gameState.dy };
