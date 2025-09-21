@@ -4,10 +4,22 @@ const ctx = canvas.getContext('2d');
 // Group game state into a single object for easier management and testing
 function getRandomPosition() {
     const tileCount = gameState.tileCount || 20;
-    return {
-        x: 1 + Math.floor(Math.random() * (tileCount - 2)),
-        y: 1 + Math.floor(Math.random() * (tileCount - 2)),
-    };
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loops
+
+    while (attempts < maxAttempts) {
+        const x = 1 + Math.floor(Math.random() * (tileCount - 2));
+        const y = 1 + Math.floor(Math.random() * (tileCount - 2));
+
+        // Check if position is not a wall (maze value !== 1)
+        if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+            return { x, y };
+        }
+        attempts++;
+    }
+
+    // Fallback: return a safe position if all attempts fail
+    return { x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) };
 }
 const gameState = {
     gridSize: 20, // Define gridSize here
@@ -581,7 +593,7 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-    gameState.level = 1;
+    gameState.level = 10;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
@@ -658,9 +670,9 @@ restartButton.addEventListener('click', resetGame);
 // on cluttered maps. This prevents the snake from becoming too fast on difficult levels.
 
 function calculateGameSpeed() {
-    const {baseSpeed} = gameState;
+    const { baseSpeed } = gameState;
     const snakeLength = gameState.snake.length;
-    const {level} = gameState;
+    const { level } = gameState;
 
     // Base calculation: speed decreases with snake length
     const speed = baseSpeed + snakeLength * 2;
