@@ -8,8 +8,34 @@ function getRandomPosition() {
     const maxAttempts = 100; // Prevent infinite loops
 
     while (attempts < maxAttempts) {
-        const x = 1 + Math.floor(Math.random() * (tileCount - 2));
-        const y = 1 + Math.floor(Math.random() * (tileCount - 2));
+        let x; let y;
+        
+        // Get snake's current direction
+        const dx = gameState.dx || 0;
+        const dy = gameState.dy || 0;
+        
+        // Bias spawn position based on movement direction
+        if (dx === 1) { // Moving right - spawn more likely on left side
+            x = 1 + Math.floor(Math.random() * Math.max(1, tileCount * 0.4)); // Left 40% of board
+            y = 1 + Math.floor(Math.random() * (tileCount - 2));
+        } else if (dx === -1) { // Moving left - spawn more likely on right side
+            x = Math.floor(tileCount * 0.6) + Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Right 40% of board
+            y = 1 + Math.floor(Math.random() * (tileCount - 2));
+        } else if (dy === 1) { // Moving down - spawn more likely on top
+            x = 1 + Math.floor(Math.random() * (tileCount - 2));
+            y = 1 + Math.floor(Math.random() * Math.max(1, tileCount * 0.4)); // Top 40% of board
+        } else if (dy === -1) { // Moving up - spawn more likely on bottom
+            x = 1 + Math.floor(Math.random() * (tileCount - 2));
+            y = Math.floor(tileCount * 0.6) + Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Bottom 40% of board
+        } else {
+            // No direction or stationary - use original random logic
+            x = 1 + Math.floor(Math.random() * (tileCount - 2));
+            y = 1 + Math.floor(Math.random() * (tileCount - 2));
+        }
+
+        // Ensure coordinates are within bounds
+        x = Math.max(1, Math.min(tileCount - 2, x));
+        y = Math.max(1, Math.min(tileCount - 2, y));
 
         // Check if position is not a wall (maze value !== 1)
         if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
@@ -593,7 +619,7 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-    gameState.level = 10;
+gameState.level = 1;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
