@@ -846,6 +846,18 @@ function drawGame() {
         ctx.fillStyle = 'yellow';
         ctx.fillRect(10, 50, timerWidth, 5);
     }
+
+    // Draw time slow powerup indicator if active
+    if (gameState.timeSlowActive) {
+        ctx.fillStyle = 'rgba(128, 0, 128, 0.7)';
+        ctx.font = '12px Arial';
+        ctx.fillText('TIME SLOW!', 10, 45);
+
+        // Draw timer bar
+        const timerWidth = (gameState.timeSlowTimer / 8000) * 100;
+        ctx.fillStyle = '#800080';
+        ctx.fillRect(10, 50, timerWidth, 5);
+    }
 }
 
 function gameOver() {
@@ -931,7 +943,7 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-    gameState.level = 100;
+    gameState.level = 1;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
