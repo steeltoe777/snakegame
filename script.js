@@ -1204,22 +1204,30 @@ function resetGame() {
 
 function handleDirectionChange(e) {
     // Ignore arrow keys when game is paused to prevent direction changes during pause
-    if (gameState.paused &&
-        (e.key === 'ArrowUp' ||
-            e.key === 'ArrowDown' ||
-            e.key === 'ArrowLeft' ||
-            e.key === 'ArrowRight')) {
-        return;
-    }
-
     if (
-        !gameState.gameRunning &&
+        gameState.paused &&
         (e.key === 'ArrowUp' ||
             e.key === 'ArrowDown' ||
             e.key === 'ArrowLeft' ||
             e.key === 'ArrowRight')
     ) {
+        return;
+    }
+
+    // Handle arrow keys based on game state
+    if (!gameState.gameRunning &&
+        (e.key === 'ArrowUp' ||
+            e.key === 'ArrowDown' ||
+            e.key === 'ArrowLeft' ||
+            e.key === 'ArrowRight')) {
+        // If game over overlay is visible, we're in true game over state
+        // In this state, ignore arrow keys to prevent accidental restart
+        if (!gameOverOverlay.classList.contains('hidden')) {
+            return;
+        }
+        // Otherwise, start the game (initial start or resume after respawn)
         startGame();
+        // Continue to allow normal arrow key processing
     }
 
     switch (e.key) {
