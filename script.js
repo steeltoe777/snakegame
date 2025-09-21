@@ -218,11 +218,6 @@ function update() {
             if (i < gameState.snake.length - 500000000) {
                 gameOver();
             } else {
-                // Add current head to trail
-                // gameState.trail.push({ x: gameState.snake[0].x, y: gameState.snake[0].y });
-                gameState.snake.pop(); // Only remove tail if no pellet was eaten
-                // gameState.snake.unshift(head);
-
                 const newDirection = Math.round(Math.random() * 3) + 1; // Direction 1-4
                 switch (newDirection) {
                     case 1:
@@ -244,6 +239,8 @@ function update() {
                     default:
                         break;
                 }
+                gameState.snake.pop(); // Only remove tail if no pellet was eaten
+                drawGame();
             }
             return;
         }
