@@ -1203,6 +1203,15 @@ function resetGame() {
 }
 
 function handleDirectionChange(e) {
+    // Ignore arrow keys when game is paused to prevent direction changes during pause
+    if (gameState.paused &&
+        (e.key === 'ArrowUp' ||
+            e.key === 'ArrowDown' ||
+            e.key === 'ArrowLeft' ||
+            e.key === 'ArrowRight')) {
+        return;
+    }
+
     if (
         !gameState.gameRunning &&
         (e.key === 'ArrowUp' ||
