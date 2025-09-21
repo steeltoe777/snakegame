@@ -1,0 +1,196 @@
+{
+  "sessionId": "3176c58c-4138-4025-9bfb-1c353b907162",
+  "repoPath": "/a0/projects/snakegame/",
+  "totalFiles": 18,
+  "processedFiles": [],
+  "remainingQueue": [
+    {
+      "path": "/a0/projects/snakegame/package.json",
+      "relativePath": "package.json",
+      "size": 539,
+      "priority": 100,
+      "fileType": ".json",
+      "estimatedTokens": 216,
+      "category": "config",
+      "lastModified": "2025-08-12T17:54:22.547Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/package-lock.json",
+      "relativePath": "package-lock.json",
+      "size": 261985,
+      "priority": 80,
+      "fileType": ".json",
+      "estimatedTokens": 104794,
+      "category": "config",
+      "lastModified": "2025-08-12T17:54:23.362Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/script.js",
+      "relativePath": "script.js",
+      "size": 10011,
+      "priority": 60,
+      "fileType": ".js",
+      "estimatedTokens": 3004,
+      "category": "source",
+      "lastModified": "2025-08-12T17:54:23.362Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/jest.setup.js",
+      "relativePath": "jest.setup.js",
+      "size": 2748,
+      "priority": 60,
+      "fileType": ".js",
+      "estimatedTokens": 825,
+      "category": "source",
+      "lastModified": "2025-08-12T17:54:22.548Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.eslintrc.js",
+      "relativePath": ".eslintrc.js",
+      "size": 719,
+      "priority": 60,
+      "fileType": ".js",
+      "estimatedTokens": 216,
+      "category": "source",
+      "lastModified": "2025-08-12T17:54:22.547Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/README.md",
+      "relativePath": "README.md",
+      "size": 3757,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 940,
+      "category": "docs",
+      "lastModified": "2025-08-12T17:54:22.548Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/docs/design.md",
+      "relativePath": "docs/design.md",
+      "size": 3054,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 764,
+      "category": "docs",
+      "lastModified": "2025-08-12T17:54:23.375Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/docs/architecture.md",
+      "relativePath": "docs/architecture.md",
+      "size": 2538,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 635,
+      "category": "docs",
+      "lastModified": "2025-08-12T17:54:23.375Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/docs/adr/001-module-structure.md",
+      "relativePath": "docs/adr/001-module-structure.md",
+      "size": 2337,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 585,
+      "category": "docs",
+      "lastModified": "2025-08-12T17:54:23.375Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.context-crystallizer/templates/guidance/system-guidance.md",
+      "relativePath": ".context-crystallizer/templates/guidance/system-guidance.md",
+      "size": 3420,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 855,
+      "category": "docs",
+      "lastModified": "2025-08-12T18:08:31.421Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.context-crystallizer/templates/guidance/standard-guidance.md",
+      "relativePath": ".context-crystallizer/templates/guidance/standard-guidance.md",
+      "size": 3822,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 956,
+      "category": "docs",
+      "lastModified": "2025-08-12T18:08:31.423Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.context-crystallizer/templates/guidance/overview-guidance.md",
+      "relativePath": ".context-crystallizer/templates/guidance/overview-guidance.md",
+      "size": 3231,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 808,
+      "category": "docs",
+      "lastModified": "2025-08-12T18:08:31.422Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.context-crystallizer/templates/guidance/detailed-guidance.md",
+      "relativePath": ".context-crystallizer/templates/guidance/detailed-guidance.md",
+      "size": 7526,
+      "priority": 40,
+      "fileType": ".md",
+      "estimatedTokens": 1882,
+      "category": "docs",
+      "lastModified": "2025-08-12T18:08:31.424Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/script.test.js",
+      "relativePath": "script.test.js",
+      "size": 14826,
+      "priority": 30,
+      "fileType": ".js",
+      "estimatedTokens": 4448,
+      "category": "test",
+      "lastModified": "2025-08-12T17:54:22.547Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/style.css",
+      "relativePath": "style.css",
+      "size": 1518,
+      "priority": 20,
+      "fileType": ".css",
+      "estimatedTokens": 456,
+      "category": "other",
+      "lastModified": "2025-08-12T17:54:23.362Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/index.html",
+      "relativePath": "index.html",
+      "size": 670,
+      "priority": 20,
+      "fileType": ".html",
+      "estimatedTokens": 201,
+      "category": "other",
+      "lastModified": "2025-08-12T17:54:22.547Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.context-crystallizer/templates/output/standard-output.mustache",
+      "relativePath": ".context-crystallizer/templates/output/standard-output.mustache",
+      "size": 764,
+      "priority": 20,
+      "fileType": ".mustache",
+      "estimatedTokens": 230,
+      "category": "other",
+      "lastModified": "2025-08-12T18:08:31.424Z"
+    },
+    {
+      "path": "/a0/projects/snakegame/.context-crystallizer/templates/output/detailed-output.mustache",
+      "relativePath": ".context-crystallizer/templates/output/detailed-output.mustache",
+      "size": 1279,
+      "priority": 20,
+      "fileType": ".mustache",
+      "estimatedTokens": 384,
+      "category": "other",
+      "lastModified": "2025-08-12T18:08:31.425Z"
+    }
+  ],
+  "startTime": "2025-08-12T18:08:31.790Z",
+  "lastActivity": "2025-08-12T18:08:31.790Z",
+  "excludePatterns": [
+    "node_modules",
+    ".git",
+    "dist",
+    "build"
+  ]
+}

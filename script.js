@@ -230,7 +230,34 @@ function gameOver() {
 gameState.gameRunning = false;
 clearInterval(gameState.gameInterval);
 finalScoreDisplay.innerText = `Score: ${gameState.score}`;
+
+// Display overlay first to ensure visibility
 gameOverOverlay.classList.remove('hidden');
+finalScoreDisplay.innerText = `Score: ${gameState.score}`;
+
+// Store level/score before reset
+const { level, score } = gameState;
+
+// Implement respawn logic
+if (level > 1) {
+// Preserve new level/score after reset
+resetGame();
+gameState.level = level - 1;
+gameState.score = Math.floor(score / 2);
+
+// Add extra pellets for half the lost score
+for (let i = 0; i < Math.floor(gameState.score / 2); i++) {
+generatePellets();
+}
+
+// Update UI elements to reflect new level and score
+document.getElementById('score').innerText = `Score: ${gameState.score}`;
+document.getElementById('level').innerText = `Level: ${gameState.level}`;
+startGame(); // Start game loop after respawn (automatically sets gameRunning = true)
+  } else {
+    // Keep overlay visible and game state stopped
+    gameState.gameRunning = false;
+  }
 }
 
 function levelUp() {
@@ -277,9 +304,13 @@ generatePellets();
 drawGame(); // Draw initial state
 gameState.gameRunning = false;
 gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
+  
+  // Re-enable keyboard controls
+  document.removeEventListener('keydown', handleDirectionChange);
+  document.addEventListener('keydown', handleDirectionChange);
 }
 
-document.addEventListener('keydown', e => {
+function handleDirectionChange(e) {
 if (!gameState.gameRunning && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
 startGame();
 }
@@ -300,7 +331,9 @@ break;
 default:
 break;
 }
-});
+}
+
+document.addEventListener('keydown', handleDirectionChange);
 
 restartButton.addEventListener('click', resetGame);
 
