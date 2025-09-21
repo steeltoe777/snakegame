@@ -1,4 +1,5 @@
 
+/* global levelUp:true */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -239,59 +240,43 @@ finalScoreDisplay.innerText = `Score: ${gameState.score}`;
 const { level, score } = gameState;
 
 // Implement respawn logic
-if (level > 1) {
-// Preserve new level/score after reset
-// Clear existing interval
-if (gameState.gameInterval) {
-    // Reset game state but keep level
-    gameState.level = level; // Keep current level
-    gameState.gameRunning = true; // Restart gameplay
-    startGame(); // Start new game cycle with halved snake
-    // Reset game state but keep level
-    gameState.gameInterval = null;
-}
-// Reset direction
-gameState.dx = 0;
-gameState.dy = 0;
-// Reset trail
-gameState.trail = [];
-// Halve the snake's length, minimum 1
-gameState.snake = gameState.snake.slice(0, Math.max(1, Math.floor(gameState.snake.length / 2)));
-gameState.level = level - 1;
-gameState.score = Math.floor(score / 2);
-
-// Add extra pellets for half the lost score
-for (let i = 0; i < Math.floor(gameState.score / 2); i++) {
-generatePellets();
-}
-
-// Update UI elements to reflect new level and score
-document.getElementById('score').innerText = `Score: ${gameState.score}`;
-// Reset snake to single segment when leveling up
-gameState.snake = [{ x: 10, y: 10 }];
-startGame(); // Start game loop after respawn (automatically sets gameRunning = true)
-  } else {
-    // Keep overlay visible and game state stopped
-    gameState.gameRunning = false;
-  }
-}
-
-function levelUp() {
-gameState.level++;
-document.getElementById('level').innerText = `Level: ${  gameState.level}`;
-gameState.dx = 0;
-gameState.dy = 0;
-gameState.trail = [];
-// Crucial fix: Stop the current game interval and set gameRunning to false
-clearInterval(gameState.gameInterval);
-gameState.gameInterval = null; // Ensure interval ID is cleared
-gameState.gameRunning = false;
-
-calculateTileCount(); // Recalculate tileCount based on current canvas dimensions
-generateMaze(); // Regenerate maze for new level (can be more complex later)
-generatePellets();
-drawGame(); // Draw initial state for the new level
+    if (level > 1) {
+        clearInterval(gameState.gameInterval); // Clear existing interval
+        gameState.gameInterval = null;
+        gameState.gameRunning = false; // Ensure game is stopped before respawn
+        gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
+        gameState.score = Math.floor(score / 2); // Halve the score
+        gameState.snake = [{ x: 10, y: 10 }]; // Respawn at initial position with length 1
+        gameState.dx = 0; // Reset direction
+        gameState.dy = 0; // Reset direction
+        gameState.trail = []; // Clear trail
+        document.getElementById('score').innerText = `Score: ${gameState.score}`;
+        document.getElementById('level').innerText = `Level: ${gameState.level}`;
+        gameOverOverlay.classList.add('hidden'); // Hide overlay
+        generateMaze(); // Regenerate maze for the new (previous) level
+        generatePellets(); // Regenerate pellets for the new (previous) level
+        drawGame(); // Draw initial state for the respawned level
+        startGame(); // Start game loop after respawn
+    } else {
+        // Game over on level 1, truly end the game
+        gameState.gameRunning = false;
+        // The overlay is already visible from line 235
+    }
 // REMOVED: startGame(); // Game should not start automatically after levelUp
+}
+function levelUp() {
+    clearInterval(gameState.gameInterval);
+    gameState.gameInterval = null;
+    gameState.level++;
+    gameState.snake = [{ x: 10, y: 10 }]; // Reset snake position
+    gameState.dx = 0; // Reset direction
+    gameState.dy = 0; // Reset direction
+    gameState.trail = []; // Clear trail
+    document.getElementById('level').innerText = `Level: ${gameState.level}`;
+    generateMaze();
+    generatePellets();
+    drawGame();
+    gameState.gameRunning = false; // Set game to idle after level up
 }
 
 function resetGame() {
