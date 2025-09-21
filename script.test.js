@@ -168,7 +168,7 @@ describe('Level Progression', () => {
         window.levelUp();
 
         expect(window.gameState.level).toBe(2);
-        expect(window.gameState.snake).toEqual([{ x: 10, y: 10 }]);
+        expect(window.gameState.snake).toEqual([{ x: 10, y: 10 }, { x: 9, y: 10 }]);
         expect(window.gameState.dx).toBe(0);
         expect(window.gameState.dy).toBe(0);
         expect(window.gameState.trail).toEqual([]);

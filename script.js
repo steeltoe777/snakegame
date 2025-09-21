@@ -1,5 +1,4 @@
 
-/* global levelUp:true */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -268,7 +267,13 @@ function levelUp() {
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
     gameState.level++;
-    gameState.snake = [{ x: 10, y: 10 }]; // Reset snake position
+    const currentSnakeLength = gameState.snake.length;
+    const newSnake = [];
+    const effectiveLength = Math.max(1, currentSnakeLength);
+    for (let i = 0; i < effectiveLength; i++) {
+        newSnake.push({ x: 10 - i, y: 10 });
+    }
+    gameState.snake = newSnake;
     gameState.dx = 0; // Reset direction
     gameState.dy = 0; // Reset direction
     gameState.trail = []; // Clear trail
