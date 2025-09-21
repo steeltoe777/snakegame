@@ -304,10 +304,13 @@ function update() {
       if (i < gameState.snake.length - 500000000) {
         gameOver();
       } else {
-        if (i <= 2) {
+        if (i <= 2 && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
           // Avoid collision with neck segments of self.
           gameState.dx = gameState.dxPrev;
           gameState.dy = gameState.dyPrev;
+          // Only for the first touch though.
+          gameState.dxPrev = 0;
+          gameState.dyPrev = 0;
         } else {
           const newDirection = Math.round(Math.random() * 3) + 1; // Direction 1-4
           switch (newDirection) {
