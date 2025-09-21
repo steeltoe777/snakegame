@@ -112,7 +112,7 @@ function handlePasswordKey(e) {
 
                 // Regenerate maze and pellets for the target level
                 generateMaze();
-    initializeSpatialGrid(); // Initialize spatial grid for collision detection
+                initializeSpatialGrid(); // Initialize spatial grid for collision detection
                 generatePellets();
 
                 // Reset key sequence
@@ -528,7 +528,7 @@ function gameOver() {
         document.getElementById('level').innerText = `Level: ${gameState.level}`;
         gameOverOverlay.classList.add('hidden'); // Hide overlay
         generateMaze(); // Regenerate maze for the new (previous) level
-    initializeSpatialGrid(); // Initialize spatial grid for collision detection
+        initializeSpatialGrid(); // Initialize spatial grid for collision detection
         generatePellets(); // Regenerate pellets for the new (previous) level
         drawGame(); // Draw initial state for the respawned level
         if (gameState.level >= 100) {
@@ -678,31 +678,35 @@ window.startGame = startGame;
 // Collision detection function with spatial grid optimization - added by Agent Zero
 function detectCollision(gameState, head, spatialGrid = null) {
     // Validate input parameters
-    if (!gameState || typeof gameState !== "object") {
-        throw new TypeError("gameState must be a valid object");
+    if (!gameState || typeof gameState !== 'object') {
+        throw new TypeError('gameState must be a valid object');
     }
-    
-    if (!head || typeof head.x !== "number" || typeof head.y !== "number") {
-        throw new TypeError("head must be an object with numeric x and y properties");
+
+    if (!head || typeof head.x !== 'number' || typeof head.y !== 'number') {
+        throw new TypeError('head must be an object with numeric x and y properties');
     }
-    
-    if (!gameState.tileCount || typeof gameState.tileCount !== "number") {
-        throw new TypeError("gameState must have a valid tileCount property");
+
+    if (!gameState.tileCount || typeof gameState.tileCount !== 'number') {
+        throw new TypeError('gameState must have a valid tileCount property');
     }
-    
+
     // Check for out of bounds (handles wrap-around for levels >= 1000)
-    const isOutOfBounds = head.x < 0 || head.x >= gameState.tileCount ||
-                         head.y < 0 || head.y >= gameState.tileCount;
-    
+    const isOutOfBounds =
+        head.x < 0 || head.x >= gameState.tileCount || head.y < 0 || head.y >= gameState.tileCount;
+
     if (isOutOfBounds) {
         return gameState.level < 1000; // Collision only for levels below 1000
     }
-    
+
     // Use spatial grid for O(1) collision detection if available and valid
-    if (spatialGrid && Array.isArray(spatialGrid) && 
-        spatialGrid[head.y] && Array.isArray(spatialGrid[head.y]) &&
-        head.y < spatialGrid.length && head.x < spatialGrid[head.y].length) {
-        
+    if (
+        spatialGrid &&
+        Array.isArray(spatialGrid) &&
+        spatialGrid[head.y] &&
+        Array.isArray(spatialGrid[head.y]) &&
+        head.y < spatialGrid.length &&
+        head.x < spatialGrid[head.y].length
+    ) {
         const gridValue = spatialGrid[head.y][head.x];
         // 1 = wall, 2 = snake segment, 3 = trail - all indicate collision
         if (gridValue === 1 || gridValue === 2 || gridValue === 3) {
@@ -710,21 +714,25 @@ function detectCollision(gameState, head, spatialGrid = null) {
         }
         return false;
     }
-    
+
     // Fallback to traditional collision detection if no spatial grid
-    
+
     // Validate maze array exists and is properly structured
-    if (!gameState.maze || !Array.isArray(gameState.maze) || 
-        !gameState.maze[head.y] || !Array.isArray(gameState.maze[head.y])) {
-        console.error("Invalid maze data structure");
+    if (
+        !gameState.maze ||
+        !Array.isArray(gameState.maze) ||
+        !gameState.maze[head.y] ||
+        !Array.isArray(gameState.maze[head.y])
+    ) {
+        console.error('Invalid maze data structure');
         return true; // Collision if maze data is invalid
     }
-    
+
     // Wall collision check
     if (gameState.maze[head.y][head.x] === 1) {
         return true;
     }
-    
+
     // Check for self-collision (skip head itself)
     if (gameState.snake && Array.isArray(gameState.snake)) {
         for (let i = 1; i < gameState.snake.length; i++) {
@@ -734,7 +742,7 @@ function detectCollision(gameState, head, spatialGrid = null) {
             }
         }
     }
-    
+
     // Check for trail collision if trail exists
     if (gameState.trail && Array.isArray(gameState.trail)) {
         for (const trailPos of gameState.trail) {
@@ -743,7 +751,7 @@ function detectCollision(gameState, head, spatialGrid = null) {
             }
         }
     }
-    
+
     return false;
 }
 
@@ -753,7 +761,7 @@ function initializeSpatialGrid() {
     gameState.spatialGrid = Array(gameState.tileCount)
         .fill(0)
         .map(() => Array(gameState.tileCount).fill(0));
-    
+
     // Initialize with maze walls using array methods
     if (gameState.maze && Array.isArray(gameState.maze)) {
         gameState.maze.forEach((row, y) => {
@@ -773,31 +781,42 @@ function updateSpatialGrid() {
         initializeSpatialGrid();
         return;
     }
-    
+
     // Clear previous snake positions using array methods
     gameState.spatialGrid.forEach((row, y) => {
         row.forEach((cell, x) => {
-            if (cell === 2) { // Snake segments are marked as 2
+            if (cell === 2) {
+                // Snake segments are marked as 2
                 gameState.spatialGrid[y][x] = 0;
             }
         });
     });
-    
+
     // Mark current snake positions
     if (gameState.snake && Array.isArray(gameState.snake)) {
-        gameState.snake.forEach(segment => {
-            if (segment && segment.x >= 0 && segment.x < gameState.tileCount &&
-                segment.y >= 0 && segment.y < gameState.tileCount) {
+        gameState.snake.forEach((segment) => {
+            if (
+                segment &&
+                segment.x >= 0 &&
+                segment.x < gameState.tileCount &&
+                segment.y >= 0 &&
+                segment.y < gameState.tileCount
+            ) {
                 gameState.spatialGrid[segment.y][segment.x] = 2;
             }
         });
     }
-    
+
     // Mark trail positions
     if (gameState.trail && Array.isArray(gameState.trail)) {
-        gameState.trail.forEach(trailPos => {
-            if (trailPos && trailPos.x >= 0 && trailPos.x < gameState.tileCount &&
-                trailPos.y >= 0 && trailPos.y < gameState.tileCount) {
+        gameState.trail.forEach((trailPos) => {
+            if (
+                trailPos &&
+                trailPos.x >= 0 &&
+                trailPos.x < gameState.tileCount &&
+                trailPos.y >= 0 &&
+                trailPos.y < gameState.tileCount
+            ) {
                 gameState.spatialGrid[trailPos.y][trailPos.x] = 3; // Trail marked as 3
             }
         });
