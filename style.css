@@ -1,4 +1,3 @@
-
 body {
     display: flex;
     flex-direction: column;
@@ -33,7 +32,8 @@ canvas {
     z-index: 100;
 }
 
-#score, #level {
+#score,
+#level {
     margin-top: 10px;
     font-size: 1.2em;
 }
@@ -76,7 +76,7 @@ canvas {
 }
 
 .gameOverContent button {
-    background-color: #4CAF50; /* Green */
+    background-color: #4caf50; /* Green */
     color: white;
     padding: 10px 20px;
     border: none;

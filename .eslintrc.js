@@ -3,15 +3,12 @@ module.exports = {
         browser: true,
         es2021: true,
         node: true,
-        jest: true
+        jest: true,
     },
-    extends: [
-        'airbnb-base',
-        'prettier'
-    ],
+    extends: ['airbnb-base', 'prettier'],
     parserOptions: {
         ecmaVersion: 12,
-        sourceType: 'module'
+        sourceType: 'module',
     },
     rules: {
         'no-alert': 'off',
@@ -22,6 +19,6 @@ module.exports = {
         'import/prefer-default-export': 'off',
         'no-empty-function': 'off', // Allow empty functions for mocks in tests
         'global-require': 'off', // Allow require() in tests
-        'import/extensions': 'off' // Allow .js extension in require/import paths
-    }
+        'import/extensions': 'off', // Allow .js extension in require/import paths
+    },
 };

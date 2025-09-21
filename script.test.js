@@ -31,9 +31,9 @@ beforeAll(() => {
 
     // Mock HTMLCanvasElement.prototype.getContext and its return value
     mockCtx = {
-    stroke: jest.fn(),
-    moveTo: jest.fn(),
-    lineTo: jest.fn(),
+        stroke: jest.fn(),
+        moveTo: jest.fn(),
+        lineTo: jest.fn(),
         clearRect: jest.fn(),
         fillRect: jest.fn(),
         beginPath: jest.fn(),

@@ -3,12 +3,15 @@
 ## 🎯 Concept & Validation
 
 ### Problem Statement
+
 Players struggle to collect pellets in complex maze layouts, especially in corners and tight spaces. This leads to longer completion times and increased frustration in higher levels with dense maze structures.
 
 ### Core Concept
+
 Implement a 'Magnet' power-up that creates a temporary magnetic field around the snake, attracting nearby pellets toward the snake's head for easier collection in challenging maze configurations.
 
 ### Value Proposition
+
 - Solves pellet collection difficulty in complex maze layouts
 - Reduces player frustration in higher difficulty levels
 - Adds strategic timing element for power-up usage
@@ -16,6 +19,7 @@ Implement a 'Magnet' power-up that creates a temporary magnetic field around the
 - Maintains core gameplay while enhancing accessibility
 
 ### Critical Risks
+
 - May make level completion too easy, reducing challenge
 - Could conflict with maze design intent in puzzle-like levels
 - Might cause performance issues with many pellets on screen
@@ -23,6 +27,7 @@ Implement a 'Magnet' power-up that creates a temporary magnetic field around the
 - Balancing attraction strength and duration could be challenging
 
 ### Assumptions
+
 - Players will appreciate assistance with pellet collection
 - Technical implementation is feasible within current architecture
 - Performance impact will be minimal with proper optimization
@@ -36,6 +41,7 @@ Implement a 'Magnet' power-up that creates a temporary magnetic field around the
 ## 🎯 Feasibility & Priority
 
 ### Technical Feasibility
+
 - Game already has robust power-up system framework
 - Position tracking mechanisms exist for all game elements
 - Drawing system can accommodate new power-up type
@@ -43,23 +49,27 @@ Implement a 'Magnet' power-up that creates a temporary magnetic field around the
 - Physics-like attraction can be simulated with position adjustments
 
 ### Resource Estimates
+
 - 3-4 hours implementation time
 - Minimal additional memory usage
 - No external dependencies required
 
 ### Dependencies
+
 - script.js (main game logic)
 - style.css (visual enhancements)
 - Existing power-up infrastructure
 - Position tracking systems
 
 ### Strategic Alignment
+
 - Enhances core gameplay without changing fundamental mechanics
 - Builds on existing systems and patterns
 - Addresses known player pain point with maze navigation
 - Complements recent power-up additions
 
 ### Priority Justification
+
 Medium-high priority - addresses specific player difficulty with tangible benefits and moderate implementation effort
 
 **Gate**: [x] Proceed
@@ -69,13 +79,16 @@ Medium-high priority - addresses specific player difficulty with tangible benefi
 ## 🎯 Architecture & Planning
 
 ### Architectural Approach
+
 Extend existing power-up system to support magnetic attraction functionality:
+
 1. Add magnet power-up array to gameState
 2. Create generation/spawning logic similar to other power-ups
 3. Implement attraction effect with physics-like simulation
 4. Add visual indicators and animation effects
 
 ### System Components
+
 - gameState.magnets: [] (array of {x, y} positions)
 - gameState.magnetActive: boolean (activation state)
 - gameState.magnetTimer: number (remaining time)
@@ -83,18 +96,22 @@ Extend existing power-up system to support magnetic attraction functionality:
 - gameState.magnetStrength: number (attraction force multiplier)
 
 ### Scope Boundaries
+
 **In Scope**:
+
 - Magnet power-up spawning and generation
 - Pellet attraction effect implementation
 - Visual indicators and animation effects
 - Integration with existing collision detection
 
 **Out of Scope**:
+
 - New game modes or major architectural changes
 - Attraction of other game elements (walls, mushrooms, etc.)
 - Complex physics simulation beyond basic attraction
 
 ### Requirements
+
 1. Magnets spawn on level 5+ with 1.5% probability
 2. Magnet effect lasts 8 seconds
 3. Attraction radius: 5 grid units
@@ -102,6 +119,7 @@ Extend existing power-up system to support magnetic attraction functionality:
 5. Animation: Pellets move smoothly toward snake head
 
 ### Implementation Plan
+
 1. Add gameState properties for magnet system
 2. Implement magnet generation and spawning
 3. Add collision detection for magnets
@@ -126,24 +144,28 @@ Extend existing power-up system to support magnetic attraction functionality:
 ## 🚀 Step-by-Step Execution
 
 ### Phase 1: Foundation
+
 - [ ] Add magnet properties to gameState
 - [ ] Implement magnet generation functions
 - [ ] Verify game still runs correctly
 - [ ] Reference git commit for backup: 08bd57d fix star and some rebalance.
 
 ### Phase 2: Core Implementation
+
 - [ ] Add collision detection for magnets
 - [ ] Implement attraction effect logic
 - [ ] Add visual drawing for magnets
 - [ ] Implement timer system integration
 
 ### Phase 3: Enhancement
+
 - [ ] Add visual distinction for active magnet effect
 - [ ] Implement smooth pellet movement animation
 - [ ] Add sound effects placeholders
 - [ ] Optimize attraction algorithm for performance
 
 ### Phase 4: Validation
+
 - [ ] Test magnet functionality
 - [ ] Verify visual indicators work
 - [ ] Balance spawn rates and durations
@@ -151,6 +173,7 @@ Extend existing power-up system to support magnetic attraction functionality:
 - [ ] Test integration with other power-ups
 
 ## ✅ Quality Gates
+
 - [ ] Code quality maintained
 - [ ] No performance regression
 - [ ] All existing functionality preserved
@@ -158,6 +181,7 @@ Extend existing power-up system to support magnetic attraction functionality:
 - [ ] Proper integration with existing power-up systems
 
 ## 📊 Success Metrics
+
 - [ ] Magnets spawn correctly
 - [ ] Attraction effect works without collisions
 - [ ] Visual indicators display properly
@@ -171,32 +195,37 @@ Extend existing power-up system to support magnetic attraction functionality:
 ## 🎨 Visual Design Specifications
 
 ### Magnet Appearance
+
 - **Magnet Power-Up**: Purple (#800080) diamond shape with pulsing effect
 - **Size**: Same as other power-ups (30x30 pixels)
 - **Animation**: Pulsing glow effect when on screen
 
 ### Active Magnet Effect
+
 - **Field Visualization**: Semi-transparent purple circle around snake head
 - **Pellet Animation**: Smooth movement toward snake head
 - **Size**: Radius of 5 grid units (150 pixels)
 
 ### Visual Indicators
+
 - **Timer Bar**: Purple progress bar below score display
 - **Activation Effect**: Brief flash when magnet activates
 - **Text Indicator**: "MAGNET" text when activated
 
 ### Color Palette Integration
-| Element | Color | Hex | Purpose |
-|---------|--------|-----|---------|
+
+| Element             | Color  | Hex     | Purpose                      |
+| ------------------- | ------ | ------- | ---------------------------- |
 | **Magnet Power-Up** | Purple | #800080 | Magnetic attraction power-up |
-| **Active Field** | Purple | #800080 | Area of effect visualization |
-| **Timer Bar** | Purple | #800080 | Time remaining indicator |
+| **Active Field**    | Purple | #800080 | Area of effect visualization |
+| **Timer Bar**       | Purple | #800080 | Time remaining indicator     |
 
 ---
 
 ## ⚖️ Game Balance Considerations
 
 ### Spawn Rate Balance
+
 - **Mushrooms**: 3% probability (invincibility)
 - **Lightning Bolts**: 2% probability (speed boost)
 - **Hourglasses**: 1.5% probability (time slow)
@@ -205,6 +234,7 @@ Extend existing power-up system to support magnetic attraction functionality:
 - **Magnets**: 1.5% probability (pellet attraction)
 
 ### Duration Balance
+
 - **Mushrooms**: 5 seconds
 - **Lightning Bolts**: 6 seconds
 - **Hourglasses**: 8 seconds
@@ -213,6 +243,7 @@ Extend existing power-up system to support magnetic attraction functionality:
 - **Magnets**: 8 seconds
 
 ### Strategic Value
+
 - **Speed Boost**: Aggressive play, quick completion
 - **Time Slow**: Defensive play, precision navigation
 - **Mushrooms**: Risk mitigation, safe exploration
@@ -225,6 +256,7 @@ Extend existing power-up system to support magnetic attraction functionality:
 ## 🔧 Technical Implementation Details
 
 ### Game State Additions
+
 ```javascript
 // Add to gameState object:
 magnets: [],              // Array of {x, y} positions
@@ -235,6 +267,7 @@ magnetStrength: 0.2       // Attraction force multiplier
 ```
 
 ### Magnet Generation Logic
+
 ```javascript
 // Magnet generation creates single power-up:
 // 1. Generate magnet at valid position (not overlapping other elements)
@@ -243,6 +276,7 @@ magnetStrength: 0.2       // Attraction force multiplier
 ```
 
 ### Attraction Effect Implementation
+
 ```javascript
 // When magnet is active:
 // 1. Calculate distance between snake head and each pellet
@@ -254,12 +288,14 @@ magnetStrength: 0.2       // Attraction force multiplier
 ```
 
 ### Collision Detection Integration
+
 ```javascript
 // Add to checkCollisions() function:
 checkMagnetCollision();
 ```
 
 ### Visual Drawing Integration
+
 ```javascript
 // Add to drawGame() function:
 drawMagnets();

@@ -11,25 +11,29 @@ This API reference documents all the major functions in the game. I've included 
 ### Game Control Functions
 
 #### `startGame()`
+
 **Purpose**: Initialize and start a new game session  
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
-**Side Effects**: 
+**Side Effects**:
+
 - Resets gameState to initial values
 - Generates new maze and pellets
 - Starts game loop interval
 
 #### `resetGame()`
+
 **Purpose**: Reset game to initial state  
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
-**Side Effects**: 
+**Side Effects**:
+
 - Clears game loop interval
 - Resets all game state variables
 - Hides game over overlay
-**Note from experience:** This function resets ALL game state, so be careful when calling it during debugging. If you call it multiple times, you'll get overlapping intervals that can cause performance issues.
+  **Note from experience:** This function resets ALL game state, so be careful when calling it during debugging. If you call it multiple times, you'll get overlapping intervals that can cause performance issues.
 
 **Common gotcha:** The game loop interval isn't cleared automatically, so make sure to call resetGame() first if you need to restart.
 **Note from experience:** This is your "safe" reset function. Unlike startGame(), it properly clears the game loop interval first. Use this when you need to reset without causing interval stacking.
@@ -37,27 +41,32 @@ This API reference documents all the major functions in the game. I've included 
 **Debugging tip:** If the game seems to be running too fast, you might have forgotten to call this before startGame().
 
 #### `gameOver()`
+
 **Purpose**: Handle game over state  
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
-**Side Effects**: 
+**Side Effects**:
+
 - Sets gameState.gameOver = true
 - Displays game over overlay
 - Shows final score
 
 ### Game Loop Functions
+
 **Note from experience:** This function handles the graceful shutdown. It shows the game over overlay but doesn't reset the game state completely - that's what resetGame() is for.
 
 **UI quirk:** The game over screen uses absolute positioning, so if you modify the canvas size, you might need to update the overlay CSS too.
 
 #### `update()`
+
 **Purpose**: Main game loop update function  
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Called by**: setInterval() every 16.67ms (60 FPS)  
 **Flow**:
+
 1. Check if game is over
 2. Update snake position
 3. Check collisions
@@ -65,11 +74,13 @@ This API reference documents all the major functions in the game. I've included 
 5. Update score and level
 
 #### `drawGame()`
+
 **Purpose**: Render complete game frame  
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Rendering Order**:
+
 1. Clear canvas
 2. Draw maze
 3. Draw pellets
@@ -79,6 +90,7 @@ This API reference documents all the major functions in the game. I've included 
 ### Rendering Functions
 
 #### `drawSnake()`
+
 **Purpose**: Render snake on canvas  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -86,6 +98,7 @@ This API reference documents all the major functions in the game. I've included 
 **Style**: Green rectangles with black border
 
 #### `drawMaze()`
+
 **Purpose**: Render maze obstacles  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -93,6 +106,7 @@ This API reference documents all the major functions in the game. I've included 
 **Style**: Gray rectangles
 
 #### `drawPellets()`
+
 **Purpose**: Render collectible pellets  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -100,6 +114,7 @@ This API reference documents all the major functions in the game. I've included 
 **Style**: Yellow circles
 
 #### `drawTrail()`
+
 **Purpose**: Render snake trail effect  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -109,6 +124,7 @@ This API reference documents all the major functions in the game. I've included 
 ### Generation Functions
 
 #### `generateMaze()`
+
 **Purpose**: Create maze obstacles for current level  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -117,6 +133,7 @@ This API reference documents all the major functions in the game. I've included 
 **Complexity**: O(n²) where n = tileCount
 
 #### `generatePellets()`
+
 **Purpose**: Place collectible pellets on valid positions  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -125,6 +142,7 @@ This API reference documents all the major functions in the game. I've included 
 **Count**: 5 pellets per level
 
 #### `getRandomPosition()`
+
 **Purpose**: Get valid random position on game grid  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -134,6 +152,7 @@ This API reference documents all the major functions in the game. I've included 
 ### Utility Functions
 
 #### `calculateTileCount()`
+
 **Purpose**: Calculate optimal tile count based on canvas size  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -141,11 +160,13 @@ This API reference documents all the major functions in the game. I've included 
 **Formula**: Math.floor(canvas.width / 30)
 
 #### `levelUp()`
+
 **Purpose**: Progress to next level  
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
-**Effects**: 
+**Effects**:
+
 - Increments gameState.level
 - Generates new maze and pellets
 - Updates password display
@@ -153,15 +174,18 @@ This API reference documents all the major functions in the game. I've included 
 ### Password System Functions
 
 #### `generatePassword(level)`
+
 **Purpose**: Generate deterministic password for given level  
 **Location**: Update approximate line references  
-**Parameters**: 
+**Parameters**:
+
 - `level` (number): Current level number  
-**Returns**: String (6-character password)  
-**Algorithm**: Deterministic pseudo-random generation  
-**Characters**: A-Z, 0-9
+  **Returns**: String (6-character password)  
+  **Algorithm**: Deterministic pseudo-random generation  
+  **Characters**: A-Z, 0-9
 
 #### `updatePasswordDisplay()`
+
 **Purpose**: Update password display in UI  
 **Location**: Update approximate line references  
 **Parameters**: None  
@@ -171,43 +195,52 @@ This API reference documents all the major functions in the game. I've included 
 ### Input Handling Functions
 
 #### `handleDirectionChange(event)`
+
 **Purpose**: Process keyboard input for snake movement  
 **Location**: Update approximate line references  
-**Parameters**: 
+**Parameters**:
+
 - `event` (KeyboardEvent): Key press event  
-**Returns**: void  
-**Valid Keys**: Arrow keys (Up, Down, Left, Right)  
-**Validation**: Prevents 180-degree turns
+  **Returns**: void  
+  **Valid Keys**: Arrow keys (Up, Down, Left, Right)  
+  **Validation**: Prevents 180-degree turns
 
 #### `handlePasswordKey(event)`
+
 **Purpose**: Handle password input for level skipping  
 **Location**: Update approximate line references  
-**Parameters**: 
+**Parameters**:
+
 - `event` (KeyboardEvent): Key press event  
-**Returns**: void  
-**Functionality**: Validates password and jumps to corresponding level
+  **Returns**: void  
+  **Functionality**: Validates password and jumps to corresponding level
 
 ## Event Listeners
 
 ### Keyboard Events
+
 - **keydown**: `handleDirectionChange()` - Arrow key movement
 - **keydown**: `handlePasswordKey()` - Password input
 
 ### DOM Events
+
 - **load**: Initialize game on page load
 - **click**: Restart button handler
 
 ## Global Variables
 
 ### Canvas Context
+
 - **canvas**: HTML5 Canvas element (600x600px)
 - **ctx**: 2D rendering context
 
 ### Game State
+
 - **gameState**: Primary state object (see Architecture.md)
 - **gameLoop**: setInterval reference for game loop
 
 ### Styling Constants
+
 - **SNAKE_COLOR**: "#00FF00" (green)
 - **FOOD_COLOR**: "#FF0000" (red)
 - **MAZE_COLOR**: "#808080" (gray)
@@ -216,6 +249,7 @@ This API reference documents all the major functions in the game. I've included 
 ## 🍄 Mushroom System Functions
 
 ### `generateMushrooms()`
+
 **Purpose**: Generate initial mushrooms for powerups at level start
 **Parameters**: None
 **Returns**: Void
@@ -223,6 +257,7 @@ This API reference documents all the major functions in the game. I've included 
 **Constraints**: Only places mushrooms on empty tiles not occupied by snake, pellets, or walls
 
 ### `spawnRandomMushroom()`
+
 **Purpose**: Randomly spawn mushrooms during gameplay
 **Parameters**: None
 **Returns**: Void
@@ -230,12 +265,14 @@ This API reference documents all the major functions in the game. I've included 
 **Note**: Uses performance.now() for accurate timing
 
 ### `drawMushrooms()`
+
 **Purpose**: Render mushrooms on the game canvas
 **Parameters**: None
 **Returns**: Void
 **Visuals**: Draws brown mushrooms with white spots for authentic appearance
 
 ### Mushroom Powerup Mechanics
+
 - **Duration**: 8 seconds of powerup time
 - **Effects**: Snake can pass through walls, grows when eating mushrooms
 - **Timer**: Uses performance-based timing for accurate countdown
