@@ -63,6 +63,11 @@ excluded_tools: []
 
 # initial prompt for the project. It will always be given to the LLM upon activating the project
 # (contrary to the memories, which are loaded on demand).
-initial_prompt: ""
+initial_prompt: " |
+* When editing files, execute shell commands such as these where you get line number, check exit code, add debug output, etc.: |
+  + cat -n FILENAME | tail -c 10000 # Show file with line numbers, and restrict use of context window. |
+  + grep -En 'pattern' FILE_GLOB | tail -c 10000 # Find pattern in file(s), and restrict use of context window. |
+  + ed # Use as editor. Line numbers will help. |
+"
 
 project_name: "snakegame"
