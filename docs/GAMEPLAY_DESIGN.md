@@ -85,7 +85,6 @@ Unlike traditional level selection systems, this password system works as follow
 - **Recovery Mechanism**: Recover from difficult situations by returning to previous levels
 - **Exploration Tool**: Experiment with different approaches on familiar levels
 
-
 ### **2. Minimap Navigation System**
 
 #### **🗺️ Real-time Strategic Overview**
@@ -104,17 +103,7 @@ Navigate large game boards with ease using the real-time minimap that shows your
     - Pellets: Red
     - Power-ups: Distinct colors (Mushrooms, Lightning Bolts, Hourglasses, Stars)
 
-
-
-
-
 #### **🎯 Strategic Usage**
-
-
-
-
-
-
 
 ### **3. Dynamic Maze Evolution System**
 

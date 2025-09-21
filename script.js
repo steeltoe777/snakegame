@@ -1215,11 +1215,13 @@ function handleDirectionChange(e) {
     }
 
     // Handle arrow keys based on game state
-    if (!gameState.gameRunning &&
+    if (
+        !gameState.gameRunning &&
         (e.key === 'ArrowUp' ||
             e.key === 'ArrowDown' ||
             e.key === 'ArrowLeft' ||
-            e.key === 'ArrowRight')) {
+            e.key === 'ArrowRight')
+    ) {
         // If game over overlay is visible, we're in true game over state
         // In this state, ignore arrow keys to prevent accidental restart
         if (!gameOverOverlay.classList.contains('hidden')) {

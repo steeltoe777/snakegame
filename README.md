@@ -24,14 +24,10 @@ I believe in building things that are fun first, optimized second. This game pri
 This is **not** your traditional snake game. It's a sophisticated hybrid that combines:
 
 ## 🎮 **Enhanced Power-Up System**
-
-Experience strategic gameplay with multiple power-up types:
-
-- **🍄 Mushroom Power-Up**: Temporary invincibility against walls
-- **⚡ Lightning Bolt Power-Up**: Temporary speed boost for quick navigation
-- **⏳ Hourglass Power-Up**: Temporary time slow for precision movement
-- **⭐ Golden Star Power-Up**: Temporary score multiplier for point optimization
-
+- **🍄 Mushroom Power-Up**: Temporary invincibility against walls (8 seconds)
+- **⚡ Lightning Bolt Power-Up**: Temporary speed boost for quick navigation (6 seconds)
+- **⏳ Hourglass Power-Up**: Temporary time slow for precision movement (8 seconds)
+- **⭐ Golden Star Power-Up**: Temporary score multiplier for point optimization (10 seconds)
 - **🐍 Classic Snake** movement and growth mechanics
 - **🟡 Pac-Man** pellet collection and maze navigation
 - **💙 Tron** trail system and visual persistence

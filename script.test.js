@@ -503,7 +503,6 @@ describe('Game Over Respawn Logic', () => {
     });
 });
 
-
 describe('Power-Up Features', () => {
     beforeEach(() => {
         resetGameEnvironment();
@@ -561,28 +560,189 @@ describe('Power-Up Features', () => {
         expect(window.minimapCtx).toBeDefined();
     });
 
-    test('Power-up timers should decrement correctly', () => {
-        // Set up active power-ups
+    test('Power-up timers should decrement correctly and deactivate when expired', () => {
+        // Set up active power-ups with their initial timers
         window.gameState.mushroomPowerupActive = true;
         window.gameState.mushroomTimer = 8000;
         window.gameState.mushroomLastUpdate = performance.now();
 
-        // Simulate time passing
-        const deltaTime = 1000; // 1 second
-        const currentTime = window.gameState.mushroomLastUpdate + deltaTime;
+        window.gameState.speedBoostActive = true;
+        window.gameState.speedBoostTimer = 6000;
+        window.gameState.speedBoostLastUpdate = performance.now();
 
-        // Mock performance.now to return our simulated time
+        window.gameState.timeSlowActive = true;
+        window.gameState.timeSlowTimer = 8000;
+        window.gameState.timeSlowLastUpdate = performance.now();
+
+        window.gameState.scoreMultiplierActive = true;
+        window.gameState.scoreMultiplierTimer = 10000;
+        window.gameState.scoreMultiplierLastUpdate = performance.now();
+
+        // Store original performance.now
         const originalPerformanceNow = performance.now;
+
+        // Test multiple decrement steps
+        let currentTime = window.gameState.mushroomLastUpdate;
+        const timeStep = 2000; // 2 seconds
+
+        // First decrement (2 seconds)
+        currentTime += timeStep;
         performance.now = jest.fn(() => currentTime);
 
-        // Update the game state (this would normally happen in the game loop)
+        // Update all power-up timers
         if (window.gameState.mushroomPowerupActive) {
             const deltaTime = currentTime - window.gameState.mushroomLastUpdate;
             window.gameState.mushroomTimer -= deltaTime;
             window.gameState.mushroomLastUpdate = currentTime;
         }
 
-        expect(window.gameState.mushroomTimer).toBe(7000); // 8000 - 1000
+        if (window.gameState.speedBoostActive) {
+            const deltaTime = currentTime - window.gameState.speedBoostLastUpdate;
+            window.gameState.speedBoostTimer -= deltaTime;
+            window.gameState.speedBoostLastUpdate = currentTime;
+        }
+
+        if (window.gameState.timeSlowActive) {
+            const deltaTime = currentTime - window.gameState.timeSlowLastUpdate;
+            window.gameState.timeSlowTimer -= deltaTime;
+            window.gameState.timeSlowLastUpdate = currentTime;
+        }
+
+        if (window.gameState.scoreMultiplierActive) {
+            const deltaTime = currentTime - window.gameState.scoreMultiplierLastUpdate;
+            window.gameState.scoreMultiplierTimer -= deltaTime;
+            window.gameState.scoreMultiplierLastUpdate = currentTime;
+        }
+
+        // Verify timers after first decrement
+        expect(window.gameState.mushroomTimer).toBe(6000); // 8000 - 2000
+        expect(window.gameState.speedBoostTimer).toBe(4000); // 6000 - 2000
+        expect(window.gameState.timeSlowTimer).toBe(6000); // 8000 - 2000
+        expect(window.gameState.scoreMultiplierTimer).toBe(8000); // 10000 - 2000
+
+        // Verify all power-ups still active
+        expect(window.gameState.mushroomPowerupActive).toBe(true);
+        expect(window.gameState.speedBoostActive).toBe(true);
+        expect(window.gameState.timeSlowActive).toBe(true);
+        expect(window.gameState.scoreMultiplierActive).toBe(true);
+
+        // Second decrement (another 2 seconds)
+        currentTime += timeStep;
+        performance.now = jest.fn(() => currentTime);
+
+        // Update all power-up timers
+        if (window.gameState.mushroomPowerupActive) {
+            const deltaTime = currentTime - window.gameState.mushroomLastUpdate;
+            window.gameState.mushroomTimer -= deltaTime;
+            window.gameState.mushroomLastUpdate = currentTime;
+            if (window.gameState.mushroomTimer <= 0) {
+                window.gameState.mushroomPowerupActive = false;
+                window.gameState.mushroomTimer = 0;
+            }
+        }
+
+        if (window.gameState.speedBoostActive) {
+            const deltaTime = currentTime - window.gameState.speedBoostLastUpdate;
+            window.gameState.speedBoostTimer -= deltaTime;
+            window.gameState.speedBoostLastUpdate = currentTime;
+            if (window.gameState.speedBoostTimer <= 0) {
+                window.gameState.speedBoostActive = false;
+                window.gameState.speedBoostTimer = 0;
+            }
+        }
+
+        if (window.gameState.timeSlowActive) {
+            const deltaTime = currentTime - window.gameState.timeSlowLastUpdate;
+            window.gameState.timeSlowTimer -= deltaTime;
+            window.gameState.timeSlowLastUpdate = currentTime;
+            if (window.gameState.timeSlowTimer <= 0) {
+                window.gameState.timeSlowActive = false;
+                window.gameState.timeSlowTimer = 0;
+            }
+        }
+
+        if (window.gameState.scoreMultiplierActive) {
+            const deltaTime = currentTime - window.gameState.scoreMultiplierLastUpdate;
+            window.gameState.scoreMultiplierTimer -= deltaTime;
+            window.gameState.scoreMultiplierLastUpdate = currentTime;
+            if (window.gameState.scoreMultiplierTimer <= 0) {
+                window.gameState.scoreMultiplierActive = false;
+                window.gameState.scoreMultiplierTimer = 0;
+            }
+        }
+
+        // Verify timers after second decrement
+        expect(window.gameState.mushroomTimer).toBe(4000); // 6000 - 2000
+        expect(window.gameState.speedBoostTimer).toBe(2000); // 4000 - 2000
+        expect(window.gameState.timeSlowTimer).toBe(4000); // 6000 - 2000
+        expect(window.gameState.scoreMultiplierTimer).toBe(6000); // 8000 - 2000
+
+        // Verify all power-ups still active
+        expect(window.gameState.mushroomPowerupActive).toBe(true);
+        expect(window.gameState.speedBoostActive).toBe(true);
+        expect(window.gameState.timeSlowActive).toBe(true);
+        expect(window.gameState.scoreMultiplierActive).toBe(true);
+
+        // Third decrement to expire some power-ups
+        // Mushroom: 4000 - 5000 = -1000 (should expire)
+        // Speed Boost: 2000 - 5000 = -3000 (should expire)
+        // Time Slow: 4000 - 5000 = -1000 (should expire)
+        // Score Multiplier: 6000 - 5000 = 1000 (should remain active)
+        currentTime += 5000;
+        performance.now = jest.fn(() => currentTime);
+
+        // Update all power-up timers
+        if (window.gameState.mushroomPowerupActive) {
+            const deltaTime = currentTime - window.gameState.mushroomLastUpdate;
+            window.gameState.mushroomTimer -= deltaTime;
+            window.gameState.mushroomLastUpdate = currentTime;
+            if (window.gameState.mushroomTimer <= 0) {
+                window.gameState.mushroomPowerupActive = false;
+                window.gameState.mushroomTimer = 0;
+            }
+        }
+
+        if (window.gameState.speedBoostActive) {
+            const deltaTime = currentTime - window.gameState.speedBoostLastUpdate;
+            window.gameState.speedBoostTimer -= deltaTime;
+            window.gameState.speedBoostLastUpdate = currentTime;
+            if (window.gameState.speedBoostTimer <= 0) {
+                window.gameState.speedBoostActive = false;
+                window.gameState.speedBoostTimer = 0;
+            }
+        }
+
+        if (window.gameState.timeSlowActive) {
+            const deltaTime = currentTime - window.gameState.timeSlowLastUpdate;
+            window.gameState.timeSlowTimer -= deltaTime;
+            window.gameState.timeSlowLastUpdate = currentTime;
+            if (window.gameState.timeSlowTimer <= 0) {
+                window.gameState.timeSlowActive = false;
+                window.gameState.timeSlowTimer = 0;
+            }
+        }
+
+        if (window.gameState.scoreMultiplierActive) {
+            const deltaTime = currentTime - window.gameState.scoreMultiplierLastUpdate;
+            window.gameState.scoreMultiplierTimer -= deltaTime;
+            window.gameState.scoreMultiplierLastUpdate = currentTime;
+            if (window.gameState.scoreMultiplierTimer <= 0) {
+                window.gameState.scoreMultiplierActive = false;
+                window.gameState.scoreMultiplierTimer = 0;
+            }
+        }
+
+        // Verify final states
+        expect(window.gameState.mushroomTimer).toBe(0);
+        expect(window.gameState.speedBoostTimer).toBe(0);
+        expect(window.gameState.timeSlowTimer).toBe(0);
+        expect(window.gameState.scoreMultiplierTimer).toBe(1000);
+
+        // Verify which power-ups are still active
+        expect(window.gameState.mushroomPowerupActive).toBe(false);
+        expect(window.gameState.speedBoostActive).toBe(false);
+        expect(window.gameState.timeSlowActive).toBe(false);
+        expect(window.gameState.scoreMultiplierActive).toBe(true);
 
         // Restore original performance.now
         performance.now = originalPerformanceNow;

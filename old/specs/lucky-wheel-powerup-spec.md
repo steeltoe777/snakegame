@@ -222,7 +222,7 @@ Out of scope:
 - [ ] Performance benchmarks achieved with profiling data
 - [ ] Security vulnerabilities addressed with scan results
 
-**Gate Decision**: [ ] Quality met | [ ] Needs improvement | [ ] Rejected (Reason: ****\*\*****\_\_\_****\*\*****)
+**Gate Decision**: [ ] Quality met | [ ] Needs improvement | [ ] Rejected (Reason: \***\*\*\*\*\***\_\_\_\***\*\*\*\*\***)
 
 ---
 
@@ -247,7 +247,7 @@ Out of scope:
 - [ ] User acceptance criteria validated with stakeholder review
 - [ ] Documentation complete and accurate
 
-**Gate Decision**: [ ] Testing complete | [ ] Issues found | [ ] Rejected (Reason: ****\*\*****\_\_\_****\*\*****)
+**Gate Decision**: [ ] Testing complete | [ ] Issues found | [ ] Rejected (Reason: \***\*\*\*\*\***\_\_\_\***\*\*\*\*\***)
 
 ---
 
@@ -271,7 +271,7 @@ Out of scope:
 - [ ] Stakeholder approval obtained with documented sign-off
 - [ ] Support team briefed on new functionality and known issues
 
-**Gate Decision**: [ ] Ready for production | [ ] Needs preparation | [ ] Rejected (Reason: ****\*\*****\_\_\_****\*\*****)
+**Gate Decision**: [ ] Ready for production | [ ] Needs preparation | [ ] Rejected (Reason: \***\*\*\*\*\***\_\_\_\***\*\*\*\*\***)
 
 ---
 
