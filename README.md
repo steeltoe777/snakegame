@@ -1,215 +1,150 @@
-# Snake Game - Agentic Documentation
+# 🐍 Snake, Tron, Pac-Man Hybrid
 
-> **AI-Agent Optimized Documentation** - Factual, structured, and machine-readable
+> **Revolutionary Game Design** - The world's first snake game with password-based level progression
 
-## 🎯 Project Overview
+## 🎯 **What Makes This Game Unique**
 
-**Snake Game** is a modern web-based implementation featuring classic snake gameplay with advanced maze generation, password-based level progression, and responsive design.
+This is **not** your traditional snake game. It's a sophisticated hybrid that combines:
+- **🐍 Classic Snake** movement and growth mechanics
+- **🟡 Pac-Man** pellet collection and maze navigation  
+- **💙 Tron** trail system and visual persistence
+- **🔐 Revolutionary Password System** for level progression
 
-### 📊 Project Facts
-- **Language**: JavaScript (ES6+)
-- **Platform**: Web Browser
-- **Canvas**: HTML5 Canvas API
-- **Testing**: Jest with jsdom
-- **Linting**: ESLint + Prettier
-- **Architecture**: Modular game state management
+## 🚀 **Core Gameplay Features**
 
-## 🏗️ Architecture & Design
+### **🔐 Password-Based Level Progression**
+- **Secret Password System**: Discover passwords as you progress
+- **Strategic Usage**: Use discovered passwords to access specific levels
+- **Display Schedule**: Passwords revealed at strategic intervals
+- **Real-time Input**: Type passwords anytime during gameplay
 
-### Core Components
+### **🌱 Dynamic Maze Evolution**
+- **Level 1-3**: Simple boundaries (classic snake)
+- **Level 4-499**: Basic internal walls
+- **Level 500-1499**: Complex maze patterns
+- **Level 1500+**: Expert labyrinth designs
+- **Infinite Scaling**: No theoretical level cap
 
-| Component | File | Purpose | Lines |
-|-----------|------|---------|-------|
-| **Game Engine** | `script.js` | Main game logic | 673 |
-| **UI Structure** | `index.html` | HTML layout | 28 |
-| **Styling** | `style.css` | Visual design | 81 |
-| **Testing** | `script.test.js` | Unit tests | 501 |
+### **🟡 Strategic Pellet Collection**
+- **Pac-Man Style**: Collect all pellets to advance
+- **Level Scaling**: More pellets as difficulty increases
+- **Strategic Placement**: Only on valid path tiles
+- **Completion Requirement**: All pellets must be collected
 
-### Game State Architecture
+### **💙 Tron-Inspired Trail System**
+- **Visual Persistence**: Blue trail shows movement history
+- **Collision Hazard**: Trail segments act as obstacles
+- **Strategic Element**: Navigate your own path history
 
-```javascript
-const gameState = {
-    snake: [{x: 10, y: 10}],     // Snake segments
-    dx: 0, dy: 0,               // Direction vectors
-    food: {x: 15, y: 15},       // Food position
-    score: 0,                   // Current score
-    level: 1,                   // Current level
-    gameOver: false,            // Game state flag
-    tileCount: 20,              // Grid dimensions
-    maze: [],                   // Maze obstacles
-    pellets: [],                // Collectible items
-    password: "",               // Level password
-    // ... additional state properties
-}
+### **🔄 Respawn & Regression System**
+- **Forgiving Death**: Drop back to previous level instead of restart
+- **Score Reduction**: Lose 50% of score (not all progress)
+- **Snake Reduction**: Halve snake length (minimum 1 segment)
+- **Strategic Reset**: Use regression for skill development
+
+### **🚪 Adaptive Boundaries**
+- **Level 1-999**: Traditional walls (game over on collision)
+- **Level 1000+**: Wrap-around boundaries (Pac-Man style)
+- **Seamless Transition**: Automatic boundary evolution
+
+## 🎮 **How to Play**
+
+### **Controls**
+- **Arrow Keys**: Control snake movement
+- **A-Z, 0-9**: Type discovered passwords for level access
+- **Space/Enter**: Start game after direction input
+
+### **Game Flow**
+1. **Start at Level 1**: Begin with simple gameplay
+2. **Collect Pellets**: Gather all yellow pellets to advance
+3. **Avoid Hazards**: Walls, trail, and self-collision
+4. **Discover Passwords**: Revealed at strategic intervals
+5. **Strategic Progression**: Balance risk vs. reward
+
+### **Pro Tips**
+- **Save Passwords**: Write down discovered passwords
+- **Risk Management**: Higher levels = greater death penalty
+- **Trail Awareness**: Watch your blue movement trail
+- **Maze Reading**: Learn to quickly analyze wall patterns
+
+## 🏗️ **Technical Architecture**
+
+### **File Structure**
+```
+snakegame/
+├── index.html          # Game interface
+├── script.js          # 672 lines of core game logic
+├── style.css          # 80 lines of styling
+├── script.test.js     # 501 lines of comprehensive tests
+└── docs/
+    └── GAMEPLAY_DESIGN.md  # Complete design document
 ```
 
-## 🎮 Game Features
+### **Key Technical Features**
+- **Fixed Grid System**: 20x20 tiles (30px each) regardless of window size
+- **60 FPS Rendering**: Optimized canvas drawing
+- **State Management**: Centralized game state object
+- **Testing Ready**: All functions exposed for unit testing
+- **No Storage Required**: Password system eliminates save file needs
 
-### Core Mechanics
-- **Snake Movement**: 4-directional movement with collision detection
-- **Food Collection**: Random food placement, score increment
-- **Growth System**: Snake grows by 1 segment per food item
-- **Collision Detection**: Wall, self, and obstacle collision
-- **Game Over**: Restart mechanism with score preservation
+## 🧪 **Testing & Development**
 
-### Advanced Features
-- **Maze Generation**: Procedural maze creation per level
-- **Password System**: Level progression via 6-character passwords
-- **Pellet Collection**: Additional collectible items for bonus points
-- **Level Scaling**: Increasing difficulty with level progression
-- **Responsive Design**: Adaptive canvas sizing
-
-### Password System
-- **Algorithm**: Deterministic password generation based on level seed
-- **Format**: 6-character alphanumeric (A-Z, 0-9)
-- **Purpose**: Level skipping and progression tracking
-- **Display**: Real-time password updates during gameplay
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Modern web browser with HTML5 Canvas support
-- Node.js (for development/testing)
-
-### Installation
+### **Quick Start**
 ```bash
-# Clone or navigate to project
+# Navigate to project
 cd /a0/projects/snakegame/
-
-# Install dependencies (if needed)
-npm install
 
 # Run tests
 npm test
 
 # Run linting
 npm run lint
+
+# Open in browser
+open index.html
 ```
 
-### Running the Game
-1. Open `index.html` in any modern web browser
-2. Use arrow keys to control the snake
-3. Collect food to grow and increase score
-4. Avoid walls, obstacles, and self-collision
-5. Use passwords to skip to higher levels
+### **Development Features**
+- **Comprehensive Tests**: 501 lines of unit tests
+- **ESLint Integration**: Code quality enforcement
+- **Prettier Formatting**: Consistent code style
+- **Browser DevTools**: Full debugging support
 
-## 🧪 Testing Strategy
+## 📊 **Game Balance**
 
-### Test Coverage
-- **Unit Tests**: Game logic, state management, utility functions
-- **Integration Tests**: Game loop, rendering, user input
-- **Edge Cases**: Boundary conditions, collision scenarios
+| Level Range | Speed | Walls | Pellets | Boundary Type |
+|-------------|--------|--------|----------|---------------|
+| 1-10        | Slow   | 0-4    | 1-10     | Traditional   |
+| 11-50       | Medium | 5-15   | 10-25    | Traditional   |
+| 51-100      | Fast   | 15-25  | 25-35    | Traditional   |
+| 100-999     | Faster | 25-40  | 35-50    | Traditional   |
+| 1000+       | Expert | 40+    | 50+      | Wrap-around   |
 
-### Test Commands
-```bash
-# Run all tests
-npm test
+## 🎯 **Unique Selling Points**
 
-# Run with coverage
-npm test -- --coverage
+1. **🔄 Infinite Progression**: No level cap - play forever
+2. **🔐 Secret Password System**: Discover passwords through gameplay
+3. **🌱 Evolutionary Design**: Game mechanics evolve with progression
+4. **🎮 Hybrid Gameplay**: Combines three classic games seamlessly
+5. **📱 No Dependencies**: Pure HTML5 - works offline
+6. **🧪 Fully Tested**: 501 lines of comprehensive test coverage
 
-# Watch mode
-npm test -- --watch
-```
+## 🎨 **Visual Design**
+- **Snake Head**: Dark green with directional eye indicator
+- **Snake Body**: Lime green segments
+- **Pellets**: Yellow circular collectibles
+- **Walls**: Grey obstacles
+- **Trail**: Blue movement history
+- **Background**: Black canvas
 
-## 📁 File Structure
+## 🔗 **Links**
 
-```
-snakegame/
-├── index.html          # Main HTML structure
-├── script.js          # Core game logic
-├── style.css          # Styling and layout
-├── script.test.js     # Test suite
-├── package.json       # Project configuration
-├── jest.config.js     # Test configuration
-├── jest.setup.js      # Test setup
-├── .eslintrc.js       # Linting rules
-├── .prettierrc.js     # Code formatting
-└── node_modules/      # Dependencies
-```
-
-## 🎯 Development Guidelines
-
-### Code Style
-- **ESLint**: Enforces consistent code style
-- **Prettier**: Automatic code formatting
-- **Jest**: Testing framework with jsdom
-
-### Key Functions (Agent Reference)
-
-| Function | Purpose | Parameters | Returns |
-|----------|---------|------------|---------|
-| `startGame()` | Initialize new game | None | void |
-| `update()` | Main game loop update | None | void |
-| `drawGame()` | Render game state | None | void |
-| `handleDirectionChange(e)` | Process user input | KeyboardEvent | void |
-| `generateMaze()` | Create level obstacles | None | void[][] |
-| `generatePellets()` | Place collectible items | None | void |
-| `getRandomPosition()` | Get valid random position | None | {x, y} |
-| `gameOver()` | Handle game end | None | void |
-| `levelUp()` | Progress to next level | None | void |
-| `resetGame()` | Reset game state | None | void |
-
-### State Management
-- **Immutable Updates**: State changes through controlled functions
-- **Event-Driven**: Keyboard input handling
-- **Frame-Based**: 60 FPS game loop
-- **Collision Detection**: Real-time boundary checking
-
-## 🔧 Configuration
-
-### Canvas Settings
-- **Dimensions**: 600x600 pixels
-- **Grid Size**: 20x20 tiles (configurable)
-- **Tile Size**: 30x30 pixels (600/20)
-
-### Game Balance
-- **Initial Speed**: Moderate (adjustable via level)
-- **Speed Increase**: ~10% per level
-- **Food Value**: 10 points
-- **Pellet Value**: 50 points
-- **Maze Density**: Increases with level
-
-## 🐛 Debugging & Development
-
-### Browser DevTools
-- **Console**: Game state logging
-- **Elements**: DOM inspection
-- **Network**: Asset loading
-- **Performance**: Frame rate monitoring
-
-### Debug Mode
-Enable debug features by modifying `gameState.debug = true` in script.js
-
-## 📈 Performance Considerations
-
-### Optimization Strategies
-- **Efficient Rendering**: Minimal redraw operations
-- **Collision Detection**: Optimized grid-based checking
-- **Memory Management**: Proper cleanup on game reset
-- **Event Handling**: Debounced input processing
-
-### Browser Compatibility
-- **Modern Browsers**: Chrome 60+, Firefox 55+, Safari 11+, Edge 79+
-- **Canvas Support**: Required for rendering
-- **ES6 Support**: Arrow functions, const/let, template literals
-
-## 🔄 Continuous Integration
-
-### Quality Gates
-- **Linting**: ESLint validation
-- **Testing**: Jest test suite
-- **Formatting**: Prettier compliance
-
-### Development Workflow
-1. Make changes to source files
-2. Run `npm run lint` to check code style
-3. Run `npm test` to verify functionality
-4. Test in browser for visual verification
-5. Commit changes with descriptive messages
+- **📋 Complete Design**: [docs/GAMEPLAY_DESIGN.md](docs/GAMEPLAY_DESIGN.md)
+- **🧪 Test Suite**: `npm test`
+- **🎮 Play Now**: Open `index.html` in any modern browser
 
 ---
 
-**Generated**: 2025-08-25 01:20:11  
-**Version**: 1.0.0  
-**Last Updated**: 2025-08-25 01:20:11
+**Game Version**: 1.0.0  
+**Last Updated**: 2025-08-25  
+**Grid Size**: Fixed 20x20 tiles (canvas resizes, grid stays constant)
