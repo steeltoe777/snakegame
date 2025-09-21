@@ -48,7 +48,11 @@ function generateMaze() {
 
     // Dynamic internal maze generation based on level
     if (gameState.level >= 4) {
-        const numInternalWalls = Math.min(10, gameState.level - 3); // More walls for higher levels, max 10
+        let numInternalWalls = Math.min(10, gameState.level - 3); // More walls for higher levels, max 10
+        if (gameState.level >= 500) {
+            numInternalWalls += Math.min(15, gameState.level - 500); // More walls for higher levels, max 15
+        }
+
         for (let k = 0; k < numInternalWalls; k++) {
             let placed = false;
             let attempts = 0;
@@ -104,9 +108,18 @@ function generateMaze() {
 function generatePellets() {
     calculateTileCount(); // Ensure tileCount is up-to-date
     gameState.pellets = [];
-    const basePellets = 5; // Minimum pellets for level 1
-    const pelletsPerLevel = 2; // How many pellets increase per level
-    const maxPelletsForLevel = basePellets + (gameState.level - 1) * pelletsPerLevel;
+    const basePellets = 1; // Minimum pellets for level 1
+    const pelletsPerLevel = 1; // How many pellets increase per level
+    let maxPelletsForLevel = basePellets;
+    if (gameState.level >= 1) {
+        maxPelletsForLevel += (Math.min(gameState.level, 10) - 1) * pelletsPerLevel;
+    }
+    if (gameState.level >= 10) {
+        maxPelletsForLevel += ((Math.min(gameState.level - 10, 10) - 1) * pelletsPerLevel) / 2.0;
+    }
+    if (gameState.level >= 20) {
+        maxPelletsForLevel += ((Math.min(gameState.level - 20, 480) - 1) * pelletsPerLevel) / 10.0;
+    }
 
     const availableTiles = [];
     for (let y = 0; y < gameState.tileCount; y++) {
