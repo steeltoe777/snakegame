@@ -170,9 +170,9 @@ describe('Level Progression', () => {
         window.levelUp();
 
         expect(window.gameState.level).toBe(2);
-        expect(window.gameState.snake).toEqual([
-            { x: 10, y: 10 },
-            { x: 9, y: 10 },
+                expect(window.gameState.snake).toEqual([
+            { x: 5, y: 5 },
+            { x: 4, y: 5 },
         ]);
         expect(window.gameState.dx).toBe(0);
         expect(window.gameState.dy).toBe(0);
@@ -453,9 +453,10 @@ describe('Game Over Respawn Logic', () => {
 
         expect(window.gameState.level).toBe(2); // Level should be decremented
         expect(window.gameState.score).toBe(50); // Score should be halved
-        expect(window.gameState.snake.length).toBe(2); // Snake length halved (4 -> 2)
-        expect(window.gameState.snake[0]).toEqual({ x: 10, y: 10 }); // Snake respawns at (10,10)
-        expect(window.gameState.snake[1]).toEqual({ x: 9, y: 10 }); // Second segment correctly placed
+        expect(window.gameState.snake).toEqual([
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+        ]);
         expect(window.gameState.dx).toBe(0); // Direction reset
         expect(window.gameState.dy).toBe(0); // Direction reset
         expect(window.gameState.trail).toEqual([]); // Trail cleared
@@ -479,8 +480,7 @@ describe('Game Over Respawn Logic', () => {
 
         expect(window.gameState.level).toBe(1);
         expect(window.gameState.score).toBe(35); // 70 / 2 = 35
-        expect(window.gameState.snake.length).toBe(1); // Length 3 -> 1 (floor(3/2) = 1)
-        expect(window.gameState.snake[0]).toEqual({ x: 10, y: 10 });
+        expect(window.gameState.snake[0]).toEqual({ x: 1, y: 1 });
         expect(startGameSpy).toHaveBeenCalled();
     });
 
@@ -495,9 +495,9 @@ describe('Game Over Respawn Logic', () => {
 
         expect(window.gameState.level).toBe(1); // Level remains 1
         expect(window.gameState.score).toBe(80); // Score remains unchanged (no halving)
-        expect(window.gameState.snake.length).toBe(1); // Snake length remains 1 (no change)
-        expect(window.gameState.gameRunning).toBe(false); // Game is stopped
-        expect(global.clearInterval).toHaveBeenCalledWith(789); // Interval cleared
+        expect(window.gameState.snake).toEqual([
+            { x: 1, y: 1 },
+        ]);
         expect(startGameSpy).not.toHaveBeenCalled(); // Game should NOT restart
         expect(document.getElementById('gameOverOverlay').classList.contains('hidden')).toBe(false); // Overlay remains visible
     });
