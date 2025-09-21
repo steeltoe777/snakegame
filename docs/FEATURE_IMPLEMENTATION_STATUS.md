@@ -29,7 +29,7 @@ These features are currently implemented and functional in the game:
     - Spec file: `score-multiplier-spec.md`
     - Implementation: Yes (by Frank Schmidt)
 
-5. **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](../specs/minimap-spec.md))
+5. **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](./specs/minimap-spec.md))
 
 6. **Pause/Resume Functionality**
     - Allows players to pause and resume the game using the 'P' key

@@ -56,7 +56,37 @@ const gameState = {
 
 ### **1. Secret Password-Based Level Progression System**
 
-### **8. Minimap Navigation System**
+#### **🔐 Core Innovation**
+
+The world's first snake game with a secret password-based level progression system. This system transforms save/load mechanics into a strategic gameplay element.
+
+#### **📊 Technical Implementation**
+
+- **Secret Algorithm**: Deterministic generation ensures consistency
+- **Character Set**: Alphanumeric passwords for security
+- **Generation Frequency**: Passwords generated for levels divisible by 10 (10, 20, 30, etc.)
+- **Real-time Input**: Type discovered passwords anytime during gameplay
+- **No Storage Required**: Eliminates need for cookies/localStorage
+
+#### **🎯 How It Works**
+
+Unlike traditional level selection systems, this password system works as follows:
+
+1. **Password Generation**: As you progress through levels, passwords are automatically generated for levels divisible by 10
+2. **Password Display**: These passwords are displayed on-screen at strategic intervals
+3. **Password Entry**: Type discovered passwords using alphanumeric keys at any time during gameplay
+4. **Level Reset**: When a valid password is entered, the game resets to the level PREVIOUS to the password's level (e.g., entering the password for level 20 resets to level 19)
+5. **Progress Reset**: Score is reset to 0, but you maintain your skill level
+
+#### **🎯 Strategic Usage**
+
+- **Skill Development**: Use passwords to practice challenging levels
+- **Progression Management**: Strategically use passwords to balance risk vs. reward
+- **Recovery Mechanism**: Recover from difficult situations by returning to previous levels
+- **Exploration Tool**: Experiment with different approaches on familiar levels
+
+
+### **2. Minimap Navigation System**
 
 #### **🗺️ Real-time Strategic Overview**
 
@@ -74,26 +104,19 @@ Navigate large game boards with ease using the real-time minimap that shows your
     - Pellets: Red
     - Power-ups: Distinct colors (Mushrooms, Lightning Bolts, Hourglasses, Stars)
 
-#### **🔐 Core Innovation**
 
-The world's first snake game with a secret password-based level progression system. This system transforms save/load mechanics into a strategic gameplay element.
 
-#### **📊 Technical Implementation**
 
-- **Secret Algorithm**: Deterministic generation ensures consistency
-- **Character Set**: Alphanumeric passwords for security
-- **Display Schedule**: Passwords revealed at strategic progression intervals
-- **Real-time Input**: Type discovered passwords anytime during gameplay
-- **No Storage Required**: Eliminates need for cookies/localStorage
 
 #### **🎯 Strategic Usage**
 
-- **Level Access**: Use discovered passwords to access specific levels
-- **Strategic Planning**: Save passwords for challenging sections
-- **Discovery-Based**: Find passwords through natural progression
-- **Security**: Passwords remain secret to maintain game integrity
 
-### **2. Dynamic Maze Evolution System**
+
+
+
+
+
+### **3. Dynamic Maze Evolution System**
 
 #### **🌱 Progressive Complexity**
 
@@ -117,7 +140,7 @@ The maze evolves from simple boundaries to complex labyrinths based on player pr
 - **Collision Avoidance**: Avoids snake spawn and existing walls
 - **Connectivity Check**: Ensures completable levels
 
-### **3. Pac-Man Inspired Collection System**
+### **4. Pac-Man Inspired Collection System**
 
 #### **🟡 Pellet Mechanics**
 
@@ -167,7 +190,7 @@ The game features multiple power-up types that provide temporary benefits, encou
 - **Strategic Choices**: Players must decide which power-ups to prioritize based on situation
 - **Risk vs Reward**: Higher value power-ups are rarer and have longer durations
 
-### **4. Tron-Inspired Trail System**
+### **6. Tron-Inspired Trail System**
 
 #### **💙 Visual Persistence**
 
@@ -181,7 +204,7 @@ The snake leaves a temporary blue trail, creating visual feedback and additional
 - **Dynamic Clearing**: Trail doesn't persist indefinitely
 - **Strategic Element**: Players must navigate their own path history
 
-### **5. Respawn & Regression System**
+### **7. Respawn & Regression System**
 
 #### **🔄 Forgiving Progression**
 
@@ -201,7 +224,7 @@ Death doesn't mean complete restart - it's a strategic regression system.
 - **Skill Development**: Lower levels provide practice opportunities
 - **Progression Strategy**: Players can choose optimal advancement pace
 
-### **6. Adaptive Boundary System**
+### **8. Adaptive Boundary System**
 
 #### **🌐 Boundary Evolution**
 
@@ -213,7 +236,7 @@ Game boundaries change behavior based on progression level.
 - **Level 1000+**: Wrap-around boundaries (Pac-Man style screen wrapping)
 - **Seamless Transition**: Automatic boundary type switching
 
-### **7. Enhanced Visual Direction System**
+### **9. Enhanced Visual Direction System**
 
 #### **👁️ Directional Indicators**
 
