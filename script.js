@@ -2,6 +2,60 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Group game state into a single object for easier management and testing
+function generateMushrooms() {
+    gameState.mushrooms = [];
+
+    // Only spawn mushrooms on higher levels and with some probability
+    if (gameState.level >= 5 && Math.random() < 0.3) {
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake or pellets
+                    let occupied = false;
+
+                    // Check snake using traditional for loop
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets using traditional for loop
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.pellets.length; k++) {
+                            const pellet = gameState.pellets[k];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1-2 mushrooms if available tiles exist
+        if (availableTiles.length > 0) {
+            const mushroomCount = Math.min(1 + Math.floor(gameState.level / 10), 2);
+            for (let i = 0; i < mushroomCount; i++) {
+                const randomIndex = Math.floor(Math.random() * availableTiles.length);
+                gameState.mushrooms.push(availableTiles[randomIndex]);
+                // Remove from available to avoid duplicate positions
+                availableTiles.splice(randomIndex, 1);
+            }
+        }
+    }
+}
+
 function getRandomPosition() {
     const tileCount = gameState.tileCount || 20;
     let attempts = 0;
@@ -81,6 +135,9 @@ const gameState = {
     pellets: [],
     trail: [],
     spatialGrid: [],
+    mushroomPowerupActive: false,
+    mushroomTimer: 0,
+    mushrooms: [],
 };
 
 // Password system for level progression
@@ -299,6 +356,8 @@ function generatePellets() {
     if (gameState.level >= 1) {
         maxPelletsForLevel += (Math.min(gameState.level, 10) - 1) * pelletsPerLevel;
     }
+
+    // Generate mushrooms for powerups
     if (gameState.level >= 10) {
         maxPelletsForLevel += ((Math.min(gameState.level - 10, 10) - 1) * pelletsPerLevel) / 2.0;
     }
@@ -362,6 +421,44 @@ function drawPellets() {
             p.x * gameState.gridSize + gameState.gridSize / 2,
             p.y * gameState.gridSize + gameState.gridSize / 2,
             gameState.gridSize / 3,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    });
+}
+
+// Draw mushrooms on the canvas
+function drawMushrooms() {
+    gameState.mushrooms.forEach((mushroom) => {
+        ctx.fillStyle = 'red';
+        ctx.beginPath();
+        ctx.arc(
+            mushroom.x * gameState.gridSize + gameState.gridSize / 2,
+            mushroom.y * gameState.gridSize + gameState.gridSize / 2,
+            gameState.gridSize / 3,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+
+        // Add white spots for mushroom appearance
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(
+            mushroom.x * gameState.gridSize + gameState.gridSize / 2 - 2,
+            mushroom.y * gameState.gridSize + gameState.gridSize / 2 - 2,
+            gameState.gridSize / 8,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(
+            mushroom.x * gameState.gridSize + gameState.gridSize / 2 + 2,
+            mushroom.y * gameState.gridSize + gameState.gridSize / 2 - 2,
+            gameState.gridSize / 8,
             0,
             Math.PI * 2
         );
@@ -461,7 +558,7 @@ function update() {
     }
 
     // Collision with walls (maze)
-    if (gameState.maze[head.y][head.x] === 1) {
+    if (gameState.maze[head.y][head.x] === 1 && !gameState.mushroomPowerupActive) {
         gameOver();
         return;
     }
@@ -535,6 +632,26 @@ function update() {
             gameState.gameInterval = setInterval(update, calculateGameSpeed());
             break;
         }
+
+        // Check for mushroom eating
+        for (let i = 0; i < gameState.mushrooms.length; i++) {
+            if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
+                gameState.mushrooms.splice(i, 1);
+                // Activate mushroom powerup for 8 seconds (8000ms)
+                gameState.mushroomPowerupActive = true;
+                gameState.mushroomTimer = 8000;
+                break;
+            }
+        }
+
+        // Update mushroom timer if powerup is active
+        if (gameState.mushroomPowerupActive) {
+            gameState.mushroomTimer -= calculateGameSpeed();
+            if (gameState.mushroomTimer <= 0) {
+                gameState.mushroomPowerupActive = false;
+                gameState.mushroomTimer = 0;
+            }
+        }
     }
 
     if (!atePellet) {
@@ -553,7 +670,20 @@ function drawGame() {
     drawMaze();
     drawPellets();
     drawTrail();
+    drawMushrooms(); // Draw mushroom powerups
     drawSnake();
+
+    // Draw mushroom powerup indicator if active
+    if (gameState.mushroomPowerupActive) {
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.font = '12px Arial';
+        ctx.fillText('MUSHROOM POWER!', 10, 20);
+
+        // Draw timer bar
+        const timerWidth = (gameState.mushroomTimer / 8000) * 100;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(10, 25, timerWidth, 5);
+    }
 }
 
 function gameOver() {
@@ -621,6 +751,7 @@ function levelUp() {
     generateMaze();
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
     generatePellets();
+    generateMushrooms(); // Generate mushrooms for powerups
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
     updatePasswordDisplay();
@@ -645,6 +776,7 @@ function resetGame() {
     generateMaze();
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
     generatePellets();
+    generateMushrooms(); // Generate mushrooms for powerups
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
