@@ -5,8 +5,8 @@ const ctx = canvas.getContext('2d');
 function getRandomPosition() {
     const tileCount = gameState.tileCount || 20;
     return {
-        x: Math.floor(Math.random() * tileCount),
-        y: Math.floor(Math.random() * tileCount),
+        x: 1 + Math.floor(Math.random() * (tileCount - 2)),
+        y: 1 + Math.floor(Math.random() * (tileCount - 2)),
     };
 }
 const gameState = {
