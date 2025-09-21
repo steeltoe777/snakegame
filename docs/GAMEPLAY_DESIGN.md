@@ -138,7 +138,7 @@ The game features multiple power-up types that provide temporary benefits, encou
 
 1. **🍄 Mushroom Power-Up**
     - **Effect**: Temporary invincibility against wall collisions
-    - **Duration**: 5 seconds
+    - **Duration**: 8 seconds
     - **Visual**: Red mushroom
     - **Special**: Also causes snake to grow when collected
 

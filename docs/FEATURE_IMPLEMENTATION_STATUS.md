@@ -1,6 +1,6 @@
 # 📋 Feature Implementation Status Summary
 
-**Last Updated**: 2025-09-20 18:15:25
+**Last Updated**: 2025-09-22 00:43:00
 **Document Version**: 1.0
 
 This document provides a clear overview of which features have been implemented in the codebase versus which specs exist but are not implemented.
@@ -29,7 +29,7 @@ These features are currently implemented and functional in the game:
     - Spec file: `score-multiplier-spec.md`
     - Implementation: Yes (by Frank Schmidt)
 
-- **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](../specs/minimap-spec.md))
+5. **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](../specs/minimap-spec.md))
 
 6. **Pause/Resume Functionality**
     - Allows players to pause and resume the game using the 'P' key
@@ -79,9 +79,9 @@ These features have specs but are NOT currently implemented in the codebase:
 ## 📊 Statistics
 
 - **Total Specs**: 15
-- **Implemented**: 5 (33%)
+- **Implemented**: 6 (40%)
 - **Not Implemented**: 7 (47%)
-- **Partially Implemented/Abandoned**: 3 (20%)
+- **Partially Implemented/Abandoned**: 2 (13%)
 
 ## 📝 Notes
 

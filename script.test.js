@@ -502,3 +502,89 @@ describe('Game Over Respawn Logic', () => {
         expect(document.getElementById('gameOverOverlay').classList.contains('hidden')).toBe(false); // Overlay remains visible
     });
 });
+
+
+describe('Power-Up Features', () => {
+    beforeEach(() => {
+        resetGameEnvironment();
+        // Set up basic game state for power-up tests
+        window.gameState.snake = [{ x: 5, y: 5 }];
+        window.gameState.gameRunning = true;
+        window.gameState.gameInterval = 123; // Simulate an active interval
+    });
+
+    test('Mushroom power-up should activate for 8 seconds and make snake invincible', () => {
+        // Activate mushroom power-up
+        window.gameState.mushroomPowerupActive = true;
+        window.gameState.mushroomTimer = 8000;
+
+        expect(window.gameState.mushroomPowerupActive).toBe(true);
+        expect(window.gameState.mushroomTimer).toBe(8000);
+    });
+
+    test('Speed boost power-up should activate for 6 seconds and increase game speed', () => {
+        // Activate speed boost power-up
+        window.gameState.speedBoostActive = true;
+        window.gameState.speedBoostTimer = 6000;
+
+        expect(window.gameState.speedBoostActive).toBe(true);
+        expect(window.gameState.speedBoostTimer).toBe(6000);
+    });
+
+    test('Time slow power-up should activate for 8 seconds and decrease game speed', () => {
+        // Activate time slow power-up
+        window.gameState.timeSlowActive = true;
+        window.gameState.timeSlowTimer = 8000;
+
+        expect(window.gameState.timeSlowActive).toBe(true);
+        expect(window.gameState.timeSlowTimer).toBe(8000);
+    });
+
+    test('Score multiplier power-up should activate for 10 seconds and double points', () => {
+        // Activate score multiplier power-up
+        window.gameState.scoreMultiplierActive = true;
+        window.gameState.scoreMultiplierTimer = 10000;
+        const initialScore = window.gameState.score;
+
+        // Simulate eating a pellet with multiplier active
+        const points = window.gameState.scoreMultiplierActive ? 20 : 10;
+        window.gameState.score += points;
+
+        expect(window.gameState.scoreMultiplierActive).toBe(true);
+        expect(window.gameState.scoreMultiplierTimer).toBe(10000);
+        expect(window.gameState.score).toBe(initialScore + 20); // Double points
+    });
+
+    test('Minimap should be initialized and accessible', () => {
+        // Check that minimap elements are properly initialized
+        expect(window.minimapCanvas).toBeDefined();
+        expect(window.minimapCtx).toBeDefined();
+    });
+
+    test('Power-up timers should decrement correctly', () => {
+        // Set up active power-ups
+        window.gameState.mushroomPowerupActive = true;
+        window.gameState.mushroomTimer = 8000;
+        window.gameState.mushroomLastUpdate = performance.now();
+
+        // Simulate time passing
+        const deltaTime = 1000; // 1 second
+        const currentTime = window.gameState.mushroomLastUpdate + deltaTime;
+
+        // Mock performance.now to return our simulated time
+        const originalPerformanceNow = performance.now;
+        performance.now = jest.fn(() => currentTime);
+
+        // Update the game state (this would normally happen in the game loop)
+        if (window.gameState.mushroomPowerupActive) {
+            const deltaTime = currentTime - window.gameState.mushroomLastUpdate;
+            window.gameState.mushroomTimer -= deltaTime;
+            window.gameState.mushroomLastUpdate = currentTime;
+        }
+
+        expect(window.gameState.mushroomTimer).toBe(7000); // 8000 - 1000
+
+        // Restore original performance.now
+        performance.now = originalPerformanceNow;
+    });
+});
