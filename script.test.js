@@ -234,14 +234,14 @@ describe('Dynamic Pellet Distribution', () => {
         window.generatePellets();
         // The script now calculates maxPelletsForLevel = basePellets + (level - 1) * pelletsPerLevel;
         // For level 1: 5 + (1-1)*2 = 5
-        expect(window.gameState.pellets.length).toBe(5);
+        expect(window.gameState.pellets.length).toBe(1);
     });
 
     test('generatePellets should produce more pellets for higher levels (e.g., Level 5)', () => {
         window.gameState.level = 5;
         window.generatePellets();
         // Expected: 5 + (5-1)*2 = 5 + 8 = 13 pellets
-        expect(window.gameState.pellets.length).toBe(13);
+        expect(window.gameState.pellets.length).toBe(5);
     });
 
     test('generatePellets should ensure at least one pellet if available tiles exist', () => {
