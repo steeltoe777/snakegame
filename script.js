@@ -12,25 +12,29 @@ function hslToRgb(h, s, l) {
     h /= 360;
     s /= 100;
     l /= 100;
-    let r; let g; let b;
+    let r;
+    let g;
+    let b;
 
     if (s === 0) {
-        r = l; g = l; b = l; // achromatic
+        r = l;
+        g = l;
+        b = l; // achromatic
     } else {
         const hue2rgb = (p, q, t) => {
             if (t < 0) t += 1;
             if (t > 1) t -= 1;
-            if (t < 1/6) return p + (q - p) * 6 * t;
-            if (t < 1/2) return q;
-            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
             return p;
         };
 
         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
         const p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1/3);
+        r = hue2rgb(p, q, h + 1 / 3);
         g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
+        b = hue2rgb(p, q, h - 1 / 3);
     }
 
     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
@@ -634,7 +638,7 @@ function drawTrail() {
             const hue = (gameState.rainbowHue + index * 3) % 360;
             const [r, g, b] = hslToRgb(Math.floor(hue), 100, 50);
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            
+
             ctx.fillRect(
                 segment.x * gameState.gridSize,
                 segment.y * gameState.gridSize,
@@ -656,14 +660,11 @@ function drawTrail() {
     }
 }
 
-
-
 function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
     // Update rainbow trail hue for animation effect
     gameState.rainbowHue = (gameState.rainbowHue + 0.5) % 360;
-    
 
     updateSpatialGrid(); // Update spatial grid for accurate collision detection
     const head = { x: gameState.snake[0].x + gameState.dx, y: gameState.snake[0].y + gameState.dy };
@@ -935,98 +936,98 @@ function drawGame() {
         ctx.fillRect(10, 25, timerWidth, 5);
     }
 
-// Draw the minimap showing the entire game board
-function drawMinimap() {
-    // Only draw if minimap context exists and it's time to update
-    if (!window.minimapCtx) return;
+    // Draw the minimap showing the entire game board
+    function drawMinimap() {
+        // Only draw if minimap context exists and it's time to update
+        if (!window.minimapCtx) return;
 
-    const ctx = window.minimapCtx;
-    const minimapSize = 100; // Should match CSS
-    const tileCount = gameState.tileCount || 20;
-    const scale = minimapSize / tileCount;
+        const ctx = window.minimapCtx;
+        const minimapSize = 100; // Should match CSS
+        const tileCount = gameState.tileCount || 20;
+        const scale = minimapSize / tileCount;
 
-    // Clear the minimap
-    ctx.clearRect(0, 0, minimapSize, minimapSize);
+        // Clear the minimap
+        ctx.clearRect(0, 0, minimapSize, minimapSize);
 
-    // Draw background
-    ctx.fillStyle = '#333333';
-    ctx.fillRect(0, 0, minimapSize, minimapSize);
+        // Draw background
+        ctx.fillStyle = '#333333';
+        ctx.fillRect(0, 0, minimapSize, minimapSize);
 
-    // Draw maze walls
-    if (gameState.maze && Array.isArray(gameState.maze)) {
-        ctx.fillStyle = '#FFFFFF'; // White for walls
-        for (let y = 0; y < gameState.maze.length; y++) {
-            for (let x = 0; x < gameState.maze[y].length; x++) {
-                if (gameState.maze[y][x] === 1) {
-                    ctx.fillRect(x * scale, y * scale, scale, scale);
+        // Draw maze walls
+        if (gameState.maze && Array.isArray(gameState.maze)) {
+            ctx.fillStyle = '#FFFFFF'; // White for walls
+            for (let y = 0; y < gameState.maze.length; y++) {
+                for (let x = 0; x < gameState.maze[y].length; x++) {
+                    if (gameState.maze[y][x] === 1) {
+                        ctx.fillRect(x * scale, y * scale, scale, scale);
+                    }
                 }
             }
         }
-    }
 
-    // Draw pellets
-    if (gameState.pellets && Array.isArray(gameState.pellets)) {
-        ctx.fillStyle = '#FF0000'; // Red for pellets
-        for (let i = 0; i < gameState.pellets.length; i++) {
-            const pellet = gameState.pellets[i];
-            ctx.fillRect(pellet.x * scale, pellet.y * scale, scale, scale);
-        }
-    }
-
-    // Draw powerups
-    // Mushrooms
-    if (gameState.mushrooms && Array.isArray(gameState.mushrooms)) {
-        ctx.fillStyle = '#00FF00'; // Green for mushrooms
-        for (let i = 0; i < gameState.mushrooms.length; i++) {
-            const mushroom = gameState.mushrooms[i];
-            ctx.fillRect(mushroom.x * scale, mushroom.y * scale, scale, scale);
-        }
-    }
-
-    // Lightning bolts
-    if (gameState.lightningBolts && Array.isArray(gameState.lightningBolts)) {
-        ctx.fillStyle = '#FFFF00'; // Yellow for lightning bolts
-        for (let i = 0; i < gameState.lightningBolts.length; i++) {
-            const bolt = gameState.lightningBolts[i];
-            ctx.fillRect(bolt.x * scale, bolt.y * scale, scale, scale);
-        }
-    }
-
-    // Hourglasses
-    if (gameState.hourglasses && Array.isArray(gameState.hourglasses)) {
-        ctx.fillStyle = '#00FFFF'; // Cyan for hourglasses
-        for (let i = 0; i < gameState.hourglasses.length; i++) {
-            const hourglass = gameState.hourglasses[i];
-            ctx.fillRect(hourglass.x * scale, hourglass.y * scale, scale, scale);
-        }
-    }
-
-    // Stars
-    if (gameState.stars && Array.isArray(gameState.stars)) {
-        ctx.fillStyle = '#FF00FF'; // Magenta for stars
-        for (let i = 0; i < gameState.stars.length; i++) {
-            const star = gameState.stars[i];
-            ctx.fillRect(star.x * scale, star.y * scale, scale, scale);
-        }
-    }
-
-    // Draw snake
-    if (gameState.snake && Array.isArray(gameState.snake)) {
-        // Draw snake body
-        ctx.fillStyle = '#00AA00'; // Darker green for snake body
-        for (let i = 1; i < gameState.snake.length; i++) {
-            const segment = gameState.snake[i];
-            ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);
+        // Draw pellets
+        if (gameState.pellets && Array.isArray(gameState.pellets)) {
+            ctx.fillStyle = '#FF0000'; // Red for pellets
+            for (let i = 0; i < gameState.pellets.length; i++) {
+                const pellet = gameState.pellets[i];
+                ctx.fillRect(pellet.x * scale, pellet.y * scale, scale, scale);
+            }
         }
 
-        // Draw snake head
-        if (gameState.snake.length > 0) {
-            const head = gameState.snake[0];
-            ctx.fillStyle = '#00FF00'; // Bright green for snake head
-            ctx.fillRect(head.x * scale, head.y * scale, scale, scale);
+        // Draw powerups
+        // Mushrooms
+        if (gameState.mushrooms && Array.isArray(gameState.mushrooms)) {
+            ctx.fillStyle = '#00FF00'; // Green for mushrooms
+            for (let i = 0; i < gameState.mushrooms.length; i++) {
+                const mushroom = gameState.mushrooms[i];
+                ctx.fillRect(mushroom.x * scale, mushroom.y * scale, scale, scale);
+            }
+        }
+
+        // Lightning bolts
+        if (gameState.lightningBolts && Array.isArray(gameState.lightningBolts)) {
+            ctx.fillStyle = '#FFFF00'; // Yellow for lightning bolts
+            for (let i = 0; i < gameState.lightningBolts.length; i++) {
+                const bolt = gameState.lightningBolts[i];
+                ctx.fillRect(bolt.x * scale, bolt.y * scale, scale, scale);
+            }
+        }
+
+        // Hourglasses
+        if (gameState.hourglasses && Array.isArray(gameState.hourglasses)) {
+            ctx.fillStyle = '#00FFFF'; // Cyan for hourglasses
+            for (let i = 0; i < gameState.hourglasses.length; i++) {
+                const hourglass = gameState.hourglasses[i];
+                ctx.fillRect(hourglass.x * scale, hourglass.y * scale, scale, scale);
+            }
+        }
+
+        // Stars
+        if (gameState.stars && Array.isArray(gameState.stars)) {
+            ctx.fillStyle = '#FF00FF'; // Magenta for stars
+            for (let i = 0; i < gameState.stars.length; i++) {
+                const star = gameState.stars[i];
+                ctx.fillRect(star.x * scale, star.y * scale, scale, scale);
+            }
+        }
+
+        // Draw snake
+        if (gameState.snake && Array.isArray(gameState.snake)) {
+            // Draw snake body
+            ctx.fillStyle = '#00AA00'; // Darker green for snake body
+            for (let i = 1; i < gameState.snake.length; i++) {
+                const segment = gameState.snake[i];
+                ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);
+            }
+
+            // Draw snake head
+            if (gameState.snake.length > 0) {
+                const head = gameState.snake[0];
+                ctx.fillStyle = '#00FF00'; // Bright green for snake head
+                ctx.fillRect(head.x * scale, head.y * scale, scale, scale);
+            }
         }
     }
-}
 
     // Draw speed boost powerup indicator if active
     if (gameState.speedBoostActive) {
@@ -1245,8 +1246,8 @@ function handleDirectionChange(e) {
                 gameState.dy = 0;
             }
             break;
-        case "P":
-        case "p":
+        case 'P':
+        case 'p':
             gameState.paused = !gameState.paused;
             drawGame(); // Redraw to show/hide pause indicator
             break;
