@@ -12,7 +12,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `startGame()`
 **Purpose**: Initialize and start a new game session  
-**Location**: script.js, line ~450  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Side Effects**: 
@@ -22,7 +22,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `resetGame()`
 **Purpose**: Reset game to initial state  
-**Location**: script.js, line ~480  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Side Effects**: 
@@ -38,7 +38,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `gameOver()`
 **Purpose**: Handle game over state  
-**Location**: script.js, line ~520  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Side Effects**: 
@@ -53,7 +53,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `update()`
 **Purpose**: Main game loop update function  
-**Location**: script.js, line ~400  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Called by**: setInterval() every 16.67ms (60 FPS)  
@@ -66,7 +66,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `drawGame()`
 **Purpose**: Render complete game frame  
-**Location**: script.js, line ~350  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Rendering Order**:
@@ -80,28 +80,28 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `drawSnake()`
 **Purpose**: Render snake on canvas  
-**Location**: script.js, line ~200  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Accesses**: gameState.snake, gameState.tileCount  
 **Style**: Green rectangles with black border
 
 #### `drawMaze()`
 **Purpose**: Render maze obstacles  
-**Location**: script.js, line ~250  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Accesses**: gameState.maze, gameState.tileCount  
 **Style**: Gray rectangles
 
 #### `drawPellets()`
 **Purpose**: Render collectible pellets  
-**Location**: script.js, line ~300  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Accesses**: gameState.pellets, gameState.tileCount  
 **Style**: Yellow circles
 
 #### `drawTrail()`
 **Purpose**: Render snake trail effect  
-**Location**: script.js, line ~220  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Accesses**: gameState.snake  
 **Style**: Fading green trail
@@ -110,7 +110,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `generateMaze()`
 **Purpose**: Create maze obstacles for current level  
-**Location**: script.js, line ~150  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: 2D array (maze grid)  
 **Algorithm**: Deterministic generation based on level seed  
@@ -118,7 +118,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `generatePellets()`
 **Purpose**: Place collectible pellets on valid positions  
-**Location**: script.js, line ~180  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: Array of pellet positions  
 **Algorithm**: Random placement avoiding obstacles  
@@ -126,7 +126,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `getRandomPosition()`
 **Purpose**: Get valid random position on game grid  
-**Location**: script.js, line ~100  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: Object {x, y}  
 **Constraints**: Must be empty space (not snake, food, or obstacle)
@@ -135,14 +135,14 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `calculateTileCount()`
 **Purpose**: Calculate optimal tile count based on canvas size  
-**Location**: script.js, line ~80  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: Integer (tile count)  
 **Formula**: Math.floor(canvas.width / 30)
 
 #### `levelUp()`
 **Purpose**: Progress to next level  
-**Location**: script.js, line ~540  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Effects**: 
@@ -154,7 +154,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `generatePassword(level)`
 **Purpose**: Generate deterministic password for given level  
-**Location**: script.js, line ~50  
+**Location**: Update approximate line references  
 **Parameters**: 
 - `level` (number): Current level number  
 **Returns**: String (6-character password)  
@@ -163,7 +163,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `updatePasswordDisplay()`
 **Purpose**: Update password display in UI  
-**Location**: script.js, line ~120  
+**Location**: Update approximate line references  
 **Parameters**: None  
 **Returns**: void  
 **Accesses**: gameState.password, DOM element #password
@@ -172,7 +172,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `handleDirectionChange(event)`
 **Purpose**: Process keyboard input for snake movement  
-**Location**: script.js, line ~600  
+**Location**: Update approximate line references  
 **Parameters**: 
 - `event` (KeyboardEvent): Key press event  
 **Returns**: void  
@@ -181,7 +181,7 @@ This API reference documents all the major functions in the game. I've included 
 
 #### `handlePasswordKey(event)`
 **Purpose**: Handle password input for level skipping  
-**Location**: script.js, line ~130  
+**Location**: Update approximate line references  
 **Parameters**: 
 - `event` (KeyboardEvent): Key press event  
 **Returns**: void  

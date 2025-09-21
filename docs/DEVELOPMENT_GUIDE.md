@@ -42,10 +42,10 @@ npm test
 - **style.css**: Styling and layout
 
 #### Key Areas to Focus On
-1. **Game State Management**: Lines 12-29 in script.js
-2. **Game Loop**: Lines 400-450 in script.js
-3. **Rendering System**: Lines 200-350 in script.js
-4. **Input Handling**: Lines 600-650 in script.js
+1. **Game State Management**: Update line range references
+2. **Game Loop**: Update line range references
+3. **Rendering System**: Update line range references
+4. **Input Handling**: Update line range references
 
 ### 3. Making Changes
 

@@ -22,16 +22,16 @@ npx http-server .         # Then visit http://localhost:8080
 ### 3. Key Files for AI Understanding
 | Priority | File | Purpose | Lines |
 |----------|------|---------|-------|
-| **1** | `script.js` | Core game logic | 673 |
+| **1** | `script.js` | Core game logic | 1037 |
 | **2** | `index.html` | UI structure | 28 |
 | **3** | `style.css` | Visual styling | 81 |
 | **4** | `script.test.js` | Test coverage | 501 |
 
 ### 4. Critical Code Sections
-- **Game State**: Lines 12-29 in script.js
-- **Game Loop**: Lines 400-450 in script.js  
-- **Rendering**: Lines 200-350 in script.js
-- **Input Handling**: Lines 600-650 in script.js
+- **Game State**: Update line range references
+- **Game Loop**: Update line range references  
+- **Rendering**: Update line range references
+- **Input Handling**: Update line range references
 
 ### 5. Testing Commands
 ```bash
@@ -83,5 +83,5 @@ console.log(gameState);
 ---
 
 **Status**: ✅ Complete & Verified  
-**Last Updated**: 2025-08-25 01:22:05  
+**Last Updated**: 2025-09-09  
 **AI-Ready**: All documentation optimized for LLM agents
