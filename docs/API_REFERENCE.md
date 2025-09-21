@@ -1,5 +1,11 @@
 # API Reference
 
+## 📖 How to Use This Guide
+
+This API reference documents all the major functions in the game. I've included some "from experience" notes that might save you some debugging time!
+
+**Pro tip:** The game state object is the heart of everything - most functions either read from or modify gameState.
+
 ## Global Functions
 
 ### Game Control Functions
@@ -23,6 +29,12 @@
 - Clears game loop interval
 - Resets all game state variables
 - Hides game over overlay
+**Note from experience:** This function resets ALL game state, so be careful when calling it during debugging. If you call it multiple times, you'll get overlapping intervals that can cause performance issues.
+
+**Common gotcha:** The game loop interval isn't cleared automatically, so make sure to call resetGame() first if you need to restart.
+**Note from experience:** This is your "safe" reset function. Unlike startGame(), it properly clears the game loop interval first. Use this when you need to reset without causing interval stacking.
+
+**Debugging tip:** If the game seems to be running too fast, you might have forgotten to call this before startGame().
 
 #### `gameOver()`
 **Purpose**: Handle game over state  
@@ -35,6 +47,9 @@
 - Shows final score
 
 ### Game Loop Functions
+**Note from experience:** This function handles the graceful shutdown. It shows the game over overlay but doesn't reset the game state completely - that's what resetGame() is for.
+
+**UI quirk:** The game over screen uses absolute positioning, so if you modify the canvas size, you might need to update the overlay CSS too.
 
 #### `update()`
 **Purpose**: Main game loop update function  
