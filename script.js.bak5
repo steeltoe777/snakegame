@@ -175,6 +175,14 @@ return;
 }
 
 // Collision with self
+    // Collision with head, neck, and next character
+    if (i < 3) {
+        continue;
+    }
+    // Collision with head, neck, and next character
+    if (i < 3) {
+        continue;
+    }
 for (let i = 1; i < gameState.snake.length; i++) {
 if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
 gameOver();
@@ -319,16 +327,16 @@ startGame();
 
 switch (e.key) {
 case 'ArrowUp':
-    if (gameState.dy !== 1) { gameState.dx = 0; gameState.dy = -1; }
+if (gameState.dy === 0) { gameState.dx = 0; gameState.dy = -1; }
 break;
 case 'ArrowDown':
-    if (gameState.dy !== -1) { gameState.dx = 0; gameState.dy = 1; }
+if (gameState.dy === 0) { gameState.dx = 0; gameState.dy = 1; }
 break;
 case 'ArrowLeft':
-    if (gameState.dx !== 1) { gameState.dx = -1; gameState.dy = 0; }
+if (gameState.dx === 0) { gameState.dx = -1; gameState.dy = 0; }
 break;
 case 'ArrowRight':
-    if (gameState.dx !== -1) { gameState.dx = 1; gameState.dy = 0; }
+if (gameState.dx === 0) { gameState.dx = 1; gameState.dy = 0; }
 break;
 default:
 break;
