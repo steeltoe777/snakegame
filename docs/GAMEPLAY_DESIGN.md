@@ -239,6 +239,7 @@ Advanced snake head with visual direction feedback.
 | **←** | Move Left | Change snake direction leftward |
 | **→** | Move Right | Change snake direction rightward |
 | **A-Z, 0-9** | Password Input | Type discovered passwords for level access |
+| **P** | Pause/Resume | Toggle pause/resume game state (case-insensitive) |
 
 ### **UI Elements**
 - **Score Display**: Real-time score tracking

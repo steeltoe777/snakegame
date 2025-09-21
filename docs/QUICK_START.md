@@ -64,7 +64,7 @@ npm test -- --coverage
 
 ### 8. Browser Controls
 - **↑ ↓ ← →**: Snake movement
-- **Any key**: Start game after game over
+- **Restart Button**: Click "Press OK to restart" after game over
 - **P**: Pause/resume game
 - **Password**: Type password to skip levels
 

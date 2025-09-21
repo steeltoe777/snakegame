@@ -103,11 +103,15 @@ Navigate large game boards with ease using the real-time minimap that shows your
 ## 🎮 **How to Play**
 
 ### **Controls**
-- **Arrow Keys**: Control snake movement
+- **Arrow Keys**: Control snake movement and start game when not running
 - **A-Z, 0-9**: Type discovered passwords for level access
-- **Space/Enter**: Start game after direction input
+- **P**: Pause/resume game (case-insensitive)
 
 ### **Game Flow**
+
+For more detailed information, see the following documentation files:
+- [Gameplay Design](docs/GAMEPLAY_DESIGN.md)
+- [Quick Start Guide](docs/QUICK_START.md)
 1. **Start at Level 1**: Begin with simple gameplay
 2. **Collect Pellets**: Gather all yellow pellets to advance
 3. **Avoid Hazards**: Walls, trail, and self-collision
