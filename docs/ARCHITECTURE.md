@@ -42,7 +42,9 @@ The Snake Game follows a **State-Driven Architecture** pattern with clear separa
 ## Component Architecture
 
 ### 1. Game State Manager
-**File**: `script.js` (lines 12-29)
+**Component**: Game State Manager
+**File**: script.js
+```javascript
 ```javascript
 const gameState = {
     // Snake properties
@@ -130,3 +132,21 @@ Level Complete → generatePassword() → Update gameState.password → Display 
 - **Game Over**: Clean reset to initial state
 - **Level Progression**: Preserves score, resets level-specific data
 - **Error Logging**: Console output for debugging
+
+## 🏗️ System Architecture Patterns
+
+### Design Patterns Used
+- **Module Pattern**: Game functionality organized into logical modules (state, rendering, input, collision)
+- **Observer Pattern**: Event-driven architecture for game state changes and UI updates
+- **Factory Pattern**: Level and maze generation using factory functions
+- **Strategy Pattern**: Configurable collision detection and rendering strategies
+
+### Data Flow Architecture
+- **Unidirectional Data Flow**: User input → Game state update → Rendering → Display
+- **Immutable State Updates**: Game state changes create new state objects rather than mutating existing ones
+- **Event-Driven Updates**: Canvas rendering triggered by state change events
+
+### Performance Optimization Patterns
+- **Spatial Partitioning**: Grid-based collision detection for O(1) lookups
+- **Object Pooling**: Reusable game object instances to minimize garbage collection
+- **Debounced Input**: Input handling with timing controls to prevent overflow

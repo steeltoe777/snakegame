@@ -42,10 +42,10 @@ npm test
 - **style.css**: Styling and layout
 
 #### Key Areas to Focus On
-1. **Game State Management**: Update line range references
-2. **Game Loop**: Update line range references
-3. **Rendering System**: Update line range references
-4. **Input Handling**: Update line range references
+1. **Game State Management**: Core game state initialization and management functions
+2. **Game Loop**: Main game loop and timing control functions
+3. **Rendering System**: Canvas rendering and visual update functions
+4. **Input Handling**: Keyboard input and user interaction functions
 
 ### 3. Making Changes
 
@@ -64,9 +64,9 @@ npm test
 #### Common Modification Patterns
 
 ##### Adding New Game Objects
-1. Add to gameState object (lines 12-29)
-2. Add rendering function (lines 200-350)
-3. Add collision detection (lines 400-450)
+1. Add to gameState object initialization section
+2. Add rendering function to canvas rendering module
+3. Add collision detection to physics engine module
 4. Add tests in script.test.js
 
 ##### Modifying Game Rules
@@ -76,8 +76,8 @@ npm test
 4. Verify visual behavior in browser
 
 ##### Adding New Levels
-1. Modify maze generation (lines 150-180)
-2. Update level progression (lines 540-560)
+1. Modify maze generation algorithm in level design module
+2. Update level progression logic in game progression module
 3. Test password generation for new levels
 4. Verify backward compatibility
 
