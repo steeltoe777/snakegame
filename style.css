@@ -21,6 +21,18 @@ canvas {
     border: 2px solid #eee;
 }
 
+#minimapCanvas {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    opacity: 0.7;
+    border: 1px solid #eee;
+    background-color: #333;
+    z-index: 100;
+}
+
 #score, #level {
     margin-top: 10px;
     font-size: 1.2em;

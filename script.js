@@ -1,6 +1,10 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Minimap initialization - using window object to avoid test issues
+window.minimapCanvas = document.getElementById('minimapCanvas');
+window.minimapCtx = window.minimapCanvas ? window.minimapCanvas.getContext('2d') : null;
+
 // Group game state into a single object for easier management and testing
 
 // Helper function to convert HSL to RGB
@@ -929,6 +933,99 @@ function drawGame() {
         ctx.fillRect(10, 25, timerWidth, 5);
     }
 
+// Draw the minimap showing the entire game board
+function drawMinimap() {
+    // Only draw if minimap context exists and it's time to update
+    if (!window.minimapCtx) return;
+
+    const ctx = window.minimapCtx;
+    const minimapSize = 100; // Should match CSS
+    const tileCount = gameState.tileCount || 20;
+    const scale = minimapSize / tileCount;
+
+    // Clear the minimap
+    ctx.clearRect(0, 0, minimapSize, minimapSize);
+
+    // Draw background
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(0, 0, minimapSize, minimapSize);
+
+    // Draw maze walls
+    if (gameState.maze && Array.isArray(gameState.maze)) {
+        ctx.fillStyle = '#FFFFFF'; // White for walls
+        for (let y = 0; y < gameState.maze.length; y++) {
+            for (let x = 0; x < gameState.maze[y].length; x++) {
+                if (gameState.maze[y][x] === 1) {
+                    ctx.fillRect(x * scale, y * scale, scale, scale);
+                }
+            }
+        }
+    }
+
+    // Draw pellets
+    if (gameState.pellets && Array.isArray(gameState.pellets)) {
+        ctx.fillStyle = '#FF0000'; // Red for pellets
+        for (let i = 0; i < gameState.pellets.length; i++) {
+            const pellet = gameState.pellets[i];
+            ctx.fillRect(pellet.x * scale, pellet.y * scale, scale, scale);
+        }
+    }
+
+    // Draw powerups
+    // Mushrooms
+    if (gameState.mushrooms && Array.isArray(gameState.mushrooms)) {
+        ctx.fillStyle = '#00FF00'; // Green for mushrooms
+        for (let i = 0; i < gameState.mushrooms.length; i++) {
+            const mushroom = gameState.mushrooms[i];
+            ctx.fillRect(mushroom.x * scale, mushroom.y * scale, scale, scale);
+        }
+    }
+
+    // Lightning bolts
+    if (gameState.lightningBolts && Array.isArray(gameState.lightningBolts)) {
+        ctx.fillStyle = '#FFFF00'; // Yellow for lightning bolts
+        for (let i = 0; i < gameState.lightningBolts.length; i++) {
+            const bolt = gameState.lightningBolts[i];
+            ctx.fillRect(bolt.x * scale, bolt.y * scale, scale, scale);
+        }
+    }
+
+    // Hourglasses
+    if (gameState.hourglasses && Array.isArray(gameState.hourglasses)) {
+        ctx.fillStyle = '#00FFFF'; // Cyan for hourglasses
+        for (let i = 0; i < gameState.hourglasses.length; i++) {
+            const hourglass = gameState.hourglasses[i];
+            ctx.fillRect(hourglass.x * scale, hourglass.y * scale, scale, scale);
+        }
+    }
+
+    // Stars
+    if (gameState.stars && Array.isArray(gameState.stars)) {
+        ctx.fillStyle = '#FF00FF'; // Magenta for stars
+        for (let i = 0; i < gameState.stars.length; i++) {
+            const star = gameState.stars[i];
+            ctx.fillRect(star.x * scale, star.y * scale, scale, scale);
+        }
+    }
+
+    // Draw snake
+    if (gameState.snake && Array.isArray(gameState.snake)) {
+        // Draw snake body
+        ctx.fillStyle = '#00AA00'; // Darker green for snake body
+        for (let i = 1; i < gameState.snake.length; i++) {
+            const segment = gameState.snake[i];
+            ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);
+        }
+
+        // Draw snake head
+        if (gameState.snake.length > 0) {
+            const head = gameState.snake[0];
+            ctx.fillStyle = '#00FF00'; // Bright green for snake head
+            ctx.fillRect(head.x * scale, head.y * scale, scale, scale);
+        }
+    }
+}
+
     // Draw speed boost powerup indicator if active
     if (gameState.speedBoostActive) {
         ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
@@ -964,6 +1061,7 @@ function drawGame() {
         ctx.fillStyle = '#FFD700'; // Gold color
         ctx.fillRect(10, 70, timerWidth, 5);
     }
+    drawMinimap(); // Draw the minimap
 }
 
 function gameOver() {

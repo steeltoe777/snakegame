@@ -43,6 +43,15 @@ Experience strategic gameplay with multiple power-up types:
 - **Display Schedule**: Passwords revealed at strategic intervals
 - **Real-time Input**: Type passwords anytime during gameplay
 
+
+### **🗺️ Minimap Navigation System**
+
+Navigate large game boards with ease using the real-time minimap that shows your position and important items.
+
+- **Real-time Updates**: Continuously refreshes to show current game state
+- **Strategic Advantage**: See pellet locations and power-ups across the entire board
+- **Non-obstructive**: Positioned in the corner for easy reference without blocking gameplay
+- **Color-coded Display**: Distinct colors for snake, walls, pellets, and power-ups
 ### **🌱 Dynamic Maze Evolution**
 - **Level 1-3**: Simple boundaries (classic snake)
 - **Level 4-499**: Basic internal walls

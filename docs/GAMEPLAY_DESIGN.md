@@ -52,6 +52,24 @@ const gameState = {
 
 ### **1. Secret Password-Based Level Progression System**
 
+
+### **8. Minimap Navigation System**
+
+#### **🗺️ Real-time Strategic Overview**
+
+Navigate large game boards with ease using the real-time minimap that shows your position and important items.
+
+#### **🎯 Key Features**
+
+- **Real-time Updates**: Continuously refreshes to show current game state
+- **Strategic Advantage**: See pellet locations and power-ups across the entire board
+- **Non-obstructive**: Positioned in the corner for easy reference without blocking gameplay
+- **Color-coded Display**: Distinct colors for snake, walls, pellets, and power-ups
+  - Snake Head: Bright Green
+  - Snake Body: Darker Green
+  - Walls: White
+  - Pellets: Red
+  - Power-ups: Distinct colors (Mushrooms, Lightning Bolts, Hourglasses, Stars)
 #### **🔐 Core Innovation**
 The world's first snake game with a secret password-based level progression system. This system transforms save/load mechanics into a strategic gameplay element.
 

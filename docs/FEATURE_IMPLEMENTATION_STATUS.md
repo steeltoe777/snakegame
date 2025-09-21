@@ -29,6 +29,7 @@ These features are currently implemented and functional in the game:
    - Spec file: `score-multiplier-spec.md`
    - Implementation: Yes (by Frank Schmidt)
 
+- **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](../specs/minimap-spec.md))
 ## ❌ Non-Implemented Features
 
 These features have specs but are NOT currently implemented in the codebase:
