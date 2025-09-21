@@ -368,3 +368,39 @@ describe('Game Over Overlay', () => {
         expect(gameOverOverlay.classList.contains('hidden')).toBe(true); // Overlay should be hidden
     });
 });
+
+describe('Respawn Logic', () => {
+    beforeEach(() => {
+        resetGameEnvironment();
+        window.gameState.gameRunning = true;
+        window.gameState.gameInterval = setInterval(() => {}, 100); // Mock interval
+    });
+
+    afterEach(() => {
+        if (window.gameState.gameInterval) {
+            clearInterval(window.gameState.gameInterval);
+        }
+    });
+
+    test('gameOver should respawn the snake with half its length and halve the score when the level is greater than 1', () => {
+        window.gameState.level = 2;
+        window.gameState.score = 100;
+        window.gameState.snake = [{ x: 5, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 5 }, { x: 2, y: 5 }];
+        const initialSnakeLength = window.gameState.snake.length;
+        window.gameOver();
+        expect(window.gameState.level).toBe(1);
+        expect(window.gameState.score).toBe(50);
+        expect(window.gameState.snake.length).toBe(Math.floor(initialSnakeLength / 2));
+        expect(document.getElementById('gameOverOverlay').classList.contains('hidden')).toBe(true);
+    });
+
+    test('gameOver should restart the game when the level is 1', () => {
+        const resetGameSpy = jest.spyOn(window, 'resetGame');
+        window.gameState.level = 1;
+        window.gameState.score = 100;
+        window.gameOver();
+        expect(resetGameSpy).toHaveBeenCalled();
+        expect(document.getElementById('gameOverOverlay').classList.contains('hidden')).toBe(false);
+    });
+});
+
