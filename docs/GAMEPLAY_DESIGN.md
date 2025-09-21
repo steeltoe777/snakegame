@@ -100,6 +100,42 @@ Unlike traditional snake food, this game features strategic pellet collection re
 - **Strategic Placement**: Only on valid path tiles
 - **Completion Requirement**: All pellets must be collected to advance
 
+
+### **5. Enhanced Power-Up System**
+
+#### **🎮 Strategic Power-Up Mechanics**
+The game features multiple power-up types that provide temporary benefits, encouraging strategic gameplay decisions:
+
+1. **🍄 Mushroom Power-Up**
+   - **Effect**: Temporary invincibility against wall collisions
+   - **Duration**: 5 seconds
+   - **Visual**: Red mushroom
+   - **Special**: Also causes snake to grow when collected
+
+2. **⚡ Lightning Bolt Power-Up**
+   - **Effect**: Temporary speed boost
+   - **Duration**: 6 seconds
+   - **Visual**: Yellow lightning bolt
+   - **Strength**: Increases movement speed by 50%
+
+3. **⏳ Hourglass Power-Up**
+   - **Effect**: Temporary time slow for precision movement
+   - **Duration**: 8 seconds
+   - **Visual**: Purple hourglass
+   - **Strength**: Decreases movement speed by 50%
+
+4. **⭐ Golden Star Power-Up**
+   - **Effect**: Temporary score multiplier
+   - **Duration**: 10 seconds
+   - **Visual**: Golden star
+   - **Strength**: Doubles points earned from pellet collection
+
+#### **📊 Power-Up Balance & Strategy**
+- **Spawn Rates**: Carefully balanced probabilities (Mushrooms: 3%, Lightning: 2%, Hourglass: 1.5%, Stars: 2%)
+- **Level Requirements**: Different power-ups unlock at different levels
+- **Strategic Choices**: Players must decide which power-ups to prioritize based on situation
+- **Risk vs Reward**: Higher value power-ups are rarer and have longer durations
+
 ### **4. Tron-Inspired Trail System**
 
 #### **💙 Visual Persistence**
@@ -226,6 +262,10 @@ window.drawGame()            // Rendering verification
 | **Snake Head** | Dark Green | #00AA00 | Snake head segment |
 | **Snake Body** | Lime | #00FF00 | Snake body segments |
 | **Trail** | Blue/#0000FF,Rainbow/Varies | Movement trail (conditional) |
+| **Mushroom** | Red | #FF0000 | Invincibility power-up |
+| **Lightning Bolt** | Yellow | #FFFF00 | Speed boost power-up |
+| **Hourglass** | Purple | #800080 | Time slow power-up |
+| **Golden Star** | Gold | #FFD700 | Score multiplier power-up |
 | **Text** | White | #FFFFFF | UI elements |
 
 ### **Layout Specifications**
@@ -302,7 +342,7 @@ window.drawGame()            // Rendering verification
 - **Visual Design**: Update color constants and drawing functions
 
 ### **Extension Opportunities**
-- **Power-ups**: Add special abilities and temporary boosts
+- **Additional Power-Up Types**: Implement shield, portal, or other advanced power-ups
 - **Multiplayer**: Implement competitive or cooperative modes
 - **Sound Effects**: Add audio feedback for actions
 - **Animations**: Implement smooth transitions and effects

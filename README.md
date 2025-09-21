@@ -20,6 +20,16 @@ I believe in building things that are fun first, optimized second. This game pri
 ## 🎯 **What Makes This Game Unique**
 
 This is **not** your traditional snake game. It's a sophisticated hybrid that combines:
+
+## 🎮 **Enhanced Power-Up System**
+
+Experience strategic gameplay with multiple power-up types:
+
+- **🍄 Mushroom Power-Up**: Temporary invincibility against walls
+- **⚡ Lightning Bolt Power-Up**: Temporary speed boost for quick navigation
+- **⏳ Hourglass Power-Up**: Temporary time slow for precision movement
+- **⭐ Golden Star Power-Up**: Temporary score multiplier for point optimization
+
 - **🐍 Classic Snake** movement and growth mechanics
 - **🟡 Pac-Man** pellet collection and maze navigation  
 - **💙 Tron** trail system and visual persistence
@@ -167,7 +177,7 @@ open index.html
 - **Snake Body**: Lime green segments
 - **Pellets**: Yellow circular collectibles
 - **Walls**: Grey obstacles
-- **Trail**: Blue movement history (rainbow during mushroom power-up)
+- **Snake Trail**: Blue movement history (rainbow during mushroom power-up)
 - **Background**: Black canvas
 
 
