@@ -248,6 +248,7 @@ const gameState = {
     scoreMultiplierTimer: 0, // Remaining time in milliseconds
     scoreMultiplierLastUpdate: 0, // Timestamp reference
     rainbowHue: 0, // Current hue value for rainbow trail effect
+    paused: false,
 };
 
 // Password system for level progression
@@ -658,6 +659,7 @@ function drawTrail() {
 
 
 function update() {
+    if (gameState.paused) return;
     if (!gameState.gameRunning) return;
     // Update rainbow trail hue for animation effect
     gameState.rainbowHue = (gameState.rainbowHue + 0.5) % 360;
@@ -1062,6 +1064,23 @@ function drawMinimap() {
         ctx.fillRect(10, 70, timerWidth, 5);
     }
     drawMinimap(); // Draw the minimap
+
+    // Draw pause indicator if game is paused
+    if (gameState.paused) {
+        // Semi-transparent overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Pause text
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
+
+        // Resume instruction
+        ctx.font = '24px Arial';
+        ctx.fillText('Press P to resume', canvas.width / 2, canvas.height / 2 + 50);
+    }
 }
 
 function gameOver() {
@@ -1225,6 +1244,11 @@ function handleDirectionChange(e) {
                 gameState.dx = 1;
                 gameState.dy = 0;
             }
+            break;
+        case "P":
+        case "p":
+            gameState.paused = !gameState.paused;
+            drawGame(); // Redraw to show/hide pause indicator
             break;
         default:
             break;
