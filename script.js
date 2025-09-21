@@ -205,6 +205,10 @@ const gameState = {
     speedBoostLastUpdate: 0, // Track last update time for accurate speed boost timer
     lightningBolts: [],
     mushrooms: [],
+    hourglasses: [], // Array of {x, y} positions
+    timeSlowActive: false, // Activation state
+    timeSlowTimer: 0, // Remaining time in milliseconds
+    timeSlowLastUpdate: 0, // Timestamp reference for accurate timer
 };
 
 // Password system for level progression
@@ -732,6 +736,23 @@ function update() {
                 break;
             }
         }
+
+        // Check for hourglass eating
+        for (let i = 0; i < gameState.hourglasses.length; i++) {
+            if (head.x === gameState.hourglasses[i].x && head.y === gameState.hourglasses[i].y) {
+                gameState.hourglasses.splice(i, 1);
+
+                // Activate time slow powerup for 8 seconds
+                gameState.timeSlowActive = true;
+                gameState.timeSlowTimer = 8000;
+                gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
+
+                // Immediately update game speed for instant slow effect
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
+                break;
+            }
+        }
         // Update mushroom timer if powerup is active
         if (gameState.mushroomPowerupActive) {
             const currentTime = performance.now();
@@ -756,6 +777,24 @@ function update() {
             if (gameState.speedBoostTimer <= 0) {
                 gameState.speedBoostActive = false;
                 gameState.speedBoostTimer = 0;
+
+                // Update time slow timer if powerup is active
+                if (gameState.timeSlowActive) {
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - gameState.timeSlowLastUpdate;
+
+                    // Decrement timer by actual elapsed time
+                    gameState.timeSlowTimer -= deltaTime;
+                    gameState.timeSlowLastUpdate = currentTime;
+                    if (gameState.timeSlowTimer <= 0) {
+                        gameState.timeSlowActive = false;
+                        gameState.timeSlowTimer = 0;
+
+                        // Update game speed when time slow ends
+                        clearInterval(gameState.gameInterval);
+                        gameState.gameInterval = setInterval(update, calculateGameSpeed());
+                    }
+                }
             }
         }
     }
@@ -770,6 +809,7 @@ function update() {
 
     spawnRandomMushroom(); // Random mushroom spawning during gameplay
     spawnRandomLightningBolt(); // Random lightning bolt spawning during gameplay
+    spawnRandomHourglass();
     drawGame();
 }
 
@@ -780,6 +820,7 @@ function drawGame() {
     drawTrail();
     drawMushrooms(); // Draw mushroom powerups
     drawLightningBolts(); // Draw lightning bolt powerups
+    drawHourglasses();
     drawSnake();
 
     // Draw mushroom powerup indicator if active
@@ -874,6 +915,7 @@ function levelUp() {
     generatePellets();
     generateMushrooms(); // Generate mushrooms for powerups
     generateLightningBolts(); // Generate lightning bolts for speed boost powerups
+    generateHourglasses();
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
     updatePasswordDisplay();
@@ -889,7 +931,7 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-    gameState.level = 1;
+    gameState.level = 100;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
@@ -899,6 +941,7 @@ function resetGame() {
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
     generatePellets();
     generateLightningBolts(); // Generate lightning bolts for speed boost powerups
+    generateHourglasses();
     generateMushrooms(); // Generate mushrooms for powerups
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
@@ -996,6 +1039,12 @@ function calculateGameSpeed() {
     if (gameState.speedBoostActive) {
         speed *= 0.75;
         maxSpeed *= 0.75;
+    }
+
+    // Apply time slow if active
+    if (gameState.timeSlowActive) {
+        speed *= 1.25;
+        maxSpeed *= 1.25;
     }
 
     return Math.max(speed, maxSpeed);
@@ -1167,6 +1216,88 @@ function generateLightningBolts() {
     }
 }
 
+function generateHourglasses() {
+    gameState.hourglasses = [];
+
+    // Only spawn hourglasses on higher levels and with some probability
+    if (gameState.level >= 5 && Math.random() < 0.015) {
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, or existing hourglasses
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing hourglasses
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.hourglasses.length; j++) {
+                            const hourglass = gameState.hourglasses[j];
+                            if (hourglass.x === x && hourglass.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 hourglass if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.hourglasses.push(availableTiles[randomIndex]);
+        }
+    }
+}
+
 // Random lightning bolt spawning during gameplay
 function spawnRandomLightningBolt() {
     // Only spawn lightning bolts on level 3+ with low probability
@@ -1238,6 +1369,86 @@ function spawnRandomLightningBolt() {
     }
 }
 
+function spawnRandomHourglass() {
+    // Only spawn hourglasses on higher levels and with some probability
+    if (gameState.level >= 5 && Math.random() < 0.015) {
+        const availableTiles = [];
+
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, or existing hourglasses
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing hourglasses
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.hourglasses.length; j++) {
+                            const hourglass = gameState.hourglasses[j];
+                            if (hourglass.x === x && hourglass.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 hourglass if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.hourglasses.push(availableTiles[randomIndex]);
+        }
+    }
+}
+
 // Draw lightning bolts on the canvas
 function drawLightningBolts() {
     gameState.lightningBolts.forEach((bolt) => {
@@ -1264,4 +1475,32 @@ function drawLightningBolts() {
         ctx.stroke();
         ctx.fill();
     });
+}
+
+function drawHourglasses() {
+    const { gridSize } = gameState;
+    ctx.fillStyle = '#800080'; // Purple color for hourglasses
+
+    for (let i = 0; i < gameState.hourglasses.length; i++) {
+        const hourglass = gameState.hourglasses[i];
+        const x = hourglass.x * gridSize;
+        const y = hourglass.y * gridSize;
+
+        // Draw hourglass shape (simplified)
+        ctx.beginPath();
+        ctx.moveTo(x + gridSize * 0.3, y + gridSize * 0.2);
+        ctx.lineTo(x + gridSize * 0.7, y + gridSize * 0.2);
+        ctx.lineTo(x + gridSize * 0.5, y + gridSize * 0.5);
+        ctx.lineTo(x + gridSize * 0.7, y + gridSize * 0.8);
+        ctx.lineTo(x + gridSize * 0.3, y + gridSize * 0.8);
+        ctx.lineTo(x + gridSize * 0.5, y + gridSize * 0.5);
+        ctx.closePath();
+        ctx.fill();
+
+        // Add subtle pulsing effect
+        const pulse = Math.sin(Date.now() / 200) * 0.1 + 0.9;
+        ctx.globalAlpha = pulse;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
 }
