@@ -104,7 +104,7 @@ This API reference documents all the major functions in the game. I've included 
 **Location**: Update approximate line references  
 **Parameters**: None  
 **Accesses**: gameState.snake  
-**Style**: Fading green trail
+**Style**: Blue trail (rainbow during mushroom power-up)
 
 ### Generation Functions
 

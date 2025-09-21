@@ -106,7 +106,7 @@ Unlike traditional snake food, this game features strategic pellet collection re
 The snake leaves a temporary blue trail, creating visual feedback and additional collision challenges.
 
 #### **⚡ Trail Mechanics**
-- **Visual Effect**: Blue trail segments behind snake movement
+- **Visual Effect**: Blue trail segments behind snake movement (rainbow during mushroom power-up)
 - **Collision Detection**: Trail segments act as obstacles
 - **Self-Collision**: Running into trail causes game over
 - **Dynamic Clearing**: Trail doesn't persist indefinitely
@@ -225,7 +225,7 @@ window.drawGame()            // Rendering verification
 | **Pellets** | Yellow | #FFFF00 | Collectible items |
 | **Snake Head** | Dark Green | #00AA00 | Snake head segment |
 | **Snake Body** | Lime | #00FF00 | Snake body segments |
-| **Trail** | Blue | #0000FF | Movement trail |
+| **Trail** | Blue/#0000FF,Rainbow/Varies | Movement trail (conditional) |
 | **Text** | White | #FFFFFF | UI elements |
 
 ### **Layout Specifications**
