@@ -2,6 +2,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Group game state into a single object for easier management and testing
+function getRandomPosition() {
+    const tileCount = gameState.tileCount || 20;
+    return {
+        x: Math.floor(Math.random() * tileCount),
+        y: Math.floor(Math.random() * tileCount),
+    };
+}
 const gameState = {
     gridSize: 20, // Define gridSize here
     tileCount: 0, // Will be calculated in resetGame/levelUp based on canvas dimensions
@@ -350,8 +357,9 @@ function gameOver() {
             0,
             Math.max(1, Math.floor(gameState.snake.length / 2))
         ); // Reduce snake length by half, minimum 1 segment
-        if (gameState.snake.length === 0) {
-            gameState.snake = [{ x: 10, y: 10 }]; // Reset to initial state if array becomes empty
+        gameState.trail = []; // Clear trail
+        if (gameState.snake.length <= 1) {
+            gameState.snake = [{ x: getRandomPosition().x, y: getRandomPosition().y }]; // Randomized start position
         }
         document.getElementById('score').innerText = `Score: ${gameState.score}`;
         document.getElementById('level').innerText = `Level: ${gameState.level}`;
