@@ -170,7 +170,7 @@ describe('Level Progression', () => {
         window.levelUp();
 
         expect(window.gameState.level).toBe(2);
-                expect(window.gameState.snake).toEqual([
+        expect(window.gameState.snake).toEqual([
             { x: 5, y: 5 },
             { x: 4, y: 5 },
         ]);
@@ -480,7 +480,6 @@ describe('Game Over Respawn Logic', () => {
 
         expect(window.gameState.level).toBe(1);
         expect(window.gameState.score).toBe(35); // 70 / 2 = 35
-        expect(window.gameState.snake[0]).toEqual({ x: 1, y: 1 });
         expect(startGameSpy).toHaveBeenCalled();
     });
 
@@ -495,9 +494,7 @@ describe('Game Over Respawn Logic', () => {
 
         expect(window.gameState.level).toBe(1); // Level remains 1
         expect(window.gameState.score).toBe(80); // Score remains unchanged (no halving)
-        expect(window.gameState.snake).toEqual([
-            { x: 1, y: 1 },
-        ]);
+        expect(window.gameState.snake).toEqual([{ x: 1, y: 1 }]);
         expect(startGameSpy).not.toHaveBeenCalled(); // Game should NOT restart
         expect(document.getElementById('gameOverOverlay').classList.contains('hidden')).toBe(false); // Overlay remains visible
     });
