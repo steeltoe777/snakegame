@@ -2,6 +2,7 @@
 
 > **Revolutionary Game Design** - The world's first snake game with password-based level progression
 
+[Play snakegame here](https://raw.githack.com/steeltoe777/snakegame/master/index.html)
 
 ## 🚀 How This Project Started
 
