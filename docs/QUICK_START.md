@@ -7,7 +7,7 @@
 cd /a0/projects/snakegame/
 ls -la                    # Verify all files present
 npm test                  # Run tests (should pass)
-npm run lint             # Check code quality
+npm run lint              # Check code quality
 ```
 
 ### 2. Game Launch
@@ -65,6 +65,7 @@ npm test -- --coverage
 ### 8. Browser Controls
 - **↑ ↓ ← →**: Snake movement
 - **Any key**: Start game after game over
+- **P**: Pause/resume game
 - **Password**: Type password to skip levels
 
 ### 9. Debug Mode
@@ -83,5 +84,5 @@ console.log(gameState);
 ---
 
 **Status**: ✅ Complete & Verified  
-**Last Updated**: 2025-09-09  
+**Last Updated**: 2025-09-21
 **AI-Ready**: All documentation optimized for LLM agents

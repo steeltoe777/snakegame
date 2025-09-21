@@ -30,6 +30,12 @@ These features are currently implemented and functional in the game:
    - Implementation: Yes (by Frank Schmidt)
 
 - **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](../specs/minimap-spec.md))
+
+6. **Pause/Resume Functionality**
+   - Allows players to pause and resume the game using the 'P' key
+   - Displays a visual indicator when the game is paused
+   - Spec file: `pause-resume-spec.md`
+   - Implementation: Yes (2025-09-21)
 ## ❌ Non-Implemented Features
 
 These features have specs but are NOT currently implemented in the codebase:
