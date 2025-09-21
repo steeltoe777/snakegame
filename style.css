@@ -1,0 +1,80 @@
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #222;
+    color: #eee;
+    font-family: 'Press Start 2P', cursive;
+    position: relative; /* Needed for absolute positioning of overlay */
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+canvas {
+    background-color: #000;
+    border: 2px solid #eee;
+}
+
+#score, #level {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+/* Game Over Overlay Styles */
+#gameOverOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's on top */
+}
+
+#gameOverOverlay.hidden {
+    display: none;
+}
+
+.gameOverContent {
+    background-color: #333;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #eee;
+}
+
+.gameOverContent h2 {
+    color: #ff0000;
+    margin-bottom: 15px;
+    font-size: 2em;
+}
+
+.gameOverContent p {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.gameOverContent button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-family: 'Press Start 2P', cursive;
+    transition: background-color 0.3s ease;
+}
+
+.gameOverContent button:hover {
+    background-color: #45a049;
+}
