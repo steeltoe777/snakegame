@@ -263,9 +263,7 @@ startGame(); // Start game loop after respawn (automatically sets gameRunning = 
 function levelUp() {
 gameState.level++;
 document.getElementById('level').innerText = `Level: ${  gameState.level}`;
-gameState.snake = [
-{ x: 10, y: 10 }
-];
+gameState.snake = Array.from({length: gameState.snake.length}, () => ({x: 10, y: 10}));
 gameState.dx = 0;
 gameState.dy = 0;
 gameState.trail = [];
