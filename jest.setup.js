@@ -1,77 +1,65 @@
 
-// Polyfill TextEncoder/TextDecoder at the very top to ensure they are available for JSDOM's dependencies
-const { TextEncoder, TextDecoder } = require('util');
+// jest.setup.js
+// Explicit and simple mock for browser environment in Jest tests
 
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
-const { JSDOM } = require('jsdom');
-
-// Set up a global JSDOM instance once
-const dom = new JSDOM(`
-    <!DOCTYPE html>
-    <html>
-    <body>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div id="score">Score: 0</div>
-        <div id="level">Level: 1</div>
-    </body>
-    </html>
-`, { runScripts: 'dangerously', resources: 'usable' });
-
-global.window = dom.window;
-global.document = dom.window.document;
-
-// Mock the Canvas API globally for all HTMLCanvasElement instances
-global.window.HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
-    clearRect: jest.fn(),
+// Create a mock canvas element
+const mockCanvasElement = {
+  getContext: jest.fn(() => ({
+    // Mock common canvas context methods
     fillRect: jest.fn(),
+    clearRect: jest.fn(),
     beginPath: jest.fn(),
     arc: jest.fn(),
     fill: jest.fn(),
-    // Add any other canvas context methods/properties used in script.js
-    font: '',
+    stroke: jest.fn(),
+    closePath: jest.fn(),
     fillText: jest.fn(),
-    measureText: jest.fn(() => ({ width: 10 })),
-    set strokeStyle(value) {},
-    set fillStyle(value) {},
-    set lineWidth(value) {},
-    set lineCap(value) {},
-    set lineJoin(value) {},
-    set miterLimit(value) {},
-    set globalAlpha(value) {},
-    set globalCompositeOperation(value) {},
-    set imageSmoothingEnabled(value) {},
-    set imageSmoothingQuality(value) {},
-    set shadowOffsetX(value) {},
-    set shadowOffsetY(value) {},
-    set shadowBlur(value) {},
-    set shadowColor(value) {},
-    set filter(value) {},
-    set direction(value) {},
-    set textAlign(value) {},
-    set textBaseline(value) {},
-    set lineDashOffset(value) {},
-    set currentTransform(value) {},
-    set canvas(value) {},
-}));
+    measureText: jest.fn(() => ({ width: 100, height: 20 })),
+    font: '',
+    fillStyle: '',
+    strokeStyle: '',
+    lineWidth: 0,
+  })),
+  width: 600,
+  height: 600,
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+};
 
-// Mock global functions that interact with the browser environment
-global.clearInterval = jest.fn();
-global.setInterval = jest.fn(() => 123); // Mock setInterval to return an ID
-global.alert = jest.fn(); // Mock alert
-
-// Ensure document.getElementById returns the correct mocked elements
-const originalGetElementById = global.document.getElementById;
-global.document.getElementById = jest.fn((id) => {
+// Mock the global document object
+global.document = {
+  getElementById: jest.fn(id => {
     if (id === 'gameCanvas') {
-        // Return the actual canvas element from the JSDOM instance, which will use our mocked getContext
-        return originalGetElementById.call(global.document, id);
+      return mockCanvasElement;
     }
-    // For other elements like score/level divs, return the actual div from the JSDOM instance
-    return originalGetElementById.call(global.document, id);
-});
+    return null; // For any other ID, return null
+  }),
+  // Add other document properties/methods if script.js uses them
+  body: {
+    appendChild: jest.fn(),
+    removeChild: jest.fn(),
+    style: {},
+  },
+  createElement: jest.fn(tagName => {
+    if (tagName === 'canvas') return mockCanvasElement;
+    return {};
+  }),
+};
 
-// Expose the JSDOM instance's window and document for tests to use
-// This is already done by global.window = dom.window; and global.document = dom.window.document;
-// No need to re-expose them in script.test.js
+// Mock the global window object
+global.window = {
+  requestAnimationFrame: jest.fn(cb => setTimeout(cb, 0)),
+  cancelAnimationFrame: jest.fn(id => clearTimeout(id)),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  innerWidth: 1024,
+  innerHeight: 768,
+};
+
+// Mock alert, confirm, prompt if script.js uses them
+global.alert = jest.fn();
+global.confirm = jest.fn();
+global.prompt = jest.fn();
+
+// Ensure console is available if script.js uses it (Jest usually handles this)
+// global.console = console;
