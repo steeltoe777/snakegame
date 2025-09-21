@@ -209,9 +209,9 @@ const gameState = {
     timeSlowActive: false, // Activation state
     timeSlowTimer: 0, // Remaining time in milliseconds
     timeSlowLastUpdate: 0, // Timestamp reference for accurate timer
-    stars: [],                 // Array of {x, y} positions
+    stars: [], // Array of {x, y} positions
     scoreMultiplierActive: false, // Activation state
-    scoreMultiplierTimer: 0,      // Remaining time in milliseconds
+    scoreMultiplierTimer: 0, // Remaining time in milliseconds
     scoreMultiplierLastUpdate: 0, // Timestamp reference
 };
 
@@ -813,6 +813,8 @@ function update() {
                 // Update game speed when time slow ends
                 clearInterval(gameState.gameInterval);
                 gameState.gameInterval = setInterval(update, calculateGameSpeed());
+            }
+        }
         // Update score multiplier timer if powerup is active
         if (gameState.scoreMultiplierActive) {
             const currentTime = performance.now();
@@ -824,9 +826,6 @@ function update() {
             if (gameState.scoreMultiplierTimer <= 0) {
                 gameState.scoreMultiplierActive = false;
                 gameState.scoreMultiplierTimer = 0;
-            }
-        }
-
             }
         }
     }
@@ -848,6 +847,11 @@ function update() {
 
 function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Change background color when score multiplier is active
+    if (gameState.scoreMultiplierActive) {
+        ctx.fillStyle = 'rgba(255, 255, 220, 0.01)'; // Light yellow with transparency
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     drawMaze();
     drawPellets();
     drawTrail();
@@ -1208,7 +1212,7 @@ function generateLightningBolts() {
     gameState.lightningBolts = [];
 
     // Only spawn lightning bolts on level 3+ with some probability
-    if (gameState.level >= 3 && Math.random() < 0.2) {
+    if (gameState.level >= 3 && Math.random() < 0.00001) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
@@ -1279,7 +1283,7 @@ function generateHourglasses() {
     gameState.hourglasses = [];
 
     // Only spawn hourglasses on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.015) {
+    if (gameState.level >= 5 && Math.random() < 0.00005) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
@@ -1360,8 +1364,8 @@ function generateHourglasses() {
 function generateStars() {
     gameState.stars = [];
 
-    // Only spawn stars on level 4+ with 2% probability
-    if (gameState.level >= 4 && Math.random() < 0.02) {
+    // Only spawn stars on level 4+
+    if (gameState.level >= 4 && Math.random() < 0.00001) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
@@ -1763,23 +1767,23 @@ function drawStars() {
         const centerY = y + gridSize / 2;
         const outerRadius = gridSize / 3;
         const innerRadius = outerRadius / 2;
-        
+
         for (let j = 0; j < 10; j++) {
             const radius = j % 2 === 0 ? outerRadius : innerRadius;
             const angle = (Math.PI / 5) * j - Math.PI / 2;
             const pointX = centerX + radius * Math.cos(angle);
             const pointY = centerY + radius * Math.sin(angle);
-            
+
             if (j === 0) {
                 ctx.moveTo(pointX, pointY);
             } else {
                 ctx.lineTo(pointX, pointY);
             }
         }
-        
+
         ctx.closePath();
         ctx.fill();
-        
+
         // Add subtle pulsing effect
         const pulse = Math.sin(Date.now() / 200) * 0.1 + 0.9;
         ctx.globalAlpha = pulse;
