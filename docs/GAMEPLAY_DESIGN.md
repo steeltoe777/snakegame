@@ -115,11 +115,11 @@ The maze evolves from simple boundaries to complex labyrinths based on player pr
 
 | Level Range   | Wall Count | Complexity   | Features              |
 | ------------- | ---------- | ------------ | --------------------- |
-| **1-3**       | 0-4        | Simple       | Outer boundaries only |
-| **4-499**     | 1-10       | Basic        | Random internal walls |
-| **500-1499**  | 10-25      | Intermediate | Dense wall patterns   |
-| **1500-4999** | 25-40      | Advanced     | Labyrinth structures  |
-| **5000+**     | 40-55      | Expert       | Near-impossible mazes |
+| **1-3**       | 0-5        | Simple       | Outer boundaries only |
+| **4-499**     | 5-15       | Basic        | Random internal walls |
+| **500-1499**  | 10-30      | Intermediate | Dense wall patterns   |
+| **1500-4999** | 25-45      | Advanced     | Labyrinth structures  |
+| **5000+**     | 40-60      | Expert       | Near-impossible mazes |
 
 #### **🧱 Wall Generation Algorithm**
 
@@ -138,7 +138,7 @@ Unlike traditional snake food, this game features strategic pellet collection re
 #### **📊 Pellet Distribution**
 
 - **Base System**: Minimum pellets guaranteed
-- **Level Scaling**: More pellets as difficulty increases
+- **Level Scaling**: Complex algorithm that scales pellet count with difficulty
 - **Strategic Placement**: Only on valid path tiles
 - **Completion Requirement**: All pellets must be collected to advance
 
