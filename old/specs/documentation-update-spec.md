@@ -3,6 +3,7 @@
 ## 🎯 Purpose
 
 Update the gameplay design documentation to accurately reflect the actual implementation of the maze generation and pellet distribution systems:
+
 - The maze generation creates more walls than originally documented
 - The pellet distribution uses a more complex scaling formula than documented
 - These updates will ensure the documentation accurately describes the implemented systems
@@ -12,6 +13,7 @@ Update the gameplay design documentation to accurately reflect the actual implem
 ## 📋 Content Changes
 
 Detail the specific content that needs to be added, modified, or removed:
+
 - Modify the "Level-Based Maze Scaling" table to reflect actual wall counts
 - Update the "Pellet Distribution" section to better describe the scaling mechanism
 - Ensure all references to these systems are consistent
