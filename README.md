@@ -24,6 +24,7 @@ I believe in building things that are fun first, optimized second. This game pri
 This is **not** your traditional snake game. It's a sophisticated hybrid that combines:
 
 ## 🎮 **Enhanced Power-Up System**
+
 - **🍄 Mushroom Power-Up**: Temporary invincibility against walls (8 seconds)
 - **⚡ Lightning Bolt Power-Up**: Temporary speed boost for quick navigation (6 seconds)
 - **⏳ Hourglass Power-Up**: Temporary time slow for precision movement (8 seconds)
@@ -141,9 +142,9 @@ For more detailed information, see the following documentation files:
 ```
 snakegame/
 ├── index.html          # Game interface
-├── script.js          # 1861 lines of core game logic
-├── style.css          # 80 lines of styling
-├── script.test.js     # 501 lines of comprehensive tests
+├── script.js          # Core game logic
+├── style.css          # Styling
+├── script.test.js     # Comprehensive tests
 └── docs/
     └── GAMEPLAY_DESIGN.md  # Complete design document
 ```
@@ -175,7 +176,7 @@ open index.html
 
 ### **Development Features**
 
-- **Comprehensive Tests**: 501 lines of unit tests
+- **Comprehensive Tests**: Unit tests
 - **ESLint Integration**: Code quality enforcement
 - **Prettier Formatting**: Consistent code style
 - **Browser DevTools**: Full debugging support
@@ -197,7 +198,7 @@ open index.html
 3. **🌱 Evolutionary Design**: Game mechanics evolve with progression
 4. **🎮 Hybrid Gameplay**: Combines three classic games seamlessly
 5. **📱 No Dependencies**: Pure HTML5 - works offline
-6. **🧪 Fully Tested**: 501 lines of comprehensive test coverage
+6. **🧪 Fully Tested**: Comprehensive test coverage
 
 ## 🎨 **Visual Design**
 
