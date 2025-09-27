@@ -79,8 +79,8 @@ These features have specs but are NOT currently implemented in the codebase:
 ## 📊 Statistics
 
 - **Total Specs**: 15
-- **Implemented**: 6 (40%)
-- **Not Implemented**: 7 (47%)
+- **Implemented**: 7 (47%)
+- **Not Implemented**: 6 (40%)
 - **Partially Implemented/Abandoned**: 2 (13%)
 
 ## 📝 Notes

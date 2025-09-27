@@ -279,3 +279,18 @@ This API reference documents all the major functions in the game. I've included 
 - **Visual Indicator**: Timer bar shown when powerup is active
 
 **Pro tip**: The mushroom system was added through iterative development and includes collision bypass, visual effects, and strategic gameplay elements!
+
+### `calculateGameSpeed()`
+**Purpose**: Calculate dynamic game speed based on snake length and level
+**Location**: Update approximate line references  
+**Parameters**: None
+**Returns**: Integer (milliseconds for game update interval)
+**Algorithm**:
+- Base calculation: speed = baseSpeed + snakeLength * 2
+- Level-based speed limits:
+  - Level 5+: 120ms minimum
+  - Level 10+: 140ms minimum
+  - Level 15+: 160ms minimum
+  - Level 20+: 180ms minimum
+- Applies modifiers for active powerups (speed boost, time slow)
+**Note**: Uses Math.max(speed, maxSpeed) to ensure minimum speed limits are maintained
