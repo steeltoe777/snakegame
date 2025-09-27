@@ -704,42 +704,38 @@ function update() {
     // Collision with self
     for (let i = 1; i < gameState.snake.length; i++) {
         if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
-            if (i < gameState.snake.length - 500000000) {
-                gameOver();
+            if (i <= 2 && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
+                // Avoid collision with neck segments of self.
+                gameState.dx = gameState.dxPrev;
+                gameState.dy = gameState.dyPrev;
+                // Only for the first touch though.
+                gameState.dxPrev = 0;
+                gameState.dyPrev = 0;
             } else {
-                if (i <= 2 && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
-                    // Avoid collision with neck segments of self.
-                    gameState.dx = gameState.dxPrev;
-                    gameState.dy = gameState.dyPrev;
-                    // Only for the first touch though.
-                    gameState.dxPrev = 0;
-                    gameState.dyPrev = 0;
-                } else {
-                    const newDirection = Math.round(Math.random() * 3) + 1; // Direction 1-4
-                    switch (newDirection) {
-                        case 1:
-                            gameState.dx = 0;
-                            gameState.dy = -1;
-                            break;
-                        case 2:
-                            gameState.dx = 0;
-                            gameState.dy = 1;
-                            break;
-                        case 3:
-                            gameState.dx = -1;
-                            gameState.dy = 0;
-                            break;
-                        case 4:
-                            gameState.dx = 1;
-                            gameState.dy = 0;
-                            break;
-                        default:
-                            break;
-                    }
-                    gameState.snake.pop(); // Only remove tail if no pellet was eaten
+                const newDirection = Math.round(Math.random() * 3) + 1; // Direction 1-4
+                switch (newDirection) {
+                    case 1:
+                        gameState.dx = 0;
+                        gameState.dy = -1;
+                        break;
+                    case 2:
+                        gameState.dx = 0;
+                        gameState.dy = 1;
+                        break;
+                    case 3:
+                        gameState.dx = -1;
+                        gameState.dy = 0;
+                        break;
+                    case 4:
+                        gameState.dx = 1;
+                        gameState.dy = 0;
+                        break;
+                    default:
+                        break;
                 }
-                drawGame();
+                gameState.snake.pop(); // Only remove tail if no pellet was eaten
             }
+            drawGame();
             return;
         }
     }

@@ -188,8 +188,8 @@ The snake leaves a temporary blue trail, creating visual feedback and additional
 #### **⚡ Trail Mechanics**
 
 - **Visual Effect**: Blue trail segments behind snake movement (rainbow during mushroom power-up)
-- **Collision Detection**: Trail segments act as obstacles
-- **Self-Collision**: Running into trail causes game over
+- **Collision Detection**: Snake body segments cause bouncing behavior, while trail segments cause death and level loss
+- **Self-Collision**: Running into snake body causes snake to bounce off in random directions, while running into trail causes death and level loss
 - **Dynamic Clearing**: Trail doesn't persist indefinitely
 - **Strategic Element**: Players must navigate their own path history
 
