@@ -6,7 +6,7 @@ When both the speed boost power-up (lightning bolt) and time slow power-up (hour
 
 1. Speed boost multiplies the speed by 0.75 (making the snake faster)
 2. Time slow multiplies the speed by 1.25 (making the snake slower)
-3. When both are active: 0.75 * 1.25 = 0.9375, which results in a net increase in speed
+3. When both are active: 0.75 \* 1.25 = 0.9375, which results in a net increase in speed
 
 This was unintended behavior as these power-ups should cancel each other out when both are active.
 

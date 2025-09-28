@@ -103,6 +103,7 @@ These features have specs but are NOT currently implemented in the codebase:
 ## Bug Fixes
 
 ### Power-Up Interaction Bug
+
 - **Status**: Fixed
 - **Date**: 2025-09-28
 - **Details**: See docs/bugfixes/powerup_interaction_fix.md
