@@ -769,7 +769,7 @@ function update() {
 
     // Check for pellet eating
     // Check for item collection
-    let shouldGrow = false;  // Only pellets and mushrooms cause growth
+    let shouldGrow = false; // Only pellets and mushrooms cause growth
     for (let i = 0; i < gameState.pellets.length; i++) {
         if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
             gameState.pellets.splice(i, 1);

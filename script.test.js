@@ -748,248 +748,252 @@ describe('Power-Up Features', () => {
         performance.now = originalPerformanceNow;
     });
 
+    test('Mushroom power-up collection should cause snake to grow', () => {
+        // Set up snake at position that will collide with a mushroom
+        window.gameState.snake = [{ x: 5, y: 5 }];
+        window.gameState.mushrooms = [{ x: 5, y: 5 }]; // Mushroom at same position as snake head
 
-test('Mushroom power-up collection should cause snake to grow', () => {
-    // Set up snake at position that will collide with a mushroom
-    window.gameState.snake = [{ x: 5, y: 5 }];
-    window.gameState.mushrooms = [{ x: 5, y: 5 }]; // Mushroom at same position as snake head
+        // Simulate item collection by directly setting atePellet to true
+        // (since the actual collision detection is in the update function)
+        window.atePellet = false;
 
-    // Simulate item collection by directly setting atePellet to true
-    // (since the actual collision detection is in the update function)
-    window.atePellet = false;
-
-    // Process mushroom collection
-    for (let i = 0; i < window.gameState.mushrooms.length; i++) {
-        if (window.gameState.mushrooms[i].x === window.gameState.snake[0].x && 
-            window.gameState.mushrooms[i].y === window.gameState.snake[0].y) {
-            // This should set atePellet to true, causing growth
-            window.atePellet = true;
-            window.gameState.mushrooms.splice(i, 1);
-            window.gameState.mushroomPowerupActive = true;
-            window.gameState.mushroomTimer = 8000;
-            break;
+        // Process mushroom collection
+        for (let i = 0; i < window.gameState.mushrooms.length; i++) {
+            if (
+                window.gameState.mushrooms[i].x === window.gameState.snake[0].x &&
+                window.gameState.mushrooms[i].y === window.gameState.snake[0].y
+            ) {
+                // This should set atePellet to true, causing growth
+                window.atePellet = true;
+                window.gameState.mushrooms.splice(i, 1);
+                window.gameState.mushroomPowerupActive = true;
+                window.gameState.mushroomTimer = 8000;
+                break;
+            }
         }
-    }
 
-    // With the bug fix, atePellet should be true for mushrooms, preventing tail removal (causing growth)
-    expect(window.atePellet).toBe(true);
-});
+        // With the bug fix, atePellet should be true for mushrooms, preventing tail removal (causing growth)
+        expect(window.atePellet).toBe(true);
+    });
 
-test('Lightning bolt power-up collection should NOT cause snake to grow', () => {
-    // Set up snake at position that will collide with a lightning bolt
-    window.gameState.snake = [{ x: 3, y: 3 }];
-    window.gameState.lightningBolts = [{ x: 3, y: 3 }]; // Lightning bolt at same position as snake head
+    test('Lightning bolt power-up collection should NOT cause snake to grow', () => {
+        // Set up snake at position that will collide with a lightning bolt
+        window.gameState.snake = [{ x: 3, y: 3 }];
+        window.gameState.lightningBolts = [{ x: 3, y: 3 }]; // Lightning bolt at same position as snake head
 
-    // Simulate item collection without setting atePellet to true
-    const shouldGrow = false; // This is what our fix uses
+        // Simulate item collection without setting atePellet to true
+        const shouldGrow = false; // This is what our fix uses
 
-    // Process lightning bolt collection
-    for (let i = 0; i < window.gameState.lightningBolts.length; i++) {
-        if (window.gameState.lightningBolts[i].x === window.gameState.snake[0].x && 
-            window.gameState.lightningBolts[i].y === window.gameState.snake[0].y) {
-            // This should NOT set shouldGrow to true, allowing normal tail removal (no growth)
-            // shouldGrow remains false
-            window.gameState.lightningBolts.splice(i, 1);
-            window.gameState.speedBoostActive = true;
-            window.gameState.speedBoostTimer = 6000;
-            break;
+        // Process lightning bolt collection
+        for (let i = 0; i < window.gameState.lightningBolts.length; i++) {
+            if (
+                window.gameState.lightningBolts[i].x === window.gameState.snake[0].x &&
+                window.gameState.lightningBolts[i].y === window.gameState.snake[0].y
+            ) {
+                // This should NOT set shouldGrow to true, allowing normal tail removal (no growth)
+                // shouldGrow remains false
+                window.gameState.lightningBolts.splice(i, 1);
+                window.gameState.speedBoostActive = true;
+                window.gameState.speedBoostTimer = 6000;
+                break;
+            }
         }
-    }
 
-    // With the bug fix, shouldGrow should remain false for lightning bolts, allowing normal tail removal
-    expect(shouldGrow).toBe(false);
-});
+        // With the bug fix, shouldGrow should remain false for lightning bolts, allowing normal tail removal
+        expect(shouldGrow).toBe(false);
+    });
 
-test('Hourglass power-up collection should NOT cause snake to grow', () => {
-    // Set up snake at position that will collide with an hourglass
-    window.gameState.snake = [{ x: 7, y: 7 }];
-    window.gameState.hourglasses = [{ x: 7, y: 7 }]; // Hourglass at same position as snake head
+    test('Hourglass power-up collection should NOT cause snake to grow', () => {
+        // Set up snake at position that will collide with an hourglass
+        window.gameState.snake = [{ x: 7, y: 7 }];
+        window.gameState.hourglasses = [{ x: 7, y: 7 }]; // Hourglass at same position as snake head
 
-    // Simulate item collection without setting atePellet to true
-    const shouldGrow = false; // This is what our fix uses
+        // Simulate item collection without setting atePellet to true
+        const shouldGrow = false; // This is what our fix uses
 
-    // Process hourglass collection
-    for (let i = 0; i < window.gameState.hourglasses.length; i++) {
-        if (window.gameState.hourglasses[i].x === window.gameState.snake[0].x && 
-            window.gameState.hourglasses[i].y === window.gameState.snake[0].y) {
-            // This should NOT set shouldGrow to true, allowing normal tail removal (no growth)
-            // shouldGrow remains false
-            window.gameState.hourglasses.splice(i, 1);
-            window.gameState.timeSlowActive = true;
-            window.gameState.timeSlowTimer = 8000;
-            break;
+        // Process hourglass collection
+        for (let i = 0; i < window.gameState.hourglasses.length; i++) {
+            if (
+                window.gameState.hourglasses[i].x === window.gameState.snake[0].x &&
+                window.gameState.hourglasses[i].y === window.gameState.snake[0].y
+            ) {
+                // This should NOT set shouldGrow to true, allowing normal tail removal (no growth)
+                // shouldGrow remains false
+                window.gameState.hourglasses.splice(i, 1);
+                window.gameState.timeSlowActive = true;
+                window.gameState.timeSlowTimer = 8000;
+                break;
+            }
         }
-    }
 
-    // With the bug fix, shouldGrow should remain false for hourglasses, allowing normal tail removal
-    expect(shouldGrow).toBe(false);
-});
+        // With the bug fix, shouldGrow should remain false for hourglasses, allowing normal tail removal
+        expect(shouldGrow).toBe(false);
+    });
 
-test('Star power-up collection should NOT cause snake to grow', () => {
-    // Set up snake at position that will collide with a star
-    window.gameState.snake = [{ x: 9, y: 9 }];
-    window.gameState.stars = [{ x: 9, y: 9 }]; // Star at same position as snake head
+    test('Star power-up collection should NOT cause snake to grow', () => {
+        // Set up snake at position that will collide with a star
+        window.gameState.snake = [{ x: 9, y: 9 }];
+        window.gameState.stars = [{ x: 9, y: 9 }]; // Star at same position as snake head
 
-    // Simulate item collection without setting atePellet to true
-    const shouldGrow = false; // This is what our fix uses
+        // Simulate item collection without setting atePellet to true
+        const shouldGrow = false; // This is what our fix uses
 
-    // Process star collection
-    for (let i = 0; i < window.gameState.stars.length; i++) {
-        if (window.gameState.stars[i].x === window.gameState.snake[0].x && 
-            window.gameState.stars[i].y === window.gameState.snake[0].y) {
-            // This should NOT set shouldGrow to true, allowing normal tail removal (no growth)
-            // shouldGrow remains false
-            window.gameState.stars.splice(i, 1);
-            window.gameState.scoreMultiplierActive = true;
-            window.gameState.scoreMultiplierTimer = 10000;
-            break;
+        // Process star collection
+        for (let i = 0; i < window.gameState.stars.length; i++) {
+            if (
+                window.gameState.stars[i].x === window.gameState.snake[0].x &&
+                window.gameState.stars[i].y === window.gameState.snake[0].y
+            ) {
+                // This should NOT set shouldGrow to true, allowing normal tail removal (no growth)
+                // shouldGrow remains false
+                window.gameState.stars.splice(i, 1);
+                window.gameState.scoreMultiplierActive = true;
+                window.gameState.scoreMultiplierTimer = 10000;
+                break;
+            }
         }
-    }
 
-    // With the bug fix, shouldGrow should remain false for stars, allowing normal tail removal
-    expect(shouldGrow).toBe(false);
-});
+        // With the bug fix, shouldGrow should remain false for stars, allowing normal tail removal
+        expect(shouldGrow).toBe(false);
+    });
 
+    test('Lightning bolt collection logic should NOT set shouldGrow flag to true', () => {
+        // Set up snake at position that will collide with a lightning bolt
+        window.gameState.snake = [{ x: 3, y: 3 }];
+        window.gameState.lightningBolts = [{ x: 3, y: 3 }]; // Lightning bolt at same position as snake head
 
+        // Initialize the shouldGrow variable as the actual code does
+        const shouldGrow = false;
 
-
-test('Lightning bolt collection logic should NOT set shouldGrow flag to true', () => {
-    // Set up snake at position that will collide with a lightning bolt
-    window.gameState.snake = [{ x: 3, y: 3 }];
-    window.gameState.lightningBolts = [{ x: 3, y: 3 }]; // Lightning bolt at same position as snake head
-
-    // Initialize the shouldGrow variable as the actual code does
-    const shouldGrow = false;
-
-    // Process lightning bolt collection exactly as in the fixed code
-    for (let i = 0; i < window.gameState.lightningBolts.length; i++) {
-        if (window.gameState.lightningBolts[i].x === window.gameState.snake[0].x && 
-            window.gameState.lightningBolts[i].y === window.gameState.snake[0].y) {
-            // Note: shouldGrow is NOT set to true here (this was the bug)
-            window.gameState.lightningBolts.splice(i, 1);
-            window.gameState.speedBoostActive = true;
-            window.gameState.speedBoostTimer = 6000;
-            break;
+        // Process lightning bolt collection exactly as in the fixed code
+        for (let i = 0; i < window.gameState.lightningBolts.length; i++) {
+            if (
+                window.gameState.lightningBolts[i].x === window.gameState.snake[0].x &&
+                window.gameState.lightningBolts[i].y === window.gameState.snake[0].y
+            ) {
+                // Note: shouldGrow is NOT set to true here (this was the bug)
+                window.gameState.lightningBolts.splice(i, 1);
+                window.gameState.speedBoostActive = true;
+                window.gameState.speedBoostTimer = 6000;
+                break;
+            }
         }
-    }
 
-    // Verify that shouldGrow remains false for lightning bolts
-    expect(shouldGrow).toBe(false);
-});
+        // Verify that shouldGrow remains false for lightning bolts
+        expect(shouldGrow).toBe(false);
+    });
 
-test('Hourglass collection logic should NOT set shouldGrow flag to true', () => {
-    // Set up snake at position that will collide with an hourglass
-    window.gameState.snake = [{ x: 7, y: 7 }];
-    window.gameState.hourglasses = [{ x: 7, y: 7 }]; // Hourglass at same position as snake head
+    test('Hourglass collection logic should NOT set shouldGrow flag to true', () => {
+        // Set up snake at position that will collide with an hourglass
+        window.gameState.snake = [{ x: 7, y: 7 }];
+        window.gameState.hourglasses = [{ x: 7, y: 7 }]; // Hourglass at same position as snake head
 
-    // Initialize the shouldGrow variable as the actual code does
-    const shouldGrow = false;
+        // Initialize the shouldGrow variable as the actual code does
+        const shouldGrow = false;
 
-    // Process hourglass collection exactly as in the fixed code
-    for (let i = 0; i < window.gameState.hourglasses.length; i++) {
-        if (window.gameState.hourglasses[i].x === window.gameState.snake[0].x && 
-            window.gameState.hourglasses[i].y === window.gameState.snake[0].y) {
-            // Note: shouldGrow is NOT set to true here (this was the bug)
-            window.gameState.hourglasses.splice(i, 1);
-            window.gameState.timeSlowActive = true;
-            window.gameState.timeSlowTimer = 8000;
-            break;
+        // Process hourglass collection exactly as in the fixed code
+        for (let i = 0; i < window.gameState.hourglasses.length; i++) {
+            if (
+                window.gameState.hourglasses[i].x === window.gameState.snake[0].x &&
+                window.gameState.hourglasses[i].y === window.gameState.snake[0].y
+            ) {
+                // Note: shouldGrow is NOT set to true here (this was the bug)
+                window.gameState.hourglasses.splice(i, 1);
+                window.gameState.timeSlowActive = true;
+                window.gameState.timeSlowTimer = 8000;
+                break;
+            }
         }
-    }
 
-    // Verify that shouldGrow remains false for hourglasses
-    expect(shouldGrow).toBe(false);
-});
+        // Verify that shouldGrow remains false for hourglasses
+        expect(shouldGrow).toBe(false);
+    });
 
+    test('Mushroom power-up activation should preserve existing behavior', () => {
+        // This test ensures mushroom power-up activation logic remains unchanged
+        window.gameState.mushroomPowerupActive = false;
+        window.gameState.mushroomTimer = 0;
 
+        // Simulate mushroom collection effect
+        window.gameState.mushroomPowerupActive = true;
+        window.gameState.mushroomTimer = 8000;
 
+        expect(window.gameState.mushroomPowerupActive).toBe(true);
+        expect(window.gameState.mushroomTimer).toBe(8000);
+    });
 
-test('Mushroom power-up activation should preserve existing behavior', () => {
-    // This test ensures mushroom power-up activation logic remains unchanged
-    window.gameState.mushroomPowerupActive = false;
-    window.gameState.mushroomTimer = 0;
+    test('Lightning bolt power-up activation should preserve existing behavior', () => {
+        // This test ensures lightning bolt power-up activation logic remains unchanged
+        window.gameState.speedBoostActive = false;
+        window.gameState.speedBoostTimer = 0;
 
-    // Simulate mushroom collection effect
-    window.gameState.mushroomPowerupActive = true;
-    window.gameState.mushroomTimer = 8000;
+        // Simulate lightning bolt collection effect
+        window.gameState.speedBoostActive = true;
+        window.gameState.speedBoostTimer = 6000;
 
-    expect(window.gameState.mushroomPowerupActive).toBe(true);
-    expect(window.gameState.mushroomTimer).toBe(8000);
-});
+        expect(window.gameState.speedBoostActive).toBe(true);
+        expect(window.gameState.speedBoostTimer).toBe(6000);
+    });
 
-test('Lightning bolt power-up activation should preserve existing behavior', () => {
-    // This test ensures lightning bolt power-up activation logic remains unchanged
-    window.gameState.speedBoostActive = false;
-    window.gameState.speedBoostTimer = 0;
+    test('Hourglass power-up activation should preserve existing behavior', () => {
+        // This test ensures hourglass power-up activation logic remains unchanged
+        window.gameState.timeSlowActive = false;
+        window.gameState.timeSlowTimer = 0;
 
-    // Simulate lightning bolt collection effect
-    window.gameState.speedBoostActive = true;
-    window.gameState.speedBoostTimer = 6000;
+        // Simulate hourglass collection effect
+        window.gameState.timeSlowActive = true;
+        window.gameState.timeSlowTimer = 8000;
 
-    expect(window.gameState.speedBoostActive).toBe(true);
-    expect(window.gameState.speedBoostTimer).toBe(6000);
-});
+        expect(window.gameState.timeSlowActive).toBe(true);
+        expect(window.gameState.timeSlowTimer).toBe(8000);
+    });
 
-test('Hourglass power-up activation should preserve existing behavior', () => {
-    // This test ensures hourglass power-up activation logic remains unchanged
-    window.gameState.timeSlowActive = false;
-    window.gameState.timeSlowTimer = 0;
+    test('Star power-up activation should preserve existing behavior', () => {
+        // This test ensures star power-up activation logic remains unchanged
+        window.gameState.scoreMultiplierActive = false;
+        window.gameState.scoreMultiplierTimer = 0;
 
-    // Simulate hourglass collection effect
-    window.gameState.timeSlowActive = true;
-    window.gameState.timeSlowTimer = 8000;
+        // Simulate star collection effect
+        window.gameState.scoreMultiplierActive = true;
+        window.gameState.scoreMultiplierTimer = 10000;
 
-    expect(window.gameState.timeSlowActive).toBe(true);
-    expect(window.gameState.timeSlowTimer).toBe(8000);
-});
+        expect(window.gameState.scoreMultiplierActive).toBe(true);
+        expect(window.gameState.scoreMultiplierTimer).toBe(10000);
+    });
 
-test('Star power-up activation should preserve existing behavior', () => {
-    // This test ensures star power-up activation logic remains unchanged
-    window.gameState.scoreMultiplierActive = false;
-    window.gameState.scoreMultiplierTimer = 0;
+    test('Power-up collection logic maintains distinct behavior for each type', () => {
+        // This test validates that each power-up type has distinct activation logic
+        // and that the fix doesn't conflate different power-up behaviors
 
-    // Simulate star collection effect
-    window.gameState.scoreMultiplierActive = true;
-    window.gameState.scoreMultiplierTimer = 10000;
+        // Set up all power-up states
+        window.gameState.mushroomPowerupActive = false;
+        window.gameState.speedBoostActive = false;
+        window.gameState.timeSlowActive = false;
+        window.gameState.scoreMultiplierActive = false;
 
-    expect(window.gameState.scoreMultiplierActive).toBe(true);
-    expect(window.gameState.scoreMultiplierTimer).toBe(10000);
-});
+        // Activate each power-up separately
+        window.gameState.mushroomPowerupActive = true;
+        window.gameState.mushroomTimer = 8000;
 
-test('Power-up collection logic maintains distinct behavior for each type', () => {
-    // This test validates that each power-up type has distinct activation logic
-    // and that the fix doesn't conflate different power-up behaviors
+        window.gameState.speedBoostActive = true;
+        window.gameState.speedBoostTimer = 6000;
 
-    // Set up all power-up states
-    window.gameState.mushroomPowerupActive = false;
-    window.gameState.speedBoostActive = false;
-    window.gameState.timeSlowActive = false;
-    window.gameState.scoreMultiplierActive = false;
+        window.gameState.timeSlowActive = true;
+        window.gameState.timeSlowTimer = 8000;
 
-    // Activate each power-up separately
-    window.gameState.mushroomPowerupActive = true;
-    window.gameState.mushroomTimer = 8000;
+        window.gameState.scoreMultiplierActive = true;
+        window.gameState.scoreMultiplierTimer = 10000;
 
-    window.gameState.speedBoostActive = true;
-    window.gameState.speedBoostTimer = 6000;
+        // Verify all power-ups activated independently
+        expect(window.gameState.mushroomPowerupActive).toBe(true);
+        expect(window.gameState.speedBoostActive).toBe(true);
+        expect(window.gameState.timeSlowActive).toBe(true);
+        expect(window.gameState.scoreMultiplierActive).toBe(true);
 
-    window.gameState.timeSlowActive = true;
-    window.gameState.timeSlowTimer = 8000;
-
-    window.gameState.scoreMultiplierActive = true;
-    window.gameState.scoreMultiplierTimer = 10000;
-
-    // Verify all power-ups activated independently
-    expect(window.gameState.mushroomPowerupActive).toBe(true);
-    expect(window.gameState.speedBoostActive).toBe(true);
-    expect(window.gameState.timeSlowActive).toBe(true);
-    expect(window.gameState.scoreMultiplierActive).toBe(true);
-
-    // Verify each has correct timer
-    expect(window.gameState.mushroomTimer).toBe(8000);
-    expect(window.gameState.speedBoostTimer).toBe(6000);
-    expect(window.gameState.timeSlowTimer).toBe(8000);
-    expect(window.gameState.scoreMultiplierTimer).toBe(10000);
-});
-
+        // Verify each has correct timer
+        expect(window.gameState.mushroomTimer).toBe(8000);
+        expect(window.gameState.speedBoostTimer).toBe(6000);
+        expect(window.gameState.timeSlowTimer).toBe(8000);
+        expect(window.gameState.scoreMultiplierTimer).toBe(10000);
+    });
 });
