@@ -1083,6 +1083,7 @@ function drawGame() {
 function gameOver() {
     gameState.gameRunning = false;
     clearInterval(gameState.gameInterval);
+    gameState.gameInterval = null;
     finalScoreDisplay.innerText = `Score: ${gameState.score}`;
 
     // Display overlay first to ensure visibility
