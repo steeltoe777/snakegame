@@ -768,127 +768,127 @@ function update() {
             gameState.gameInterval = setInterval(update, calculateGameSpeed());
             break;
         }
+    }
 
-        // Check for mushroom eating
-        for (let i = 0; i < gameState.mushrooms.length; i++) {
-            if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
-                gameState.mushrooms.splice(i, 1);
-                atePellet = true;
-                // Activate mushroom powerup for 8 seconds and make snake grow
-                gameState.mushroomPowerupActive = true;
-                gameState.mushroomTimer = 8000;
-                gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
-                break;
-            }
-        }
-
-        // Check for lightning bolt eating
-        for (let i = 0; i < gameState.lightningBolts.length; i++) {
-            if (
-                head.x === gameState.lightningBolts[i].x &&
-                head.y === gameState.lightningBolts[i].y
-            ) {
-                gameState.lightningBolts.splice(i, 1);
-                atePellet = true;
-                // Activate speed boost powerup for 6 seconds
-                gameState.speedBoostActive = true;
-                // Immediately update game speed for instant boost effect
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
-                gameState.speedBoostTimer = 6000;
-                gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
-                break;
-            }
-        }
-
-        // Check for hourglass eating
-        for (let i = 0; i < gameState.hourglasses.length; i++) {
-            if (head.x === gameState.hourglasses[i].x && head.y === gameState.hourglasses[i].y) {
-                gameState.hourglasses.splice(i, 1);
-
-                // Activate time slow powerup for 8 seconds
-                gameState.timeSlowActive = true;
-                gameState.timeSlowTimer = 8000;
-                gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
-
-                // Immediately update game speed for instant slow effect
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
-                break;
-            }
-        }
-        // Check for star eating
-        for (let i = 0; i < gameState.stars.length; i++) {
-            if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
-                gameState.stars.splice(i, 1);
-                atePellet = true;
-                // Activate score multiplier powerup for 10 seconds
-                gameState.scoreMultiplierActive = true;
-                gameState.scoreMultiplierTimer = 10000;
-                gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
-                break;
-            }
-        }
-
-        // Update mushroom timer if powerup is active
-        if (gameState.mushroomPowerupActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.mushroomLastUpdate;
-
-            // Decrement timer by actual elapsed time
-            gameState.mushroomTimer -= deltaTime;
-            gameState.mushroomLastUpdate = currentTime;
-            if (gameState.mushroomTimer <= 0) {
-                gameState.mushroomPowerupActive = false;
-                gameState.mushroomTimer = 0;
-            }
-        }
-        // Update speed boost timer if powerup is active
-        if (gameState.speedBoostActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.speedBoostLastUpdate;
-
-            // Decrement timer by actual elapsed time
-            gameState.speedBoostTimer -= deltaTime;
-            gameState.speedBoostLastUpdate = currentTime;
-            if (gameState.speedBoostTimer <= 0) {
-                gameState.speedBoostActive = false;
-                gameState.speedBoostTimer = 0;
-            }
-        }
-
-        // Update time slow timer if powerup is active
-        if (gameState.timeSlowActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.timeSlowLastUpdate;
-
-            // Decrement timer by actual elapsed time
-            gameState.timeSlowTimer -= deltaTime;
-            gameState.timeSlowLastUpdate = currentTime;
-            if (gameState.timeSlowTimer <= 0) {
-                gameState.timeSlowActive = false;
-                gameState.timeSlowTimer = 0;
-
-                // Update game speed when time slow ends
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
-            }
-        }
-        // Update score multiplier timer if powerup is active
-        if (gameState.scoreMultiplierActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.scoreMultiplierLastUpdate;
-
-            // Decrement timer by actual elapsed time
-            gameState.scoreMultiplierTimer -= deltaTime;
-            gameState.scoreMultiplierLastUpdate = currentTime;
-            if (gameState.scoreMultiplierTimer <= 0) {
-                gameState.scoreMultiplierActive = false;
-                gameState.scoreMultiplierTimer = 0;
-            }
+    // Check for mushroom eating
+    for (let i = 0; i < gameState.mushrooms.length; i++) {
+        if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
+            gameState.mushrooms.splice(i, 1);
+            atePellet = true;
+            // Activate mushroom powerup for 8 seconds and make snake grow
+            gameState.mushroomPowerupActive = true;
+            gameState.mushroomTimer = 8000;
+            gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
+            break;
         }
     }
 
+    // Check for lightning bolt eating
+    for (let i = 0; i < gameState.lightningBolts.length; i++) {
+        if (
+            head.x === gameState.lightningBolts[i].x &&
+            head.y === gameState.lightningBolts[i].y
+        ) {
+            gameState.lightningBolts.splice(i, 1);
+            atePellet = true;
+            // Activate speed boost powerup for 6 seconds
+            gameState.speedBoostActive = true;
+            // Immediately update game speed for instant boost effect
+            clearInterval(gameState.gameInterval);
+            gameState.gameInterval = setInterval(update, calculateGameSpeed());
+            gameState.speedBoostTimer = 6000;
+            gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
+            break;
+        }
+    }
+
+    // Check for hourglass eating
+    for (let i = 0; i < gameState.hourglasses.length; i++) {
+        if (head.x === gameState.hourglasses[i].x && head.y === gameState.hourglasses[i].y) {
+            gameState.hourglasses.splice(i, 1);
+
+            // Activate time slow powerup for 8 seconds
+            gameState.timeSlowActive = true;
+            gameState.timeSlowTimer = 8000;
+            gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
+
+            // Immediately update game speed for instant slow effect
+            clearInterval(gameState.gameInterval);
+            gameState.gameInterval = setInterval(update, calculateGameSpeed());
+            break;
+        }
+    }
+
+    // Check for star eating
+    for (let i = 0; i < gameState.stars.length; i++) {
+        if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
+            gameState.stars.splice(i, 1);
+            atePellet = true;
+            // Activate score multiplier powerup for 10 seconds
+            gameState.scoreMultiplierActive = true;
+            gameState.scoreMultiplierTimer = 10000;
+            gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
+            break;
+        }
+    }
+
+    // Update mushroom timer if powerup is active
+    if (gameState.mushroomPowerupActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.mushroomLastUpdate;
+
+        // Decrement timer by actual elapsed time
+        gameState.mushroomTimer -= deltaTime;
+        gameState.mushroomLastUpdate = currentTime;
+        if (gameState.mushroomTimer <= 0) {
+            gameState.mushroomPowerupActive = false;
+            gameState.mushroomTimer = 0;
+        }
+    }
+    // Update speed boost timer if powerup is active
+    if (gameState.speedBoostActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.speedBoostLastUpdate;
+
+        // Decrement timer by actual elapsed time
+        gameState.speedBoostTimer -= deltaTime;
+        gameState.speedBoostLastUpdate = currentTime;
+        if (gameState.speedBoostTimer <= 0) {
+            gameState.speedBoostActive = false;
+            gameState.speedBoostTimer = 0;
+        }
+    }
+
+    // Update time slow timer if powerup is active
+    if (gameState.timeSlowActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.timeSlowLastUpdate;
+
+        // Decrement timer by actual elapsed time
+        gameState.timeSlowTimer -= deltaTime;
+        gameState.timeSlowLastUpdate = currentTime;
+        if (gameState.timeSlowTimer <= 0) {
+            gameState.timeSlowActive = false;
+            gameState.timeSlowTimer = 0;
+
+            // Update game speed when time slow ends
+            clearInterval(gameState.gameInterval);
+            gameState.gameInterval = setInterval(update, calculateGameSpeed());
+        }
+    }
+    // Update score multiplier timer if powerup is active
+    if (gameState.scoreMultiplierActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.scoreMultiplierLastUpdate;
+
+        // Decrement timer by actual elapsed time
+        gameState.scoreMultiplierTimer -= deltaTime;
+        gameState.scoreMultiplierLastUpdate = currentTime;
+        if (gameState.scoreMultiplierTimer <= 0) {
+            gameState.scoreMultiplierActive = false;
+            gameState.scoreMultiplierTimer = 0;
+        }
+    }
     if (!atePellet) {
         gameState.snake.pop(); // Only remove tail if no pellet was eaten
     }
