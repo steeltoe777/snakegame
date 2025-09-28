@@ -852,6 +852,24 @@ function update() {
         if (gameState.mushroomTimer <= 0) {
             gameState.mushroomPowerupActive = false;
             gameState.mushroomTimer = 0;
+            // Check if snake head is now inside a wall after power-up ends
+            const head = gameState.snake[0];
+            // Check outer wall collision
+            if (
+                gameState.level < 1000 &&
+                (head.x < 0 ||
+                    head.x >= gameState.tileCount ||
+                    head.y < 0 ||
+                    head.y >= gameState.tileCount)
+            ) {
+                gameOver();
+                return;
+            }
+            // Check maze wall collision
+            if (gameState.maze[head.y] && gameState.maze[head.y][head.x] === 1) {
+                gameOver();
+                return;
+            }
         }
     }
     // Update speed boost timer if powerup is active

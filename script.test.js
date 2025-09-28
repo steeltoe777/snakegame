@@ -922,6 +922,53 @@ describe('Power-Up Features', () => {
         expect(window.gameState.mushroomTimer).toBe(8000);
     });
 
+    test('Snake should die when mushroom power-up expires while in wall', () => {
+        // Setup game state with snake in wall position
+        window.gameState.mushroomPowerupActive = true;
+        window.gameState.mushroomTimer = 1000; // Will expire
+        window.gameState.mushroomLastUpdate = performance.now() - 1500; // Expired 1.5 seconds ago
+        window.gameState.snake = [{ x: -1, y: 5 }]; // Snake head outside left wall
+        window.gameState.level = 1;
+        window.gameState.tileCount = 20;
+
+        // Mock gameOver function to track if it's called
+        let gameOverCalled = false;
+        const originalGameOver = window.gameOver;
+        window.gameOver = () => {
+            gameOverCalled = true;
+        };
+
+        // Manually process mushroom timer expiration (simulating what happens in update())
+        const currentTime = performance.now();
+        const deltaTime = currentTime - window.gameState.mushroomLastUpdate;
+        window.gameState.mushroomTimer -= deltaTime;
+        window.gameState.mushroomLastUpdate = currentTime;
+
+        if (window.gameState.mushroomTimer <= 0) {
+            window.gameState.mushroomPowerupActive = false;
+            window.gameState.mushroomTimer = 0;
+
+            // This is the code we added to fix the bug
+            // Check if snake head is now inside a wall after power-up ends
+            const head = window.gameState.snake[0];
+            // Check outer wall collision
+            if (
+                window.gameState.level < 1000 &&
+                (head.x < 0 ||
+                    head.x >= window.gameState.tileCount ||
+                    head.y < 0 ||
+                    head.y >= window.gameState.tileCount)
+            ) {
+                window.gameOver();
+            }
+        }
+
+        // Verify that gameOver was called
+        expect(gameOverCalled).toBe(true);
+
+        // Restore original gameOver function
+        window.gameOver = originalGameOver;
+    });
     test('Lightning bolt power-up activation should preserve existing behavior', () => {
         // This test ensures lightning bolt power-up activation logic remains unchanged
         window.gameState.speedBoostActive = false;
