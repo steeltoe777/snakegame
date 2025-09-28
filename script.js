@@ -746,7 +746,7 @@ function update() {
                     default:
                         break;
                 }
-                gameState.snake.pop(); // Only remove tail if no pellet was eaten
+                gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
             }
             drawGame();
             return;
@@ -768,14 +768,15 @@ function update() {
     gameState.snake.unshift(head);
 
     // Check for pellet eating
-    let atePellet = false;
+    // Check for item collection
+    let shouldGrow = false;  // Only pellets and mushrooms cause growth
     for (let i = 0; i < gameState.pellets.length; i++) {
         if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
             gameState.pellets.splice(i, 1);
             const points = gameState.scoreMultiplierActive ? 20 : 10;
             gameState.score += points;
             document.getElementById('score').innerText = `Score: ${gameState.score}`;
-            atePellet = true;
+            shouldGrow = true;
             // Update game speed based on increased snake length
             clearInterval(gameState.gameInterval);
             gameState.gameInterval = setInterval(update, calculateGameSpeed());
@@ -787,7 +788,7 @@ function update() {
     for (let i = 0; i < gameState.mushrooms.length; i++) {
         if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
             gameState.mushrooms.splice(i, 1);
-            atePellet = true;
+            shouldGrow = true;
             // Activate mushroom powerup for 8 seconds and make snake grow
             gameState.mushroomPowerupActive = true;
             gameState.mushroomTimer = 8000;
@@ -800,7 +801,6 @@ function update() {
     for (let i = 0; i < gameState.lightningBolts.length; i++) {
         if (head.x === gameState.lightningBolts[i].x && head.y === gameState.lightningBolts[i].y) {
             gameState.lightningBolts.splice(i, 1);
-            atePellet = true;
             // Activate speed boost powerup for 6 seconds
             gameState.speedBoostActive = true;
             // Immediately update game speed for instant boost effect
@@ -833,7 +833,6 @@ function update() {
     for (let i = 0; i < gameState.stars.length; i++) {
         if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
             gameState.stars.splice(i, 1);
-            atePellet = true;
             // Activate score multiplier powerup for 10 seconds
             gameState.scoreMultiplierActive = true;
             gameState.scoreMultiplierTimer = 10000;
@@ -899,8 +898,8 @@ function update() {
             gameState.scoreMultiplierTimer = 0;
         }
     }
-    if (!atePellet) {
-        gameState.snake.pop(); // Only remove tail if no pellet was eaten
+    if (!shouldGrow) {
+        gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
     }
 
     if (gameState.pellets.length === 0) {
