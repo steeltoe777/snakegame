@@ -1318,12 +1318,18 @@ function calculateGameSpeed() {
 
     return Math.max(speed, maxSpeed);
 }
-
 function startGame() {
+    // FIX: Clear any existing game interval before starting a new one
+    if (gameState.gameInterval) {
+        clearInterval(gameState.gameInterval);
+        gameState.gameInterval = null; // Clear the interval ID
+    }
     if (gameState.gameRunning) return;
     gameState.gameRunning = true;
     gameState.gameInterval = setInterval(update, calculateGameSpeed()); // Dynamic speed based on snake length
 }
+
+
 
 // Initial setup
 resetGame(); // Re-add this line
