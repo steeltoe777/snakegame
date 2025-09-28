@@ -1330,8 +1330,6 @@ function startGame() {
     gameState.gameInterval = setInterval(update, calculateGameSpeed()); // Dynamic speed based on snake length
 }
 
-
-
 // Initial setup
 resetGame(); // Re-add this line
 

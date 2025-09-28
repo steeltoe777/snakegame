@@ -149,18 +149,21 @@ Unlike traditional snake food, this game features strategic pellet collection re
 The game features multiple power-up types that provide temporary benefits, encouraging strategic gameplay decisions:
 
 1. **🍄 Mushroom Power-Up**
+
     - **Effect**: Temporary invincibility against wall collisions
     - **Duration**: 8 seconds
     - **Visual**: Red mushroom
     - **Special**: Also causes snake to grow when collected
 
 2. **⚡ Lightning Bolt Power-Up**
+
     - **Effect**: Temporary speed boost
     - **Duration**: 6 seconds
     - **Visual**: Yellow lightning bolt
     - **Strength**: Increases movement speed by 50%
 
 3. **⏳ Hourglass Power-Up**
+
     - **Effect**: Temporary time slow for precision movement
     - **Duration**: 8 seconds
     - **Visual**: Purple hourglass
