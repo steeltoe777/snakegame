@@ -1231,6 +1231,7 @@ function handleDirectionChange(e) {
     ) {
         // If game over overlay is visible, we're in true game over state
         // In this state, ignore arrow keys to prevent accidental restart
+        // This prevents the bug where arrow keys restart the game during game over state
         if (!gameOverOverlay.classList.contains('hidden')) {
             return;
         }
