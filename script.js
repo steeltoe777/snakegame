@@ -363,9 +363,22 @@ function handlePasswordKey(e) {
     }
 }
 
-// Listen for password key presses
-document.addEventListener('keydown', handlePasswordKey);
+// Listen for password key presses - managed centrally to prevent accumulation
+// Centralized event listener management
+function manageEventListeners(action) {
+    if (action === 'add') {
+        document.addEventListener('keydown', handlePasswordKey);
+        document.addEventListener('keydown', handleDirectionChange);
+    } else if (action === 'remove') {
+        document.removeEventListener('keydown', handlePasswordKey);
+        document.removeEventListener('keydown', handleDirectionChange);
+    }
+}
 
+// Initial event listener setup
+manageEventListeners('add');
+
+// DOM elements for game over overlay
 // DOM elements for game over overlay
 const gameOverOverlay = document.getElementById('gameOverOverlay');
 const finalScoreDisplay = document.getElementById('finalScore');
@@ -785,10 +798,7 @@ function update() {
 
     // Check for lightning bolt eating
     for (let i = 0; i < gameState.lightningBolts.length; i++) {
-        if (
-            head.x === gameState.lightningBolts[i].x &&
-            head.y === gameState.lightningBolts[i].y
-        ) {
+        if (head.x === gameState.lightningBolts[i].x && head.y === gameState.lightningBolts[i].y) {
             gameState.lightningBolts.splice(i, 1);
             atePellet = true;
             // Activate speed boost powerup for 6 seconds
@@ -1194,9 +1204,10 @@ function resetGame() {
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
 
     // Re-enable keyboard controls
-    document.removeEventListener('keydown', handleDirectionChange);
-    document.addEventListener('keydown', handleDirectionChange);
     updatePasswordDisplay();
+    // Manage event listeners centrally
+    manageEventListeners('remove');
+    manageEventListeners('add');
 }
 
 function handleDirectionChange(e) {
@@ -1271,8 +1282,6 @@ function handleDirectionChange(e) {
             break;
     }
 }
-
-document.addEventListener('keydown', handleDirectionChange);
 
 restartButton.addEventListener('click', resetGame);
 
