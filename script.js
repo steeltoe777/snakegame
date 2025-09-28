@@ -1314,14 +1314,16 @@ function calculateGameSpeed() {
         maxSpeed = baseSpeed + 20; // 120ms interval minimum
     }
 
-    // Apply speed boost if active
-    if (gameState.speedBoostActive) {
+    // Apply speed modifiers
+    // When both speed boost and time slow are active, they should cancel each other out
+    if (gameState.speedBoostActive && gameState.timeSlowActive) {
+        // Both active - no speed modifier applied (normal speed)
+    } else if (gameState.speedBoostActive) {
+        // Only speed boost active
         speed *= 0.75;
         maxSpeed *= 0.75;
-    }
-
-    // Apply time slow if active
-    if (gameState.timeSlowActive) {
+    } else if (gameState.timeSlowActive) {
+        // Only time slow active
         speed *= 1.25;
         maxSpeed *= 1.25;
     }

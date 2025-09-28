@@ -99,3 +99,10 @@ These features have specs but are NOT currently implemented in the codebase:
 2. The hourglass feature appears to be the same as the time slow feature
 3. The rainbow trail enhancement was recently added and properly documented with a separate spec
 4. All implemented features have corresponding drawing functions in the codebase
+
+## Bug Fixes
+
+### Power-Up Interaction Bug
+- **Status**: Fixed
+- **Date**: 2025-09-28
+- **Details**: See docs/bugfixes/powerup_interaction_fix.md
