@@ -753,7 +753,7 @@ describe('Power-Up Features', () => {
         window.gameState.snake = [{ x: 5, y: 5 }];
         window.gameState.mushrooms = [{ x: 5, y: 5 }]; // Mushroom at same position as snake head
 
-        // Simulate item collection by directly setting atePellet to true
+        // Simulate item collection by directly setting shouldGrow to true
         // (since the actual collision detection is in the update function)
         let shouldGrow = false; // This is what our fix uses
 
@@ -781,7 +781,7 @@ describe('Power-Up Features', () => {
         window.gameState.snake = [{ x: 3, y: 3 }];
         window.gameState.lightningBolts = [{ x: 3, y: 3 }]; // Lightning bolt at same position as snake head
 
-        // Simulate item collection without setting atePellet to true
+        // Simulate item collection without setting shouldGrow to true
         const shouldGrow = false; // This is what our fix uses
 
         // Process lightning bolt collection
@@ -808,7 +808,7 @@ describe('Power-Up Features', () => {
         window.gameState.snake = [{ x: 7, y: 7 }];
         window.gameState.hourglasses = [{ x: 7, y: 7 }]; // Hourglass at same position as snake head
 
-        // Simulate item collection without setting atePellet to true
+        // Simulate item collection without setting shouldGrow to true
         const shouldGrow = false; // This is what our fix uses
 
         // Process hourglass collection
@@ -835,7 +835,7 @@ describe('Power-Up Features', () => {
         window.gameState.snake = [{ x: 9, y: 9 }];
         window.gameState.stars = [{ x: 9, y: 9 }]; // Star at same position as snake head
 
-        // Simulate item collection without setting atePellet to true
+        // Simulate item collection without setting shouldGrow to true
         const shouldGrow = false; // This is what our fix uses
 
         // Process star collection
