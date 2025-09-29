@@ -1139,8 +1139,8 @@ function gameOver() {
         gameState.stars = [];
         // Reset all powerup timers and active states
         gameState.mushroomPowerupActive = false;
-        gameState.speedBoostActive = false;     // ADDED: Reset speed boost state on respawn
-        gameState.timeSlowActive = false;        // ADDED: Reset time slow state on respawn
+        gameState.speedBoostActive = false; // ADDED: Reset speed boost state on respawn
+        gameState.timeSlowActive = false; // ADDED: Reset time slow state on respawn
         gameState.scoreMultiplierActive = false; // ADDED: Reset score multiplier state on respawn
         gameState.mushroomTimer = 0;
         gameState.speedBoostTimer = 0;

@@ -1,6 +1,6 @@
 # 📋 Feature Implementation Status Summary
 
-**Last Updated**: 2025-09-22 00:43:00
+**Last Updated**: 2025-09-29 22:30:26
 **Document Version**: 1.0
 
 This document provides a clear overview of which features have been implemented in the codebase versus which specs exist but are not implemented.
@@ -36,10 +36,18 @@ These features are currently implemented and functional in the game:
 5. **Minimap Navigation System** - Real-time minimap showing snake position and items ([spec](./specs/minimap-spec.md))
 
 6. **Pause/Resume Functionality**
+
     - Allows players to pause and resume the game using the 'P' key
     - Displays a visual indicator when the game is paused
     - Spec file: `pause-resume-spec.md`
     - Implementation: Yes (2025-09-21)
+
+7. **Power-Up Growth Bugfix**
+
+    - Fixed unintended snake growth when collecting hourglass, star, and lightning bolt power-ups
+    - Only mushrooms and pellets now correctly cause snake growth
+    - Spec file: `bugfixes/powerup_growth_fix.md`
+    - Implementation: Yes (2025-09-29)
 
 ## ❌ Non-Implemented Features
 
@@ -89,7 +97,7 @@ These features have specs but are NOT currently implemented in the codebase:
 ## 📊 Statistics
 
 - **Total Specs**: 15
-- **Implemented**: 7 (47%)
+- **Implemented**: 8 (53%)
 - **Not Implemented**: 6 (40%)
 - **Partially Implemented/Abandoned**: 2 (13%)
 

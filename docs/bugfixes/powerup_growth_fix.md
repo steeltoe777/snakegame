@@ -7,7 +7,7 @@ This was unintended behavior as only the mushroom power-up should cause the snak
 
 ## Root Cause
 
-In the `update()` function, all power-up collection routines were setting `atePellet = true`, which prevented
+In the `update()` function, all power-up collection routines were setting `shouldGrow = true`, which prevented
 the snake's tail from being removed, causing unintended growth. This flag was originally intended only for
 pellets and mushrooms.
 

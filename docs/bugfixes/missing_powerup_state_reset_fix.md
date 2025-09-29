@@ -28,8 +28,8 @@ Added the missing power-up state resets in the `gameOver()` function:
 ```javascript
 // Reset all powerup timers and active states
 gameState.mushroomPowerupActive = false;
-gameState.speedBoostActive = false;     // ADDED
-gameState.timeSlowActive = false;        // ADDED
+gameState.speedBoostActive = false; // ADDED
+gameState.timeSlowActive = false; // ADDED
 gameState.scoreMultiplierActive = false; // ADDED
 gameState.mushroomTimer = 0;
 gameState.speedBoostTimer = 0;
