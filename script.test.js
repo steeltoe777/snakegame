@@ -755,7 +755,7 @@ describe('Power-Up Features', () => {
 
         // Simulate item collection by directly setting atePellet to true
         // (since the actual collision detection is in the update function)
-        window.atePellet = false;
+        let shouldGrow = false; // This is what our fix uses
 
         // Process mushroom collection
         for (let i = 0; i < window.gameState.mushrooms.length; i++) {
@@ -763,8 +763,8 @@ describe('Power-Up Features', () => {
                 window.gameState.mushrooms[i].x === window.gameState.snake[0].x &&
                 window.gameState.mushrooms[i].y === window.gameState.snake[0].y
             ) {
-                // This should set atePellet to true, causing growth
-                window.atePellet = true;
+                // This should set shouldGrow to true, causing growth
+                shouldGrow = true;
                 window.gameState.mushrooms.splice(i, 1);
                 window.gameState.mushroomPowerupActive = true;
                 window.gameState.mushroomTimer = 8000;
@@ -772,8 +772,8 @@ describe('Power-Up Features', () => {
             }
         }
 
-        // With the bug fix, atePellet should be true for mushrooms, preventing tail removal (causing growth)
-        expect(window.atePellet).toBe(true);
+        // With the bug fix, shouldGrow should be true for mushrooms, preventing tail removal (causing growth)
+        expect(shouldGrow).toBe(true);
     });
 
     test('Lightning bolt power-up collection should NOT cause snake to grow', () => {

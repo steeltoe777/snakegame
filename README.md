@@ -26,6 +26,7 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 ## 🎮 **Enhanced Power-Up System**
 
 - **🍄 Mushroom Power-Up**: Temporary invincibility against walls (8 seconds)
+  - The mushroom power-up sets shouldGrow to true, preventing tail removal and causing growth.
 - **⚡ Lightning Bolt Power-Up**: Temporary speed boost for quick navigation (6 seconds)
 - **⏳ Hourglass Power-Up**: Temporary time slow for precision movement (8 seconds)
 - **⭐ Golden Star Power-Up**: Temporary score multiplier for point optimization (10 seconds)
@@ -38,8 +39,7 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 
 ### **🔐 Password-Based Level Progression**
 
-- **Secret Password System**: Discover passwords as you progress
-- **Strategic Usage**: Use discovered passwords to access specific levels
+The mushroom power-up sets shouldGrow to true, preventing tail removal and causing growth.
 - **Display Schedule**: Passwords revealed at strategic intervals
 - **Real-time Input**: Type passwords anytime during gameplay
 
