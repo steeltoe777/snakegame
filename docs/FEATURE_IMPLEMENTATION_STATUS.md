@@ -106,4 +106,10 @@ These features have specs but are NOT currently implemented in the codebase:
 
 - **Status**: Fixed
 - **Date**: 2025-09-28
+
+### Missing Power-Up State Reset on Respawn
+
+- **Status**: Fixed
+- **Details**: See docs/bugfixes/missing_powerup_state_reset_fix.md
+
 - **Details**: See docs/bugfixes/powerup_interaction_fix.md
