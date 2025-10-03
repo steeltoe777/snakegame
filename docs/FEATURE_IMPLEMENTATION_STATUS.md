@@ -43,7 +43,6 @@ These features are currently implemented and functional in the game:
     - Implementation: Yes (2025-09-21)
 
 7. **Power-Up Growth Bugfix**
-
     - Fixed unintended snake growth when collecting hourglass, star, and lightning bolt power-ups
     - Only mushrooms and pellets now correctly cause snake growth
     - Spec file: `bugfixes/powerup_growth_fix.md`
