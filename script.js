@@ -1,3 +1,22 @@
+// Named constants for magic numbers
+const GRID_SIZE = 20;
+const BASE_SPEED = 100; // Base movement speed in ms
+// Probability constants for power-up spawning
+
+// Timing constants for power-ups in milliseconds
+const MUSHROOM_POWERUP_DURATION = 8000;
+const SPEED_BOOST_DURATION = 6000;
+const SCORE_MULTIPLIER_DURATION = 10000;
+
+// Speed modifiers
+
+// Position bias constants
+
+// Password system constants
+const PASSWORD_LENGTH = 6;
+
+// Visual effect constants
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -10,8 +29,8 @@ window.minimapCtx = window.minimapCanvas ? window.minimapCanvas.getContext('2d')
 // Helper function to convert HSL to RGB
 function hslToRgb(h, s, l) {
     h /= 360;
-    s /= 100;
-    l /= 100;
+    s /= BASE_SPEED;
+    l /= BASE_SPEED;
     let r;
     let g;
     let b;
@@ -24,7 +43,7 @@ function hslToRgb(h, s, l) {
         const hue2rgb = (p, q, t) => {
             if (t < 0) t += 1;
             if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / PASSWORD_LENGTH) return p + (q - p) * PASSWORD_LENGTH * t;
             if (t < 1 / 2) return q;
             if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
             return p;
@@ -159,7 +178,7 @@ function spawnRandomMushroom() {
 function getRandomPosition() {
     const tileCount = gameState.tileCount || 20;
     let attempts = 0;
-    const maxAttempts = 100; // Prevent infinite loops
+    const maxAttempts = BASE_SPEED; // Prevent infinite loops
 
     while (attempts < maxAttempts) {
         let x;
@@ -219,9 +238,9 @@ function getRandomPosition() {
     return { x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) };
 }
 const gameState = {
-    gridSize: 20, // Define gridSize here
+    gridSize: GRID_SIZE, // Define gridSize here
     tileCount: 0, // Will be calculated in resetGame/levelUp based on canvas dimensions
-    baseSpeed: 100, // Base movement speed in ms
+    baseSpeed: BASE_SPEED, // Base movement speed in ms
     snake: [{ x: 10, y: 10 }],
     dxPrev: 0,
     dyPrev: 0,
@@ -258,7 +277,7 @@ const gameState = {
 // Password system for level progression
 const passwordSystem = {
     keySequence: [],
-    maxSequenceLength: 20,
+    maxSequenceLength: GRID_SIZE,
 
     // Generate deterministic password based on level
     generatePassword(level) {
@@ -267,7 +286,7 @@ const passwordSystem = {
         let seed = level;
 
         // Deterministic pseudo-random generation
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < PASSWORD_LENGTH; i++) {
             seed = (seed * 9301 + 49297) % 233280;
             const index = Math.floor((seed / 233280) * chars.length);
             password += chars[index];
@@ -390,7 +409,7 @@ function calculateTileCount() {
     } else {
         // Fallback for environments where canvas might not be fully ready (e.g., initial load in JSDOM)
         // This value should ideally be set by the test environment or after DOMContentLoaded
-        gameState.tileCount = 20; // Default to 20 if canvas dimensions are not available
+        gameState.tileCount = GRID_SIZE; // Default to GRID_SIZE if canvas dimensions are not available
     }
 }
 
@@ -414,7 +433,7 @@ function generateMaze() {
     if (gameState.level >= 4) {
         let numInternalWalls = Math.min(10, gameState.level - 3); // More walls for higher levels, max 10
         if (gameState.level >= 500) {
-            numInternalWalls += Math.min(15, (gameState.level - 500) / 20); // More walls for higher levels, max 15
+            numInternalWalls += Math.min(15, (gameState.level - 500) / GRID_SIZE); // More walls for higher levels, max 15
         }
         if (gameState.level >= 1500) {
             numInternalWalls += Math.min(15, (gameState.level - 1500) / 1000); // More walls for higher levels, max 15
@@ -426,7 +445,7 @@ function generateMaze() {
         for (let k = 0; k < numInternalWalls; k++) {
             let placed = false;
             let attempts = 0;
-            while (!placed && attempts < 100) {
+            while (!placed && attempts < BASE_SPEED) {
                 // Limit attempts to prevent infinite loops
                 const wallX = Math.floor(Math.random() * (gameState.tileCount - 2)) + 1; // Avoid outer walls
                 const wallY = Math.floor(Math.random() * (gameState.tileCount - 2)) + 1;
@@ -489,8 +508,8 @@ function generatePellets() {
     if (gameState.level >= 10) {
         maxPelletsForLevel += ((Math.min(gameState.level - 10, 10) - 1) * pelletsPerLevel) / 2.0;
     }
-    if (gameState.level >= 20) {
-        maxPelletsForLevel += ((Math.min(gameState.level - 20, 480) - 1) * pelletsPerLevel) / 10.0;
+    if (gameState.level >= GRID_SIZE) {
+        maxPelletsForLevel += ((Math.min(gameState.level - GRID_SIZE, 480) - 1) * pelletsPerLevel) / 10.0;
     }
 
     const availableTiles = [];
@@ -608,7 +627,7 @@ function drawSnake() {
 
             // Add eye indicator based on direction
             ctx.fillStyle = 'white';
-            const eyeSize = Math.max(2, gameState.gridSize / 6);
+            const eyeSize = Math.max(2, gameState.gridSize / PASSWORD_LENGTH);
             let eyeX = segment.x * gameState.gridSize + gameState.gridSize / 2;
             let eyeY = segment.y * gameState.gridSize + gameState.gridSize / 2;
 
@@ -649,7 +668,7 @@ function drawTrail() {
         gameState.trail.forEach((segment, index) => {
             // Calculate hue for this segment based on its position and time
             const hue = (gameState.rainbowHue + index * 3) % 360;
-            const [r, g, b] = hslToRgb(Math.floor(hue), 100, 50);
+            const [r, g, b] = hslToRgb(Math.floor(hue), BASE_SPEED, 50);
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
 
             ctx.fillRect(
@@ -773,7 +792,7 @@ function update() {
     for (let i = 0; i < gameState.pellets.length; i++) {
         if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
             gameState.pellets.splice(i, 1);
-            const points = gameState.scoreMultiplierActive ? 20 : 10;
+            const points = gameState.scoreMultiplierActive ? GRID_SIZE : 10;
             gameState.score += points;
             document.getElementById('score').innerText = `Score: ${gameState.score}`;
             shouldGrow = true;
@@ -791,7 +810,7 @@ function update() {
             shouldGrow = true;
             // Activate mushroom powerup for 8 seconds and make snake grow
             gameState.mushroomPowerupActive = true;
-            gameState.mushroomTimer = 8000;
+            gameState.mushroomTimer = MUSHROOM_POWERUP_DURATION;
             gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
             break;
         }
@@ -801,12 +820,12 @@ function update() {
     for (let i = 0; i < gameState.lightningBolts.length; i++) {
         if (head.x === gameState.lightningBolts[i].x && head.y === gameState.lightningBolts[i].y) {
             gameState.lightningBolts.splice(i, 1);
-            // Activate speed boost powerup for 6 seconds
+            // Activate speed boost powerup for PASSWORD_LENGTH seconds
             gameState.speedBoostActive = true;
             // Immediately update game speed for instant boost effect
             clearInterval(gameState.gameInterval);
             gameState.gameInterval = setInterval(update, calculateGameSpeed());
-            gameState.speedBoostTimer = 6000;
+            gameState.speedBoostTimer = SPEED_BOOST_DURATION;
             gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
             break;
         }
@@ -819,7 +838,7 @@ function update() {
 
             // Activate time slow powerup for 8 seconds
             gameState.timeSlowActive = true;
-            gameState.timeSlowTimer = 8000;
+            gameState.timeSlowTimer = MUSHROOM_POWERUP_DURATION;
             gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
 
             // Immediately update game speed for instant slow effect
@@ -835,7 +854,7 @@ function update() {
             gameState.stars.splice(i, 1);
             // Activate score multiplier powerup for 10 seconds
             gameState.scoreMultiplierActive = true;
-            gameState.scoreMultiplierTimer = 10000;
+            gameState.scoreMultiplierTimer = SCORE_MULTIPLIER_DURATION;
             gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
             break;
         }
@@ -951,7 +970,7 @@ function drawGame() {
     if (gameState.mushroomPowerupActive) {
         ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
         ctx.font = '12px Arial';
-        ctx.fillText('MUSHROOM POWER!', 10, 20);
+        ctx.fillText('MUSHROOM POWER!', 10, GRID_SIZE);
 
         // Draw timer bar
         const timerWidth = (gameState.mushroomTimer / 8000) * 100;
@@ -965,7 +984,7 @@ function drawGame() {
         if (!window.minimapCtx) return;
 
         const ctx = window.minimapCtx;
-        const minimapSize = 100; // Should match CSS
+        const minimapSize = BASE_SPEED; // Should match CSS
         const tileCount = gameState.tileCount || 20;
         const scale = minimapSize / tileCount;
 
@@ -1156,8 +1175,8 @@ function gameOver() {
         initializeSpatialGrid(); // Initialize spatial grid for collision detection
         generatePellets(); // Regenerate pellets for the new (previous) level
         drawGame(); // Draw initial state for the respawned level
-        if (gameState.level >= 100) {
-            // Reset snake direction after death on level 100 and above
+        if (gameState.level >= BASE_SPEED) {
+            // Reset snake direction after death on level BASE_SPEED and above
             gameState.dx = 0;
             gameState.dy = 0;
         } else {
@@ -1320,7 +1339,7 @@ function calculateGameSpeed() {
     // Level-based speed limits - higher levels get slower maximum speeds
     let maxSpeed = baseSpeed;
 
-    if (level >= 20) {
+    if (level >= GRID_SIZE) {
         // Very high levels: slowest speed for careful navigation
         maxSpeed = baseSpeed + 80; // 180ms interval minimum
     } else if (level >= 15) {
