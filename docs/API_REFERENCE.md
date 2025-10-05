@@ -274,7 +274,7 @@ This API reference documents all the major functions in the game. I've included 
 ### Mushroom Powerup Mechanics
 
 - **Duration**: 8 seconds of powerup time
-- **Effects**: Snake can pass through walls, grows when eating mushrooms
+- **Effects**: Snake can pass through walls, grows when eating pellets or mushrooms
 - **Timer**: Uses performance-based timing for accurate countdown
 - **Visual Indicator**: Timer bar shown when powerup is active
 

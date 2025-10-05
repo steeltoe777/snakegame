@@ -3,7 +3,7 @@
 ## Problem
 
 When collecting certain power-ups (hourglass, star, lightning bolt), the snake would grow unintentionally.
-This was unintended behavior as only the mushroom power-up should cause the snake to grow.
+This was unintended behavior as only pellets and mushrooms should cause the snake to grow.
 
 ## Root Cause
 
@@ -34,4 +34,5 @@ ESLint also passes with no errors.
 - Maintains intended behavior for pellets and mushrooms
 - Improves code clarity with better variable names and comments
 - Aligns implementation with documented game design (GAMEPLAY_DESIGN.md explicitly states
-  that only mushrooms cause growth)
+  that only pellets and mushrooms cause growth)
+- Updated README.md to accurately reflect the corrected power-up growth behavior
