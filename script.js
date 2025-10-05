@@ -20,6 +20,10 @@ const PASSWORD_LENGTH = 6;
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Constants for game over mechanics
+const SCORE_REDUCTION_FACTOR = 2;  // Factor by which score is reduced on respawn
+const SNAKE_LENGTH_REDUCTION_FACTOR = 2;  // Factor by which snake length is reduced on respawn
+
 // Minimap initialization - using window object to avoid test issues
 window.minimapCanvas = document.getElementById('minimapCanvas');
 window.minimapCtx = window.minimapCanvas ? window.minimapCanvas.getContext('2d') : null;
@@ -1134,21 +1138,19 @@ function gameOver() {
 
     // Display overlay first to ensure visibility
     gameOverOverlay.classList.remove('hidden');
-    finalScoreDisplay.innerText = `Score: ${gameState.score}`;
 
     // Store level/score before reset
-    const { level, score } = gameState;
 
     // Implement respawn logic
+    const { level, score } = gameState;
     if (level > 1) {
-        clearInterval(gameState.gameInterval); // Clear existing interval
         gameState.gameInterval = null;
         gameState.gameRunning = false; // Ensure game is stopped before respawn
         gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
-        gameState.score = Math.floor(score / 2); // Halve the score
+        gameState.score = Math.floor(score / SCORE_REDUCTION_FACTOR); // Halve the score
         gameState.snake = gameState.snake.slice(
             0,
-            Math.max(1, Math.floor(gameState.snake.length / 2))
+            Math.max(1, Math.floor(gameState.snake.length / SNAKE_LENGTH_REDUCTION_FACTOR))
         ); // Reduce snake length by half, minimum 1 segment
         gameState.trail = []; // Clear trail
         // Clear all powerups when respawning
