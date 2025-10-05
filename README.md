@@ -32,7 +32,6 @@ This is **not** your traditional snake game. It's a sophisticated hybrid that co
 - **⭐ Golden Star Power-Up**: Temporary score multiplier for point optimization (10 seconds)
 - **🐍 Classic Snake** movement and growth mechanics
 - **🟡 Pac-Man** pellet collection and maze navigation
-- **💙 Tron** trail system and visual persistence
 - **🔐 Revolutionary Password System** for level progression
 
 ## 🚀 **Core Gameplay Features**
@@ -70,7 +69,6 @@ Navigate large game boards with ease using the real-time minimap that shows your
 
 ### **💙 Tron-Inspired Trail System**
 
-- **Visual Persistence**: Blue trail shows movement history
 - **Collision Hazard**: Trail segments act as obstacles
 - **Strategic Element**: Navigate your own path history
 
@@ -216,14 +214,11 @@ Every project has its rough edges! Here are some things I'm aware of and plannin
 
 ### **High Priority**
 
-- [ ] **Mobile responsiveness** - Game works but could use better touch controls
 - [ ] **Password input focus** - Sometimes loses focus when typing quickly
 - [ ] **Performance optimization** - Could use requestAnimationFrame instead of setInterval
 
 ### **Nice to Have**
 
-- [ ] **Sound effects** - Would really enhance the gameplay experience
-- [ ] **High score persistence** - Local storage for competitive play
 - [ ] **Level selection menu** - Visual interface for password entry
 - [ ] **Customizable controls** - Let players remap keys
 
