@@ -21,8 +21,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Constants for game over mechanics
-const SCORE_REDUCTION_FACTOR = 2;  // Factor by which score is reduced on respawn
-const SNAKE_LENGTH_REDUCTION_FACTOR = 2;  // Factor by which snake length is reduced on respawn
+const SCORE_REDUCTION_FACTOR = 2; // Factor by which score is reduced on respawn
+const SNAKE_LENGTH_REDUCTION_FACTOR = 2; // Factor by which snake length is reduced on respawn
 
 // Minimap initialization - using window object to avoid test issues
 window.minimapCanvas = document.getElementById('minimapCanvas');
@@ -513,7 +513,8 @@ function generatePellets() {
         maxPelletsForLevel += ((Math.min(gameState.level - 10, 10) - 1) * pelletsPerLevel) / 2.0;
     }
     if (gameState.level >= GRID_SIZE) {
-        maxPelletsForLevel += ((Math.min(gameState.level - GRID_SIZE, 480) - 1) * pelletsPerLevel) / 10.0;
+        maxPelletsForLevel +=
+            ((Math.min(gameState.level - GRID_SIZE, 480) - 1) * pelletsPerLevel) / 10.0;
     }
 
     const availableTiles = [];

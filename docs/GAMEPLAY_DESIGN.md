@@ -417,7 +417,6 @@ window.drawGame(); // Rendering verification
 **Generated**: 2025-08-25 01:51:56  
 **Status**: Complete Implementation Reference
 
-
 ## Game Over Behavior
 
 The game over system works as follows:
@@ -425,12 +424,10 @@ The game over system works as follows:
 1. When the snake collides with itself or a wall, the game over sequence is triggered
 2. On Level 1, collisions result in a complete game over
 3. On Levels 2+, players respawn at the previous level with:
-   - Score reduced by half
-   - Snake length reduced to 3 segments
-   - Power-ups retained
+    - Score reduced by half
+    - Snake length reduced to 3 segments
+    - Power-ups retained
 4. This creates a forgiving progression system that encourages continued play
-
-
 
 ## Password System Behavior
 
@@ -444,23 +441,22 @@ The password system allows players to advance to specific levels:
 
 This system provides a way for players to quickly access higher levels for replaying or skipping to challenging sections.
 
-
-
 ## Power-up Spawn Probabilities
 
 The power-up spawning system has been carefully balanced to provide an engaging gameplay experience:
 
 ### Initial Spawn Rates (when a level is generated)
+
 - **Mushroom**: 15% chance to appear
 - **Lightning Bolt**: 2% chance to appear
 - **Star**: 2% chance to appear
 - **Hourglass**: 1% chance to appear
 
 ### Random Spawn Rates (during gameplay)
+
 - **Mushroom**: 0.3% chance per game update
 - **Lightning Bolt**: 0.6% chance per game update
 - **Star**: 1.2% chance per game update
 - **Hourglass**: 0.4% chance per game update
 
 These probabilities create a tiered rarity system where Mushrooms are common, Lightning Bolts and Stars are uncommon, and Hourglasses are rare.
-

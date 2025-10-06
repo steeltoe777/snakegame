@@ -253,11 +253,13 @@ The game uses vanilla JavaScript and should work in any modern browser.
 ## Usage
 
 ### Basic Controls
+
 - **Arrow Keys**: Control the snake's direction
 - **Enter**: Submit passwords
 - **Spacebar**: Pause/resume the game
 
 ### Game Features
+
 - Navigate through 20 procedurally generated levels
 - Collect power-ups to gain special abilities
 - Enter passwords to advance to specific levels
