@@ -1,7 +1,7 @@
 # 🎮 Snake, Tron, Pac-Man Hybrid - Complete Gameplay Design Document
 
-**Document Version**: 1.1.0  
-**Last Updated**: 2025-09-09  
+**Document Version**: 1.2.0
+**Last Updated**: 2025-10-06
 **Game Version**: Current
 
 ---
@@ -73,7 +73,7 @@ Unlike traditional level selection systems, this password system works as follow
 1. **Password Generation**: As you progress through levels, passwords are automatically generated for levels divisible by 10
 2. **Password Display**: These passwords are displayed on-screen at strategic intervals
 3. **Password Entry**: Type discovered passwords using alphanumeric keys at any time during gameplay
-4. **Level Reset**: When a valid password is entered, the game resets to the level PREVIOUS to the password's level (e.g., entering the password for level 20 resets to level 19)
+4. **Level Advance**: When a valid password is entered, the game resets to the level PREVIOUS to the password's level (e.g., entering the password for level 20 resets to level 19)
 5. **Progress Reset**: Score is reset to 0, but you maintain your skill level
 
 #### **🎯 Strategic Usage**
@@ -175,7 +175,7 @@ The game features multiple power-up types that provide temporary benefits, encou
 
 #### **📊 Power-Up Balance & Strategy**
 
-- **Spawn Rates**: Carefully balanced probabilities (Mushrooms: 3%, Lightning: 2%, Hourglass: 1.5%, Stars: 2%)
+- **Spawn Rates**: Carefully balanced probabilities (Mushrooms: 3%, Lightning: balanced probabilities, Hourglass: 1.5%, Stars: balanced probabilities)
 - **Level Requirements**: Different power-ups unlock at different levels
 - **Strategic Choices**: Players must decide which power-ups to prioritize based on situation
 - **Risk vs Reward**: Higher value power-ups are rarer and have longer durations
@@ -261,7 +261,7 @@ Advanced snake head with visual direction feedback.
 
 - **True Game Over**: Only at level 1 with death
 - **Infinite Progression**: No theoretical level cap
-- **Strategic Reset**: Password system enables replay optimization
+- **Progression Management**: Password system enables replay optimization
 
 ---
 
@@ -416,3 +416,51 @@ window.drawGame(); // Rendering verification
 **Author**: Agent Zero Analysis  
 **Generated**: 2025-08-25 01:51:56  
 **Status**: Complete Implementation Reference
+
+
+## Game Over Behavior
+
+The game over system works as follows:
+
+1. When the snake collides with itself or a wall, the game over sequence is triggered
+2. On Level 1, collisions result in a complete game over
+3. On Levels 2+, players respawn at the previous level with:
+   - Score reduced by half
+   - Snake length reduced to 3 segments
+   - Power-ups retained
+4. This creates a forgiving progression system that encourages continued play
+
+
+
+## Password System Behavior
+
+The password system allows players to advance to specific levels:
+
+1. Players can enter passwords at any time during gameplay
+2. Valid passwords immediately advance the player to the corresponding level
+3. The player's score is adjusted based on the target level
+4. Previously collected power-ups are retained
+5. Invalid passwords are ignored
+
+This system provides a way for players to quickly access higher levels for replaying or skipping to challenging sections.
+
+
+
+## Power-up Spawn Probabilities
+
+The power-up spawning system has been carefully balanced to provide an engaging gameplay experience:
+
+### Initial Spawn Rates (when a level is generated)
+- **Mushroom**: 15% chance to appear
+- **Lightning Bolt**: 2% chance to appear
+- **Star**: 2% chance to appear
+- **Hourglass**: 1% chance to appear
+
+### Random Spawn Rates (during gameplay)
+- **Mushroom**: 0.3% chance per game update
+- **Lightning Bolt**: 0.6% chance per game update
+- **Star**: 1.2% chance per game update
+- **Hourglass**: 0.4% chance per game update
+
+These probabilities create a tiered rarity system where Mushrooms are common, Lightning Bolts and Stars are uncommon, and Hourglasses are rare.
+

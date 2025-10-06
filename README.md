@@ -239,3 +239,26 @@ Every project has its rough edges! Here are some things I'm aware of and plannin
 **Game Version**: 1.0.0  
 **Last Updated**: 2025-09-09  
 **Grid Size**: Fixed 20x20 tiles (canvas resizes, grid stays constant)
+
+## Installation
+
+To run the Snake Game locally:
+
+1. Clone or download this repository
+2. Open `index.html` in a web browser
+3. No additional dependencies are required
+
+The game uses vanilla JavaScript and should work in any modern browser.
+
+## Usage
+
+### Basic Controls
+- **Arrow Keys**: Control the snake's direction
+- **Enter**: Submit passwords
+- **Spacebar**: Pause/resume the game
+
+### Game Features
+- Navigate through 20 procedurally generated levels
+- Collect power-ups to gain special abilities
+- Enter passwords to advance to specific levels
+- Compete for high scores
