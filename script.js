@@ -123,7 +123,7 @@ function generateMushrooms() {
 function spawnRandomMushroom() {
     // Only spawn mushrooms on higher levels with 0.3% probability
     if (gameState.level >= 5 && Math.random() < 0.003) {
-        // 1% chance per update
+        // 0.3% chance per update
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms)
@@ -1721,7 +1721,7 @@ function generateStars() {
 function spawnRandomLightningBolt() {
     // Only spawn lightning bolts on level 3+ with 0.6% probability
     if (gameState.level >= 3 && Math.random() < 0.006) {
-        // 0.8% chance per update
+        // 0.6% chance per update
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
