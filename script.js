@@ -121,8 +121,8 @@ function generateMushrooms() {
 
 // Random mushroom spawning during gameplay
 function spawnRandomMushroom() {
-    // Only spawn mushrooms on higher levels and with low probability
-    if (gameState.level >= 5 && Math.random() < 0.005) {
+    // Only spawn mushrooms on higher levels with 0.3% probability
+    if (gameState.level >= 5 && Math.random() < 0.003) {
         // 1% chance per update
         const availableTiles = [];
 
@@ -1475,7 +1475,7 @@ function generateLightningBolts() {
     gameState.lightningBolts = [];
 
     // Only spawn lightning bolts on level 3+ with some probability
-    if (gameState.level >= 3 && Math.random() < 0.00001) {
+    if (gameState.level >= 3 && Math.random() < 0.2) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
@@ -1546,7 +1546,7 @@ function generateHourglasses() {
     gameState.hourglasses = [];
 
     // Only spawn hourglasses on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.00005) {
+    if (gameState.level >= 5 && Math.random() < 0.2) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
@@ -1628,7 +1628,7 @@ function generateStars() {
     gameState.stars = [];
 
     // Only spawn stars on level 4+
-    if (gameState.level >= 4 && Math.random() < 0.00001) {
+    if (gameState.level >= 4 && Math.random() < 0.2) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
@@ -1719,8 +1719,8 @@ function generateStars() {
 
 // Random lightning bolt spawning during gameplay
 function spawnRandomLightningBolt() {
-    // Only spawn lightning bolts on level 3+ with low probability
-    if (gameState.level >= 3 && Math.random() < 0.008) {
+    // Only spawn lightning bolts on level 3+ with 0.6% probability
+    if (gameState.level >= 3 && Math.random() < 0.006) {
         // 0.8% chance per update
         const availableTiles = [];
 
@@ -1790,7 +1790,7 @@ function spawnRandomLightningBolt() {
 
 function spawnRandomHourglass() {
     // Only spawn hourglasses on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.015) {
+    if (gameState.level >= 5 && Math.random() < 0.008) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
@@ -1869,8 +1869,8 @@ function spawnRandomHourglass() {
 }
 
 function spawnRandomStar() {
-    // Only spawn stars on level 4+ with 2% probability
-    if (gameState.level >= 4 && Math.random() < 0.02) {
+    // Only spawn stars on level 4+ with 1.2% probability
+    if (gameState.level >= 4 && Math.random() < 0.012) {
         const availableTiles = [];
 
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
