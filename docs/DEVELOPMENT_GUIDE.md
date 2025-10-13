@@ -14,7 +14,6 @@ To maintain `file://` execution capability, the following constraints apply:
 
 These constraints ensure the game can be distributed and run simply by sharing the folder.
 
-
 Hey there! I'm excited you're interested in contributing to this project. This guide will help you understand how I built this game and how you can extend it.
 
 ### My Development Approach

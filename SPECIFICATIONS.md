@@ -14,25 +14,27 @@ Detailed specifications for the Snake Game implementation.
 ### Game Elements
 
 1. **Snake**
-   - Starts with 3 segments
-   - Grows by 1 segment when eating food
-   - Moves continuously in the current direction
-   - Dies on collision with walls or itself
+
+    - Starts with 3 segments
+    - Grows by 1 segment when eating food
+    - Moves continuously in the current direction
+    - Dies on collision with walls or itself
 
 2. **Food**
-   - Appears randomly on the grid
-   - Worth 10 points
-   - Disappears when eaten
+
+    - Appears randomly on the grid
+    - Worth 10 points
+    - Disappears when eaten
 
 3. **Power-ups**
-   - Score Multiplier: Temporarily doubles points gained
-   - Speed Boost: Temporarily increases snake speed
-   - Slow Motion: Temporarily decreases snake speed
-   - Mushroom: Random effect (positive or negative)
-   - Wall: Temporary barriers on the grid
-   - Pellets: Small collectibles worth 1 point each
-   - Lightning Bolts: High-speed obstacles
-   - Stars: Decorative elements
+    - Score Multiplier: Temporarily doubles points gained
+    - Speed Boost: Temporarily increases snake speed
+    - Slow Motion: Temporarily decreases snake speed
+    - Mushroom: Random effect (positive or negative)
+    - Wall: Temporary barriers on the grid
+    - Pellets: Small collectibles worth 1 point each
+    - Lightning Bolts: High-speed obstacles
+    - Stars: Decorative elements
 
 ### Game States
 

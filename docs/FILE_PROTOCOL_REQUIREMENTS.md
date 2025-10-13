@@ -1,6 +1,6 @@
 # File Protocol Requirements
 
-_Last Updated: 2025-10-13
+\_Last Updated: 2025-10-13
 
 This document outlines the requirements and constraints for maintaining `file://` protocol compatibility.
 
@@ -41,4 +41,3 @@ python -m http.server
 ```
 
 However, the final implementation must work without these.
-

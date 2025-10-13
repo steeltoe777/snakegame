@@ -1,23 +1,22 @@
-
 /* 🎨 Modernized CSS with CSS variables for better maintainability */
 /* This improves themeability while maintaining file:// compatibility */
 
 :root {
-  --snake-color: #4CAF50;
-  --food-color: #FF5722;
-  --background-color: #222;
-  --text-color: #EEE;
-  --border-color: #333;
-  --powerup-color: #FFC107;
-  --mushroom-color: #9C27B0;
-  --wall-color: #FF9800;
-  --custom-color-1: #4caf50;
-  --custom-color-2: #222;
-  --custom-color-3: #333;
-  --custom-color-4: #45a049;
-  --custom-color-5: #000;
-  --custom-color-6: #ff0000;
-  --custom-color-7: #eee;
+    --snake-color: #4caf50;
+    --food-color: #ff5722;
+    --background-color: #222;
+    --text-color: #eee;
+    --border-color: #333;
+    --powerup-color: #ffc107;
+    --mushroom-color: #9c27b0;
+    --wall-color: #ff9800;
+    --custom-color-1: #4caf50;
+    --custom-color-2: #222;
+    --custom-color-3: #333;
+    --custom-color-4: #45a049;
+    --custom-color-5: #000;
+    --custom-color-6: #ff0000;
+    --custom-color-7: #eee;
 }
 
 body {

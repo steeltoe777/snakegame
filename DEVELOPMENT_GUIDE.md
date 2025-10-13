@@ -24,6 +24,7 @@ snakegame/
 ## 🛠️ Development Environment Setup
 
 ### Prerequisites
+
 - A modern web browser (Chrome, Firefox, Safari, Edge)
 - A text editor (VS Code, Sublime Text, Atom, etc.)
 - Node.js and npm (for running tests and linting)
@@ -33,9 +34,9 @@ snakegame/
 1. Clone or download the repository
 2. Navigate to the project directory
 3. Install dependencies (if any are added in the future):
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 ### Running the Game
 
@@ -62,22 +63,25 @@ npm run lint -- --fix
 ### Core Components
 
 1. **Game State Management**
-   - Single global gameState object containing all game data
-   - Functions to initialize, update, and reset game state
+
+    - Single global gameState object containing all game data
+    - Functions to initialize, update, and reset game state
 
 2. **Rendering System**
-   - Canvas-based rendering
-   - Separate functions for drawing different game elements
-   - Efficient redraw only when necessary
+
+    - Canvas-based rendering
+    - Separate functions for drawing different game elements
+    - Efficient redraw only when necessary
 
 3. **Input Handling**
-   - Keyboard event listeners
-   - Support for arrow keys and WASD
-   - Pause/resume with Spacebar
+
+    - Keyboard event listeners
+    - Support for arrow keys and WASD
+    - Pause/resume with Spacebar
 
 4. **Game Loop**
-   - RequestAnimationFrame for smooth animation
-   - Consistent timing regardless of frame rate
+    - RequestAnimationFrame for smooth animation
+    - Consistent timing regardless of frame rate
 
 ### File Organization
 
@@ -94,6 +98,7 @@ The main game logic is contained in `script.js`, which is organized into section
 ## 🧪 Testing
 
 ### Test Framework
+
 - Jest for JavaScript testing
 - Tests located in the `tests/` directory
 
@@ -125,14 +130,14 @@ The game uses CSS variables for consistent theming:
 
 ```css
 :root {
-  --snake-color: #4CAF50;
-  --food-color: #FF5722;
-  --background-color: #222;
-  --text-color: #EEE;
-  --border-color: #333;
-  --powerup-color: #FFC107;  /* Amber, less bright than yellow */
-  --mushroom-color: #9C27B0;
-  --wall-color: #FF9800;
+    --snake-color: #4caf50;
+    --food-color: #ff5722;
+    --background-color: #222;
+    --text-color: #eee;
+    --border-color: #333;
+    --powerup-color: #ffc107; /* Amber, less bright than yellow */
+    --mushroom-color: #9c27b0;
+    --wall-color: #ff9800;
 }
 ```
 

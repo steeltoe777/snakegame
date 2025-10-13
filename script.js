@@ -3,7 +3,6 @@
 // 📝 Magic numbers replaced with constant names for better readability
 // This improves maintainability while preserving functionality
 
-
 // 🎨 Adjusted bright colors to be less saturated for better visual comfort
 // Replaced bright yellows with amber tones and reduced saturation
 
@@ -95,7 +94,8 @@ function hslToRgb(h, s, l) {
             if (t > 1) t -= 1;
             if (t < 1 / PASSWORD_LENGTH) return p + (q - p) * PASSWORD_LENGTH * t;
             if (t < 1 / SCORE_REDUCTION_FACTOR) return q;
-            if (t < SCORE_REDUCTION_FACTOR / 3) return p + (q - p) * (SCORE_REDUCTION_FACTOR / 3 - t) * PASSWORD_LENGTH;
+            if (t < SCORE_REDUCTION_FACTOR / 3)
+                return p + (q - p) * (SCORE_REDUCTION_FACTOR / 3 - t) * PASSWORD_LENGTH;
             return p;
         };
 
@@ -287,7 +287,10 @@ function getRandomPosition() {
         }
     }
     // Ultimate fallback: center position (should be safe in most cases)
-    return { x: Math.floor(tileCount / SCORE_REDUCTION_FACTOR), y: Math.floor(tileCount / SCORE_REDUCTION_FACTOR) };
+    return {
+        x: Math.floor(tileCount / SCORE_REDUCTION_FACTOR),
+        y: Math.floor(tileCount / SCORE_REDUCTION_FACTOR),
+    };
 }
 const gameState = {
     gridSize: GRID_SIZE, // Define gridSize here
@@ -505,8 +508,10 @@ function generateMaze() {
             let attempts = 0;
             while (!placed && attempts < BASE_SPEED) {
                 // Limit attempts to prevent infinite loops
-                const wallX = Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1; // Avoid outer walls
-                const wallY = Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1;
+                const wallX =
+                    Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1; // Avoid outer walls
+                const wallY =
+                    Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1;
                 const wallLength = Math.floor(Math.random() * 5) + 1; // Wall length 1-6
                 const isHorizontal = Math.random() > 0.5;
 
@@ -640,8 +645,12 @@ function drawMushrooms() {
         ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(
-            mushroom.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR - SCORE_REDUCTION_FACTOR,
-            mushroom.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR - SCORE_REDUCTION_FACTOR,
+            mushroom.x * gameState.gridSize +
+                gameState.gridSize / SCORE_REDUCTION_FACTOR -
+                SCORE_REDUCTION_FACTOR,
+            mushroom.y * gameState.gridSize +
+                gameState.gridSize / SCORE_REDUCTION_FACTOR -
+                SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
@@ -650,8 +659,12 @@ function drawMushrooms() {
 
         ctx.beginPath();
         ctx.arc(
-            mushroom.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR + SCORE_REDUCTION_FACTOR,
-            mushroom.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR - SCORE_REDUCTION_FACTOR,
+            mushroom.x * gameState.gridSize +
+                gameState.gridSize / SCORE_REDUCTION_FACTOR +
+                SCORE_REDUCTION_FACTOR,
+            mushroom.y * gameState.gridSize +
+                gameState.gridSize / SCORE_REDUCTION_FACTOR -
+                SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
@@ -693,7 +706,12 @@ function drawSnake() {
                 eyeY = segment.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR;
             }
 
-            ctx.fillRect(eyeX - eyeSize / SCORE_REDUCTION_FACTOR, eyeY - eyeSize / SCORE_REDUCTION_FACTOR, eyeSize, eyeSize);
+            ctx.fillRect(
+                eyeX - eyeSize / SCORE_REDUCTION_FACTOR,
+                eyeY - eyeSize / SCORE_REDUCTION_FACTOR,
+                eyeSize,
+                eyeSize
+            );
         } else {
             // Draw body segments with original lime color
             ctx.fillStyle = 'lime';
@@ -1174,11 +1192,19 @@ function drawGame() {
         ctx.fillStyle = 'white';
         ctx.font = 'bold 48px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('PAUSED', canvas.width / SCORE_REDUCTION_FACTOR, canvas.height / SCORE_REDUCTION_FACTOR);
+        ctx.fillText(
+            'PAUSED',
+            canvas.width / SCORE_REDUCTION_FACTOR,
+            canvas.height / SCORE_REDUCTION_FACTOR
+        );
 
         // Resume instruction
         ctx.font = '24px Arial';
-        ctx.fillText('Press P to resume', canvas.width / SCORE_REDUCTION_FACTOR, canvas.height / SCORE_REDUCTION_FACTOR + 50);
+        ctx.fillText(
+            'Press P to resume',
+            canvas.width / SCORE_REDUCTION_FACTOR,
+            canvas.height / SCORE_REDUCTION_FACTOR + 50
+        );
     }
 }
 
