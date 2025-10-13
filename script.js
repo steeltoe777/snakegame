@@ -847,6 +847,15 @@ function update() {
     for (let i = 0; i < gameState.lightningBolts.length; i++) {
         if (head.x === gameState.lightningBolts[i].x && head.y === gameState.lightningBolts[i].y) {
             gameState.lightningBolts.splice(i, 1);
+
+                // Reduce snake length as bonus for eating speedup
+                const lengthReduction = Math.floor(gameState.snake.length / 3);
+                if (lengthReduction > 0 && gameState.snake.length > 1) {
+                    // Ensure snake never becomes shorter than its head
+                    const actualReduction = Math.min(lengthReduction, gameState.snake.length - 1);
+                    gameState.snake.splice(-actualReduction);
+                }
+
             // Activate speed boost powerup for PASSWORD_LENGTH seconds
             gameState.speedBoostActive = true;
             // Immediately update game speed for instant boost effect
