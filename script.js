@@ -1,3 +1,16 @@
+// Color conversion constants
+const COLOR_MAX_VALUE = 255;
+
+// Level progression constants
+const LEVEL_THRESHOLD_BASE = 1000;
+const WALL_COUNT_LIMIT = 15;
+
+// Position calculation constants
+const HUE_FULL_CIRCLE = 360;
+
+// Timer bar position constants
+
+// Other game constants
 // Named constants for magic numbers
 const GRID_SIZE = 20;
 const BASE_SPEED = 100; // Base movement speed in ms
@@ -6,7 +19,7 @@ const BASE_SPEED = 100; // Base movement speed in ms
 // Timing constants for power-ups in milliseconds
 const MUSHROOM_POWERUP_DURATION = 8000;
 const SPEED_BOOST_DURATION = 6000;
-const SCORE_MULTIPLIER_DURATION = 10000;
+const SCORE_MULTIPLIER_DURATION = 10000; // 10 seconds in milliseconds
 
 // Speed modifiers
 
@@ -23,8 +36,31 @@ const ctx = canvas.getContext('2d');
 // Constants for game over mechanics
 const SCORE_REDUCTION_FACTOR = 2; // Factor by which score is reduced on respawn
 const SNAKE_LENGTH_REDUCTION_FACTOR = 2; // Factor by which snake length is reduced on respawn
+// Helper function to calculate available tiles for item spawning
+// Excludes snake body, walls, and edges to prevent items from appearing in invalid locations
+function getAvailableTiles(gameState) {
+    const availableTiles = [];
+    for (let y = 1; y < gameState.tileCount - 1; y++) {
+        for (let x = 1; x < gameState.tileCount - 1; x++) {
+            let occupied;
+        if (!(gameState.maze && gameState.maze[y] && gameState.maze[y][x])) { // Skip walls
+ // Skip walls
+            for (let j = 0; j < gameState.snake.length; j++) {
+                const segment = gameState.snake[j];
+                if (segment.x === x && segment.y === y) {
+                    occupied = true;
+                    break;
+                }
+            }
+            }
+            if (!occupied) {
+                availableTiles.push({ x, y });
+            }
+        }
+    }
+    return availableTiles;
+}
 
-// Minimap initialization - using window object to avoid test issues
 window.minimapCanvas = document.getElementById('minimapCanvas');
 window.minimapCtx = window.minimapCanvas ? window.minimapCanvas.getContext('2d') : null;
 
@@ -32,7 +68,7 @@ window.minimapCtx = window.minimapCanvas ? window.minimapCanvas.getContext('2d')
 
 // Helper function to convert HSL to RGB
 function hslToRgb(h, s, l) {
-    h /= 360;
+    h /= HUE_FULL_CIRCLE;
     s /= BASE_SPEED;
     l /= BASE_SPEED;
     let r;
@@ -60,7 +96,7 @@ function hslToRgb(h, s, l) {
         b = hue2rgb(p, q, h - 1 / 3);
     }
 
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    return [Math.round(r * COLOR_MAX_VALUE), Math.round(g * COLOR_MAX_VALUE), Math.round(b * COLOR_MAX_VALUE)];
 }
 
 function generateMushrooms() {
@@ -68,8 +104,7 @@ function generateMushrooms() {
 
     // Only spawn mushrooms on higher levels and with some probability
     if (gameState.level >= 5 && Math.random() < 0.15) {
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -124,8 +159,7 @@ function spawnRandomMushroom() {
     // Only spawn mushrooms on higher levels with 0.3% probability
     if (gameState.level >= 5 && Math.random() < 0.003) {
         // 0.3% chance per update
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -345,7 +379,7 @@ function handlePasswordKey(e) {
         passwordSystem.addKey(key);
 
         // Only check passwords for levels divisible by 10 (and not level 1)
-        for (let level = 10; level <= 100000; level += 10) {
+        for (let level = 10; level <= LEVEL_THRESHOLD_BASE; level += 10) {
             const levelPassword = passwordSystem.generatePassword(level);
             if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
                 // Reset to PREVIOUS level (level - 1)
@@ -423,8 +457,8 @@ function generateMaze() {
         .fill(0)
         .map(() => Array(gameState.tileCount).fill(0));
 
-    if (gameState.level < 1000) {
-        // Create outer walls to define the game area when level is below 1000
+    if (gameState.level < LEVEL_THRESHOLD_BASE) {
+        // Create outer walls to define the game area when level is below LEVEL_THRESHOLD_BASE
         for (let i = 0; i < gameState.tileCount; i++) {
             gameState.maze[0][i] = 1; // Top wall
             gameState.maze[gameState.tileCount - 1][i] = 1; // Bottom wall
@@ -437,13 +471,13 @@ function generateMaze() {
     if (gameState.level >= 4) {
         let numInternalWalls = Math.min(10, gameState.level - 3); // More walls for higher levels, max 10
         if (gameState.level >= 500) {
-            numInternalWalls += Math.min(15, (gameState.level - 500) / GRID_SIZE); // More walls for higher levels, max 15
+            numInternalWalls += Math.min(WALL_COUNT_LIMIT, (gameState.level - 500) / GRID_SIZE); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
-        if (gameState.level >= 1500) {
-            numInternalWalls += Math.min(15, (gameState.level - 1500) / 1000); // More walls for higher levels, max 15
+        if (gameState.level >= WALL_COUNT_LIMIT) {
+            numInternalWalls += Math.min(WALL_COUNT_LIMIT, (gameState.level - WALL_COUNT_LIMIT) / LEVEL_THRESHOLD_BASE); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
         if (gameState.level >= 5000) {
-            numInternalWalls += Math.min(15, (gameState.level - 5000) / 1000); // More walls for higher levels, max 15
+            numInternalWalls += Math.min(WALL_COUNT_LIMIT, (gameState.level - 5000) / LEVEL_THRESHOLD_BASE); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
 
         for (let k = 0; k < numInternalWalls; k++) {
@@ -517,19 +551,7 @@ function generatePellets() {
             ((Math.min(gameState.level - GRID_SIZE, 480) - 1) * pelletsPerLevel) / 10.0;
     }
 
-    const availableTiles = [];
-    for (let y = 0; y < gameState.tileCount; y++) {
-        for (let x = 0; x < gameState.tileCount; x++) {
-            // Place pellets only on path squares (maze[y][x] === 0)
-            // and not on the initial snake position
-            if (
-                gameState.maze[y][x] === 0 &&
-                !(x === gameState.snake[0].x && y === gameState.snake[0].y)
-            ) {
-                availableTiles.push({ x, y });
-            }
-        }
-    }
+    const availableTiles = getAvailableTiles(gameState);
 
     // Shuffle available tiles
     for (let i = availableTiles.length - 1; i > 0; i--) {
@@ -672,7 +694,7 @@ function drawTrail() {
         // Draw with rainbow effect
         gameState.trail.forEach((segment, index) => {
             // Calculate hue for this segment based on its position and time
-            const hue = (gameState.rainbowHue + index * 3) % 360;
+            const hue = (gameState.rainbowHue + index * 3) % HUE_FULL_CIRCLE;
             const [r, g, b] = hslToRgb(Math.floor(hue), BASE_SPEED, 50);
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
 
@@ -701,7 +723,7 @@ function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
     // Update rainbow trail hue for animation effect
-    gameState.rainbowHue = (gameState.rainbowHue + 0.5) % 360;
+    gameState.rainbowHue = (gameState.rainbowHue + 0.5) % HUE_FULL_CIRCLE;
 
     updateSpatialGrid(); // Update spatial grid for accurate collision detection
     const head = { x: gameState.snake[0].x + gameState.dx, y: gameState.snake[0].y + gameState.dy };
@@ -713,8 +735,8 @@ function update() {
         head.y < 0 ||
         head.y >= gameState.tileCount
     ) {
-        if (gameState.level < 1000 && !gameState.mushroomPowerupActive) {
-            // Only check for outer wall collisions on level below 1000 and without mushroom
+        if (gameState.level < LEVEL_THRESHOLD_BASE && !gameState.mushroomPowerupActive) {
+            // Only check for outer wall collisions on level below LEVEL_THRESHOLD_BASE and without mushroom
             gameOver();
             return;
         }
@@ -880,7 +902,7 @@ function update() {
             const head = gameState.snake[0];
             // Check outer wall collision
             if (
-                gameState.level < 1000 &&
+                gameState.level < LEVEL_THRESHOLD_BASE &&
                 (head.x < 0 ||
                     head.x >= gameState.tileCount ||
                     head.y < 0 ||
@@ -959,7 +981,7 @@ function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Change background color when score multiplier is active
     if (gameState.scoreMultiplierActive) {
-        ctx.fillStyle = 'rgba(255, 255, 220, 0.01)'; // Light yellow with transparency
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'; // Slightly brighter than normal when score multiplier active
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     drawMaze();
@@ -1078,12 +1100,12 @@ function drawGame() {
 
     // Draw speed boost powerup indicator if active
     if (gameState.speedBoostActive) {
-        ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+        ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, COLOR_MAX_VALUE, 0, 0.5)';
         ctx.font = '12px Arial';
         ctx.fillText('SPEED BOOST!', 10, 45);
 
         // Draw timer bar
-        const timerWidth = (gameState.speedBoostTimer / 6000) * 100;
+        const timerWidth = (gameState.speedBoostTimer / SPEED_BOOST_DURATION) * 100;
         ctx.fillStyle = 'yellow';
         ctx.fillRect(10, 50, timerWidth, 5);
     }
@@ -1102,12 +1124,12 @@ function drawGame() {
 
     // Draw score multiplier powerup indicator if active
     if (gameState.scoreMultiplierActive) {
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Gold color with transparency
+        ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, 30, 0, 0.7)'; // Gold color with transparency
         ctx.font = '12px Arial';
         ctx.fillText('SCORE X2', 10, 65);
 
         // Draw timer bar
-        const timerWidth = (gameState.scoreMultiplierTimer / 10000) * 100;
+        const timerWidth = (gameState.scoreMultiplierTimer / SCORE_MULTIPLIER_DURATION) * 100;
         ctx.fillStyle = '#FFD700'; // Gold color
         ctx.fillRect(10, 70, timerWidth, 5);
     }
@@ -1345,7 +1367,7 @@ function calculateGameSpeed() {
     if (level >= GRID_SIZE) {
         // Very high levels: slowest speed for careful navigation
         maxSpeed = baseSpeed + 80; // 180ms interval minimum
-    } else if (level >= 15) {
+    } else if (level >= WALL_COUNT_LIMIT) {
         // High levels: moderately slow
         maxSpeed = baseSpeed + 60; // 160ms interval minimum
     } else if (level >= 10) {
@@ -1477,8 +1499,7 @@ function generateLightningBolts() {
 
     // Only spawn lightning bolts on level 3+ with some probability
     if (gameState.level >= 3 && Math.random() < 0.2) {
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1548,8 +1569,7 @@ function generateHourglasses() {
 
     // Only spawn hourglasses on higher levels and with some probability
     if (gameState.level >= 5 && Math.random() < 0.2) {
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1630,8 +1650,7 @@ function generateStars() {
 
     // Only spawn stars on level 4+
     if (gameState.level >= 4 && Math.random() < 0.2) {
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1723,8 +1742,7 @@ function spawnRandomLightningBolt() {
     // Only spawn lightning bolts on level 3+ with 0.6% probability
     if (gameState.level >= 3 && Math.random() < 0.006) {
         // 0.6% chance per update
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1792,8 +1810,7 @@ function spawnRandomLightningBolt() {
 function spawnRandomHourglass() {
     // Only spawn hourglasses on higher levels and with some probability
     if (gameState.level >= 5 && Math.random() < 0.008) {
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1872,8 +1889,7 @@ function spawnRandomHourglass() {
 function spawnRandomStar() {
     // Only spawn stars on level 4+ with 1.2% probability
     if (gameState.level >= 4 && Math.random() < 0.012) {
-        const availableTiles = [];
-
+    const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
