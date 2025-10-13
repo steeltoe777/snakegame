@@ -43,15 +43,16 @@ function getAvailableTiles(gameState) {
     for (let y = 1; y < gameState.tileCount - 1; y++) {
         for (let x = 1; x < gameState.tileCount - 1; x++) {
             let occupied;
-        if (!(gameState.maze && gameState.maze[y] && gameState.maze[y][x])) { // Skip walls
- // Skip walls
+            if (gameState.maze && gameState.maze[y] && gameState.maze[y][x]) { // Skip walls
+            // eslint-disable-next-line no-continue
+                continue;
+            }
             for (let j = 0; j < gameState.snake.length; j++) {
                 const segment = gameState.snake[j];
                 if (segment.x === x && segment.y === y) {
                     occupied = true;
                     break;
                 }
-            }
             }
             if (!occupied) {
                 availableTiles.push({ x, y });
