@@ -2,6 +2,19 @@
 
 ## 👋 Welcome, Fellow Developer!
 
+## 🛠️ Development Constraints
+
+To maintain `file://` execution capability, the following constraints apply:
+
+- No ES6 modules (import/export) allowed
+- All code must be in a single script.js file or loaded via traditional script tags
+- No external dependencies that require bundling
+- Use IIFE pattern for namespacing instead of modules
+- No build/bundling requirements for basic execution
+
+These constraints ensure the game can be distributed and run simply by sharing the folder.
+
+
 Hey there! I'm excited you're interested in contributing to this project. This guide will help you understand how I built this game and how you can extend it.
 
 ### My Development Approach

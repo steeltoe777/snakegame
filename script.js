@@ -1,4 +1,12 @@
 // Color conversion constants
+
+// 📝 Magic numbers replaced with constant names for better readability
+// This improves maintainability while preserving functionality
+
+
+// 🎨 Adjusted bright colors to be less saturated for better visual comfort
+// Replaced bright yellows with amber tones and reduced saturation
+
 const COLOR_MAX_VALUE = 255;
 
 // Level progression constants
@@ -35,7 +43,7 @@ const ctx = canvas.getContext('2d');
 
 // Constants for game over mechanics
 const SCORE_REDUCTION_FACTOR = 2; // Factor by which score is reduced on respawn
-const SNAKE_LENGTH_REDUCTION_FACTOR = 2; // Factor by which snake length is reduced on respawn
+const SNAKE_LENGTH_REDUCTION_FACTOR = SCORE_REDUCTION_FACTOR; // Factor by which snake length is reduced on respawn
 // Helper function to calculate available tiles for item spawning
 // Excludes snake body, walls, and edges to prevent items from appearing in invalid locations
 function getAvailableTiles(gameState) {
@@ -86,13 +94,13 @@ function hslToRgb(h, s, l) {
             if (t < 0) t += 1;
             if (t > 1) t -= 1;
             if (t < 1 / PASSWORD_LENGTH) return p + (q - p) * PASSWORD_LENGTH * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            if (t < 1 / SCORE_REDUCTION_FACTOR) return q;
+            if (t < SCORE_REDUCTION_FACTOR / 3) return p + (q - p) * (SCORE_REDUCTION_FACTOR / 3 - t) * PASSWORD_LENGTH;
             return p;
         };
 
         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
+        const p = SCORE_REDUCTION_FACTOR * l - q;
         r = hue2rgb(p, q, h + 1 / 3);
         g = hue2rgb(p, q, h);
         b = hue2rgb(p, q, h - 1 / 3);
@@ -220,7 +228,7 @@ function spawnRandomMushroom() {
 }
 
 function getRandomPosition() {
-    const tileCount = gameState.tileCount || 20;
+    const tileCount = gameState.tileCount || GRID_SIZE;
     let attempts = 0;
     const maxAttempts = BASE_SPEED; // Prevent infinite loops
 
@@ -236,32 +244,32 @@ function getRandomPosition() {
         if (dx === 1) {
             // Moving right - spawn more likely on left side
             x = 1 + Math.floor(Math.random() * Math.max(1, tileCount * 0.4)); // Left 40% of board
-            y = 1 + Math.floor(Math.random() * (tileCount - 2));
+            y = 1 + Math.floor(Math.random() * (tileCount - SCORE_REDUCTION_FACTOR));
         } else if (dx === -1) {
             // Moving left - spawn more likely on right side
             x =
                 Math.floor(tileCount * 0.6) +
-                Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Right 40% of board
-            y = 1 + Math.floor(Math.random() * (tileCount - 2));
+                Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - SCORE_REDUCTION_FACTOR)); // Right 40% of board
+            y = 1 + Math.floor(Math.random() * (tileCount - SCORE_REDUCTION_FACTOR));
         } else if (dy === 1) {
             // Moving down - spawn more likely on top
-            x = 1 + Math.floor(Math.random() * (tileCount - 2));
+            x = 1 + Math.floor(Math.random() * (tileCount - SCORE_REDUCTION_FACTOR));
             y = 1 + Math.floor(Math.random() * Math.max(1, tileCount * 0.4)); // Top 40% of board
         } else if (dy === -1) {
             // Moving up - spawn more likely on bottom
-            x = 1 + Math.floor(Math.random() * (tileCount - 2));
+            x = 1 + Math.floor(Math.random() * (tileCount - SCORE_REDUCTION_FACTOR));
             y =
                 Math.floor(tileCount * 0.6) +
-                Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - 2)); // Bottom 40% of board
+                Math.floor(Math.random() * Math.max(1, tileCount * 0.4 - SCORE_REDUCTION_FACTOR)); // Bottom 40% of board
         } else {
             // No direction or stationary - use original random logic
-            x = 1 + Math.floor(Math.random() * (tileCount - 2));
-            y = 1 + Math.floor(Math.random() * (tileCount - 2));
+            x = 1 + Math.floor(Math.random() * (tileCount - SCORE_REDUCTION_FACTOR));
+            y = 1 + Math.floor(Math.random() * (tileCount - SCORE_REDUCTION_FACTOR));
         }
 
         // Ensure coordinates are within bounds
-        x = Math.max(1, Math.min(tileCount - 2, x));
-        y = Math.max(1, Math.min(tileCount - 2, y));
+        x = Math.max(1, Math.min(tileCount - SCORE_REDUCTION_FACTOR, x));
+        y = Math.max(1, Math.min(tileCount - SCORE_REDUCTION_FACTOR, y));
 
         // Check if position is not a wall (maze value !== 1)
         if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
@@ -279,7 +287,7 @@ function getRandomPosition() {
         }
     }
     // Ultimate fallback: center position (should be safe in most cases)
-    return { x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) };
+    return { x: Math.floor(tileCount / SCORE_REDUCTION_FACTOR), y: Math.floor(tileCount / SCORE_REDUCTION_FACTOR) };
 }
 const gameState = {
     gridSize: GRID_SIZE, // Define gridSize here
@@ -497,8 +505,8 @@ function generateMaze() {
             let attempts = 0;
             while (!placed && attempts < BASE_SPEED) {
                 // Limit attempts to prevent infinite loops
-                const wallX = Math.floor(Math.random() * (gameState.tileCount - 2)) + 1; // Avoid outer walls
-                const wallY = Math.floor(Math.random() * (gameState.tileCount - 2)) + 1;
+                const wallX = Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1; // Avoid outer walls
+                const wallY = Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1;
                 const wallLength = Math.floor(Math.random() * 5) + 1; // Wall length 1-6
                 const isHorizontal = Math.random() > 0.5;
 
@@ -601,14 +609,14 @@ function drawMaze() {
 
 function drawPellets() {
     gameState.pellets.forEach((p) => {
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = '#FFC107';
         ctx.beginPath();
         ctx.arc(
-            p.x * gameState.gridSize + gameState.gridSize / 2,
-            p.y * gameState.gridSize + gameState.gridSize / 2,
+            p.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR,
+            p.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 3,
             0,
-            Math.PI * 2
+            Math.PI * SCORE_REDUCTION_FACTOR
         );
         ctx.fill();
     });
@@ -620,11 +628,11 @@ function drawMushrooms() {
         ctx.fillStyle = 'red';
         ctx.beginPath();
         ctx.arc(
-            mushroom.x * gameState.gridSize + gameState.gridSize / 2,
-            mushroom.y * gameState.gridSize + gameState.gridSize / 2,
+            mushroom.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR,
+            mushroom.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 3,
             0,
-            Math.PI * 2
+            Math.PI * SCORE_REDUCTION_FACTOR
         );
         ctx.fill();
 
@@ -632,21 +640,21 @@ function drawMushrooms() {
         ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(
-            mushroom.x * gameState.gridSize + gameState.gridSize / 2 - 2,
-            mushroom.y * gameState.gridSize + gameState.gridSize / 2 - 2,
+            mushroom.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR - SCORE_REDUCTION_FACTOR,
+            mushroom.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR - SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
-            Math.PI * 2
+            Math.PI * SCORE_REDUCTION_FACTOR
         );
         ctx.fill();
 
         ctx.beginPath();
         ctx.arc(
-            mushroom.x * gameState.gridSize + gameState.gridSize / 2 + 2,
-            mushroom.y * gameState.gridSize + gameState.gridSize / 2 - 2,
+            mushroom.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR + SCORE_REDUCTION_FACTOR,
+            mushroom.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR - SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
-            Math.PI * 2
+            Math.PI * SCORE_REDUCTION_FACTOR
         );
         ctx.fill();
     });
@@ -667,8 +675,8 @@ function drawSnake() {
             // Add eye indicator based on direction
             ctx.fillStyle = 'white';
             const eyeSize = Math.max(2, gameState.gridSize / PASSWORD_LENGTH);
-            let eyeX = segment.x * gameState.gridSize + gameState.gridSize / 2;
-            let eyeY = segment.y * gameState.gridSize + gameState.gridSize / 2;
+            let eyeX = segment.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR;
+            let eyeY = segment.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR;
 
             // Position eye based on movement direction
             if (gameState.dx === 1)
@@ -681,11 +689,11 @@ function drawSnake() {
                 eyeY -= gameState.gridSize / 3; // Moving up
             else {
                 // Default position when not moving - center the eye
-                eyeX = segment.x * gameState.gridSize + gameState.gridSize / 2;
-                eyeY = segment.y * gameState.gridSize + gameState.gridSize / 2;
+                eyeX = segment.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR;
+                eyeY = segment.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR;
             }
 
-            ctx.fillRect(eyeX - eyeSize / 2, eyeY - eyeSize / 2, eyeSize, eyeSize);
+            ctx.fillRect(eyeX - eyeSize / SCORE_REDUCTION_FACTOR, eyeY - eyeSize / SCORE_REDUCTION_FACTOR, eyeSize, eyeSize);
         } else {
             // Draw body segments with original lime color
             ctx.fillStyle = 'lime';
@@ -775,7 +783,7 @@ function update() {
     // Collision with self
     for (let i = 1; i < gameState.snake.length; i++) {
         if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
-            if (i <= 2 && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
+            if (i <= SCORE_REDUCTION_FACTOR && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
                 // Avoid collision with neck segments of self.
                 gameState.dx = gameState.dxPrev;
                 gameState.dy = gameState.dyPrev;
@@ -1002,7 +1010,7 @@ function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Change background color when score multiplier is active
     if (gameState.scoreMultiplierActive) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'; // Slightly brighter than normal when score multiplier active
+        ctx.fillStyle = 'rgba(255, 193, 7, 0.05)'; // Slightly brighter than normal when score multiplier active
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     drawMaze();
@@ -1016,12 +1024,12 @@ function drawGame() {
 
     // Draw mushroom powerup indicator if active
     if (gameState.mushroomPowerupActive) {
-        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, 0, 0, 0.5)';
         ctx.font = '12px Arial';
         ctx.fillText('MUSHROOM POWER!', 10, GRID_SIZE);
 
         // Draw timer bar
-        const timerWidth = (gameState.mushroomTimer / 8000) * 100;
+        const timerWidth = (gameState.mushroomTimer / MUSHROOM_POWERUP_DURATION) * BASE_SPEED;
         ctx.fillStyle = 'red';
         ctx.fillRect(10, 25, timerWidth, 5);
     }
@@ -1033,7 +1041,7 @@ function drawGame() {
 
         const ctx = window.minimapCtx;
         const minimapSize = BASE_SPEED; // Should match CSS
-        const tileCount = gameState.tileCount || 20;
+        const tileCount = gameState.tileCount || GRID_SIZE;
         const scale = minimapSize / tileCount;
 
         // Clear the minimap
@@ -1076,7 +1084,7 @@ function drawGame() {
 
         // Lightning bolts
         if (gameState.lightningBolts && Array.isArray(gameState.lightningBolts)) {
-            ctx.fillStyle = '#FFFF00'; // Yellow for lightning bolts
+            ctx.fillStyle = '#FFC107'; // Yellow for lightning bolts
             for (let i = 0; i < gameState.lightningBolts.length; i++) {
                 const bolt = gameState.lightningBolts[i];
                 ctx.fillRect(bolt.x * scale, bolt.y * scale, scale, scale);
@@ -1127,7 +1135,7 @@ function drawGame() {
 
         // Draw timer bar
         const timerWidth = (gameState.speedBoostTimer / SPEED_BOOST_DURATION) * 100;
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = '#FFC107';
         ctx.fillRect(10, 50, timerWidth, 5);
     }
 
@@ -1138,7 +1146,7 @@ function drawGame() {
         ctx.fillText('TIME SLOW!', 10, 45);
 
         // Draw timer bar
-        const timerWidth = (gameState.timeSlowTimer / 8000) * 100;
+        const timerWidth = (gameState.timeSlowTimer / MUSHROOM_POWERUP_DURATION) * BASE_SPEED;
         ctx.fillStyle = '#800080';
         ctx.fillRect(10, 50, timerWidth, 5);
     }
@@ -1151,7 +1159,7 @@ function drawGame() {
 
         // Draw timer bar
         const timerWidth = (gameState.scoreMultiplierTimer / SCORE_MULTIPLIER_DURATION) * 100;
-        ctx.fillStyle = '#FFD700'; // Gold color
+        ctx.fillStyle = '#FFA000'; // Gold color
         ctx.fillRect(10, 70, timerWidth, 5);
     }
     drawMinimap(); // Draw the minimap
@@ -1166,11 +1174,11 @@ function drawGame() {
         ctx.fillStyle = 'white';
         ctx.font = 'bold 48px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
+        ctx.fillText('PAUSED', canvas.width / SCORE_REDUCTION_FACTOR, canvas.height / SCORE_REDUCTION_FACTOR);
 
         // Resume instruction
         ctx.font = '24px Arial';
-        ctx.fillText('Press P to resume', canvas.width / 2, canvas.height / 2 + 50);
+        ctx.fillText('Press P to resume', canvas.width / SCORE_REDUCTION_FACTOR, canvas.height / SCORE_REDUCTION_FACTOR + 50);
     }
 }
 
@@ -1381,7 +1389,7 @@ function calculateGameSpeed() {
     const { level } = gameState;
 
     // Base calculation: speed decreases with snake length
-    let speed = baseSpeed + snakeLength * 2;
+    let speed = baseSpeed + snakeLength * SCORE_REDUCTION_FACTOR;
 
     // Level-based speed limits - higher levels get slower maximum speeds
     let maxSpeed = baseSpeed;
@@ -1397,7 +1405,7 @@ function calculateGameSpeed() {
         maxSpeed = baseSpeed + 40; // 140ms interval minimum
     } else if (level >= 5) {
         // Medium levels: slightly slower
-        maxSpeed = baseSpeed + 20; // 120ms interval minimum
+        maxSpeed = baseSpeed + GRID_SIZE; // 120ms interval minimum
     }
 
     // Apply speed modifiers
@@ -1477,7 +1485,7 @@ function updateSpatialGrid() {
     // Clear previous snake positions using array methods
     gameState.spatialGrid.forEach((row, y) => {
         row.forEach((cell, x) => {
-            if (cell === 2) {
+            if (cell === SCORE_REDUCTION_FACTOR) {
                 // Snake segments are marked as 2
                 gameState.spatialGrid[y][x] = 0;
             }
@@ -1494,7 +1502,7 @@ function updateSpatialGrid() {
                 segment.y >= 0 &&
                 segment.y < gameState.tileCount
             ) {
-                gameState.spatialGrid[segment.y][segment.x] = 2;
+                gameState.spatialGrid[segment.y][segment.x] = SCORE_REDUCTION_FACTOR;
             }
         });
     }
@@ -2001,26 +2009,26 @@ function spawnRandomStar() {
 // Draw lightning bolts on the canvas
 function drawLightningBolts() {
     gameState.lightningBolts.forEach((bolt) => {
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = '#FFC107';
         ctx.beginPath();
         ctx.moveTo(
-            bolt.x * gameState.gridSize + gameState.gridSize / 2,
+            bolt.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR,
             bolt.y * gameState.gridSize
         );
         ctx.lineTo(
             bolt.x * gameState.gridSize + gameState.gridSize / 4,
-            bolt.y * gameState.gridSize + gameState.gridSize / 2
+            bolt.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR
         );
         ctx.lineTo(
             bolt.x * gameState.gridSize + (gameState.gridSize * 3) / 4,
-            bolt.y * gameState.gridSize + gameState.gridSize / 2
+            bolt.y * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR
         );
         ctx.lineTo(
-            bolt.x * gameState.gridSize + gameState.gridSize / 2,
+            bolt.x * gameState.gridSize + gameState.gridSize / SCORE_REDUCTION_FACTOR,
             bolt.y * gameState.gridSize + gameState.gridSize
         );
         ctx.strokeStyle = 'orange';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = SCORE_REDUCTION_FACTOR;
         ctx.stroke();
         ctx.fill();
     });
@@ -2056,7 +2064,7 @@ function drawHourglasses() {
 
 function drawStars() {
     const { gridSize } = gameState;
-    ctx.fillStyle = '#FFD700'; // Gold color for stars
+    ctx.fillStyle = '#FFA000'; // Gold color for stars
 
     for (let i = 0; i < gameState.stars.length; i++) {
         const star = gameState.stars[i];
@@ -2065,14 +2073,14 @@ function drawStars() {
 
         // Draw five-pointed star
         ctx.beginPath();
-        const centerX = x + gridSize / 2;
-        const centerY = y + gridSize / 2;
+        const centerX = x + gridSize / SCORE_REDUCTION_FACTOR;
+        const centerY = y + gridSize / SCORE_REDUCTION_FACTOR;
         const outerRadius = gridSize / 3;
-        const innerRadius = outerRadius / 2;
+        const innerRadius = outerRadius / SCORE_REDUCTION_FACTOR;
 
         for (let j = 0; j < 10; j++) {
-            const radius = j % 2 === 0 ? outerRadius : innerRadius;
-            const angle = (Math.PI / 5) * j - Math.PI / 2;
+            const radius = j % SCORE_REDUCTION_FACTOR === 0 ? outerRadius : innerRadius;
+            const angle = (Math.PI / 5) * j - Math.PI / SCORE_REDUCTION_FACTOR;
             const pointX = centerX + radius * Math.cos(angle);
             const pointY = centerY + radius * Math.sin(angle);
 

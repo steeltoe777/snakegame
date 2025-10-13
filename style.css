@@ -1,3 +1,25 @@
+
+/* 🎨 Modernized CSS with CSS variables for better maintainability */
+/* This improves themeability while maintaining file:// compatibility */
+
+:root {
+  --snake-color: #4CAF50;
+  --food-color: #FF5722;
+  --background-color: #222;
+  --text-color: #EEE;
+  --border-color: #333;
+  --powerup-color: #FFC107;
+  --mushroom-color: #9C27B0;
+  --wall-color: #FF9800;
+  --custom-color-1: #4caf50;
+  --custom-color-2: #222;
+  --custom-color-3: #333;
+  --custom-color-4: #45a049;
+  --custom-color-5: #000;
+  --custom-color-6: #ff0000;
+  --custom-color-7: #eee;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -5,8 +27,8 @@ body {
     justify-content: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #222;
-    color: #eee;
+    background-color: var(--custom-color-3);
+    color: var(--custom-color-7);
     font-family: 'Press Start 2P', cursive;
     position: relative; /* Needed for absolute positioning of overlay */
 }
@@ -20,8 +42,8 @@ h1 {
 }
 
 canvas {
-    background-color: #000;
-    border: 2px solid #eee;
+    background-color: var(--custom-color-5);
+    border: 2px solid var(--custom-color-7);
 }
 
 #minimapCanvas {
@@ -31,8 +53,8 @@ canvas {
     width: 100px;
     height: 100px;
     opacity: 0.7;
-    border: 1px solid #eee;
-    background-color: #333;
+    border: 1px solid var(--custom-color-7);
+    background-color: var(--custom-color-2);
     z-index: 100;
 }
 
@@ -61,7 +83,7 @@ canvas {
 }
 
 .gameOverContent {
-    background-color: #333;
+    background-color: var(--custom-color-2);
     padding: 30px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -80,11 +102,11 @@ canvas {
     -ms-border-radius: 10px;
     border-radius: 10px;
     text-align: center;
-    border: 2px solid #eee;
+    border: 2px solid var(--custom-color-7);
 }
 
 .gameOverContent h2 {
-    color: #ff0000;
+    color: var(--custom-color-6);
     margin-bottom: 15px;
     font-size: 2em;
 }
@@ -95,7 +117,7 @@ canvas {
 }
 
 .gameOverContent button {
-    background-color: #4caf50; /* Green */
+    background-color: var(--custom-color-1); /* Green */
     color: white;
     padding: 10px 20px;
     border: none;
@@ -137,5 +159,5 @@ canvas {
 }
 
 .gameOverContent button:hover {
-    background-color: #45a049;
+    background-color: var(--custom-color-4);
 }

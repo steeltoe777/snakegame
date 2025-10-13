@@ -250,6 +250,18 @@ To run the Snake Game locally:
 
 The game uses vanilla JavaScript and should work in any modern browser.
 
+
+## 🎮 Direct Execution
+
+This game runs directly from the file system without requiring a web server:
+
+1. Download or clone the repository
+2. Open `index.html` directly in your browser
+3. Start playing immediately!
+
+**Compatibility Note**: This project maintains `file://` protocol compatibility for simple distribution.
+All code improvements are implemented while preserving this capability.
+
 ## Usage
 
 ### Basic Controls
@@ -264,3 +276,9 @@ The game uses vanilla JavaScript and should work in any modern browser.
 - Collect power-ups to gain special abilities
 - Enter passwords to advance to specific levels
 - Compete for high scores
+
+## 📈 Recent Improvements
+
+This project has undergone significant code quality improvements while maintaining file:// compatibility.
+For details, see [Improvement Summary](docs/IMPROVEMENTS_SUMMARY.md).
+
