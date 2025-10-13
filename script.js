@@ -1209,6 +1209,7 @@ function gameOver() {
         generateMaze(); // Regenerate maze for the new (previous) level
         initializeSpatialGrid(); // Initialize spatial grid for collision detection
         generatePellets(); // Regenerate pellets for the new (previous) level
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Explicit clear before respawn draw
         drawGame(); // Draw initial state for the respawned level
         if (gameState.level >= BASE_SPEED) {
             // Reset snake direction after death on level BASE_SPEED and above
