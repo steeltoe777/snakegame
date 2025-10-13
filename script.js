@@ -43,8 +43,9 @@ function getAvailableTiles(gameState) {
     for (let y = 1; y < gameState.tileCount - 1; y++) {
         for (let x = 1; x < gameState.tileCount - 1; x++) {
             let occupied;
-            if (gameState.maze && gameState.maze[y] && gameState.maze[y][x]) { // Skip walls
-            // eslint-disable-next-line no-continue
+            if (gameState.maze && gameState.maze[y] && gameState.maze[y][x]) {
+                // Skip walls
+                // eslint-disable-next-line no-continue
                 continue;
             }
             for (let j = 0; j < gameState.snake.length; j++) {
@@ -97,7 +98,11 @@ function hslToRgb(h, s, l) {
         b = hue2rgb(p, q, h - 1 / 3);
     }
 
-    return [Math.round(r * COLOR_MAX_VALUE), Math.round(g * COLOR_MAX_VALUE), Math.round(b * COLOR_MAX_VALUE)];
+    return [
+        Math.round(r * COLOR_MAX_VALUE),
+        Math.round(g * COLOR_MAX_VALUE),
+        Math.round(b * COLOR_MAX_VALUE),
+    ];
 }
 
 function generateMushrooms() {
@@ -105,7 +110,7 @@ function generateMushrooms() {
 
     // Only spawn mushrooms on higher levels and with some probability
     if (gameState.level >= 5 && Math.random() < 0.15) {
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -160,7 +165,7 @@ function spawnRandomMushroom() {
     // Only spawn mushrooms on higher levels with 0.3% probability
     if (gameState.level >= 5 && Math.random() < 0.003) {
         // 0.3% chance per update
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -475,10 +480,16 @@ function generateMaze() {
             numInternalWalls += Math.min(WALL_COUNT_LIMIT, (gameState.level - 500) / GRID_SIZE); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
         if (gameState.level >= WALL_COUNT_LIMIT) {
-            numInternalWalls += Math.min(WALL_COUNT_LIMIT, (gameState.level - WALL_COUNT_LIMIT) / LEVEL_THRESHOLD_BASE); // More walls for higher levels, max WALL_COUNT_LIMIT
+            numInternalWalls += Math.min(
+                WALL_COUNT_LIMIT,
+                (gameState.level - WALL_COUNT_LIMIT) / LEVEL_THRESHOLD_BASE
+            ); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
         if (gameState.level >= 5000) {
-            numInternalWalls += Math.min(WALL_COUNT_LIMIT, (gameState.level - 5000) / LEVEL_THRESHOLD_BASE); // More walls for higher levels, max WALL_COUNT_LIMIT
+            numInternalWalls += Math.min(
+                WALL_COUNT_LIMIT,
+                (gameState.level - 5000) / LEVEL_THRESHOLD_BASE
+            ); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
 
         for (let k = 0; k < numInternalWalls; k++) {
@@ -849,13 +860,13 @@ function update() {
         if (head.x === gameState.lightningBolts[i].x && head.y === gameState.lightningBolts[i].y) {
             gameState.lightningBolts.splice(i, 1);
 
-                // Reduce snake length as bonus for eating speedup
-                const lengthReduction = Math.floor(gameState.snake.length / 3);
-                if (lengthReduction > 0 && gameState.snake.length > 1) {
-                    // Ensure snake never becomes shorter than its head
-                    const actualReduction = Math.min(lengthReduction, gameState.snake.length - 1);
-                    gameState.snake.splice(-actualReduction);
-                }
+            // Reduce snake length as bonus for eating speedup
+            const lengthReduction = Math.floor(gameState.snake.length / 3);
+            if (lengthReduction > 0 && gameState.snake.length > 1) {
+                // Ensure snake never becomes shorter than its head
+                const actualReduction = Math.min(lengthReduction, gameState.snake.length - 1);
+                gameState.snake.splice(-actualReduction);
+            }
 
             // Activate speed boost powerup for PASSWORD_LENGTH seconds
             gameState.speedBoostActive = true;
@@ -1510,7 +1521,7 @@ function generateLightningBolts() {
 
     // Only spawn lightning bolts on level 3+ with some probability
     if (gameState.level >= 3 && Math.random() < 0.2) {
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1580,7 +1591,7 @@ function generateHourglasses() {
 
     // Only spawn hourglasses on higher levels and with some probability
     if (gameState.level >= 5 && Math.random() < 0.2) {
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1661,7 +1672,7 @@ function generateStars() {
 
     // Only spawn stars on level 4+
     if (gameState.level >= 4 && Math.random() < 0.2) {
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1753,7 +1764,7 @@ function spawnRandomLightningBolt() {
     // Only spawn lightning bolts on level 3+ with 0.6% probability
     if (gameState.level >= 3 && Math.random() < 0.006) {
         // 0.6% chance per update
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1821,7 +1832,7 @@ function spawnRandomLightningBolt() {
 function spawnRandomHourglass() {
     // Only spawn hourglasses on higher levels and with some probability
     if (gameState.level >= 5 && Math.random() < 0.008) {
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
@@ -1900,7 +1911,7 @@ function spawnRandomHourglass() {
 function spawnRandomStar() {
     // Only spawn stars on level 4+ with 1.2% probability
     if (gameState.level >= 4 && Math.random() < 0.012) {
-    const availableTiles = getAvailableTiles(gameState);
+        const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
             for (let x = 1; x < gameState.tileCount - 1; x++) {
