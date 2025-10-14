@@ -1231,6 +1231,7 @@ function gameOver() {
             Math.max(1, Math.floor(gameState.snake.length / SNAKE_LENGTH_REDUCTION_FACTOR))
         ); // Reduce snake length by half, minimum 1 segment
         gameState.trail = []; // Clear trail
+        updateSpatialGrid(); // FIX: Update spatial grid immediately after clearing trail
         // Clear all powerups when respawning
         gameState.lightningBolts = [];
         gameState.mushrooms = [];
