@@ -19,6 +19,7 @@ Detailed specifications for the Snake Game implementation.
     - Grows by 1 segment when eating food
     - Moves continuously in the current direction
     - Attempts random movement on self-collision instead of immediate death
+
 - Dies on collision with walls or trail segments when not shielded
 
 2. **Food**

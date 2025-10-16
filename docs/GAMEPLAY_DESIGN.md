@@ -225,6 +225,7 @@ Game boundaries change behavior based on progression level.
 - **Level 1-999**: Traditional walls (game over on collision without shield)
 - **Level 1000+**: Wrap-around boundaries (Pac-Man style screen wrapping)
 - **Collision Handling**: Regardless of boundary type, self-collision causes the snake to attempt random movement rather than immediate game over
+
 ### **9. Enhanced Visual Direction System**
 
 #### **👁️ Directional Indicators**

@@ -84,13 +84,14 @@ When the mushroom power-up is active:
 Wall collisions are handled differently based on:
 
 1. **Boundary Type** (based on level):
-   - Levels 1-999: Traditional walls cause game over
-   - Levels 1000+: Wrap-around boundaries
+
+    - Levels 1-999: Traditional walls cause game over
+    - Levels 1000+: Wrap-around boundaries
 
 2. **Power-Up Status**:
-   - No power-ups: Direct collision causes game over
-   - Shield active: Movement is blocked but snake survives
-   - Mushroom active: Snake phases through walls
+    - No power-ups: Direct collision causes game over
+    - Shield active: Movement is blocked but snake survives
+    - Mushroom active: Snake phases through walls
 
 ### Trail Collisions
 
