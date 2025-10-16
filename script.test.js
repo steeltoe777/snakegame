@@ -37,6 +37,7 @@ beforeAll(() => {
         clearRect: jest.fn(),
         fillRect: jest.fn(),
         beginPath: jest.fn(),
+        closePath: jest.fn(),
         arc: jest.fn(),
         fill: jest.fn(),
         fillText: jest.fn(),

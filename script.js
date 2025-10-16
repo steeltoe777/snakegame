@@ -25,6 +25,7 @@ const BASE_SPEED = 100; // Base movement speed in ms
 
 // Timing constants for power-ups in milliseconds
 const MUSHROOM_POWERUP_DURATION = 8000;
+const SHIELD_POWERUP_DURATION = 12000; // 12 seconds in milliseconds
 const SPEED_BOOST_DURATION = 6000;
 const SCORE_MULTIPLIER_DURATION = 10000; // 10 seconds in milliseconds
 
@@ -167,6 +168,107 @@ function generateMushrooms() {
         }
     }
 }
+// Generate shields for powerups
+function generateShields() {
+    // Only spawn shields on level 6+ with some probability
+    if (gameState.level >= 6 && Math.random() < 0.12) {
+        const availableTiles = getAvailableTiles(gameState);
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars/shields)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, hourglasses, stars, or existing shields
+                    let occupied = false;
+
+                    // Check snake using traditional for loop
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets using traditional for loop
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.pellets.length; k++) {
+                            const pellet = gameState.pellets[k];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.mushrooms.length; k++) {
+                            const mushroom = gameState.mushrooms[k];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check lightning bolts
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.lightningBolts.length; k++) {
+                            const bolt = gameState.lightningBolts[k];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check hourglasses
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.hourglasses.length; k++) {
+                            const hourglass = gameState.hourglasses[k];
+                            if (hourglass.x === x && hourglass.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check stars
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.stars.length; k++) {
+                            const star = gameState.stars[k];
+                            if (star.x === x && star.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check shields
+                    if (!occupied) {
+                        for (let k = 0; k < gameState.shields.length; k++) {
+                            const shield = gameState.shields[k];
+                            if (shield.x === x && shield.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 shield if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.shields.push(availableTiles[randomIndex]);
+        }
+    }
+}
 
 // Random mushroom spawning during gameplay
 function spawnRandomMushroom() {
@@ -223,6 +325,108 @@ function spawnRandomMushroom() {
         if (availableTiles.length > 0) {
             const randomIndex = Math.floor(Math.random() * availableTiles.length);
             gameState.mushrooms.push(availableTiles[randomIndex]);
+        }
+    }
+}
+// Random shield spawning during gameplay
+function spawnRandomShield() {
+    // Only spawn shields on level 6+ with 0.5% probability
+    if (gameState.level >= 6 && Math.random() < 0.005) {
+        // 0.5% chance per update
+        const availableTiles = getAvailableTiles(gameState);
+        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars/shields)
+        for (let y = 1; y < gameState.tileCount - 1; y++) {
+            for (let x = 1; x < gameState.tileCount - 1; x++) {
+                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, hourglasses, stars, or existing shields
+                    let occupied = false;
+
+                    // Check snake
+                    for (let j = 0; j < gameState.snake.length; j++) {
+                        const segment = gameState.snake[j];
+                        if (segment.x === x && segment.y === y) {
+                            occupied = true;
+                            break;
+                        }
+                    }
+
+                    // Check pellets
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.pellets.length; j++) {
+                            const pellet = gameState.pellets[j];
+                            if (pellet.x === x && pellet.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check mushrooms
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.mushrooms.length; j++) {
+                            const mushroom = gameState.mushrooms[j];
+                            if (mushroom.x === x && mushroom.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check lightning bolts
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
+                            const bolt = gameState.lightningBolts[j];
+                            if (bolt.x === x && bolt.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check hourglasses
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.hourglasses.length; j++) {
+                            const hourglass = gameState.hourglasses[j];
+                            if (hourglass.x === x && hourglass.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check stars
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.stars.length; j++) {
+                            const star = gameState.stars[j];
+                            if (star.x === x && star.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check existing shields
+                    if (!occupied) {
+                        for (let j = 0; j < gameState.shields.length; j++) {
+                            const shield = gameState.shields[j];
+                            if (shield.x === x && shield.y === y) {
+                                occupied = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!occupied) {
+                        availableTiles.push({ x, y });
+                    }
+                }
+            }
+        }
+
+        // Spawn 1 shield if available tiles exist
+        if (availableTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableTiles.length);
+            gameState.shields.push(availableTiles[randomIndex]);
         }
     }
 }
@@ -312,11 +516,15 @@ const gameState = {
     mushroomPowerupActive: false,
     mushroomTimer: 0,
     mushroomLastUpdate: 0, // Track last update time for accurate timer
+    shieldPowerupActive: false,
+    shieldTimer: 0,
+    shieldLastUpdate: 0, // Track last update time for accurate timer
     speedBoostActive: false,
     speedBoostTimer: 0,
     speedBoostLastUpdate: 0, // Track last update time for accurate speed boost timer
     lightningBolts: [],
     mushrooms: [],
+    shields: [], // Array of {x, y} positions
     hourglasses: [], // Array of {x, y} positions
     timeSlowActive: false, // Activation state
     timeSlowTimer: 0, // Remaining time in milliseconds
@@ -672,6 +880,84 @@ function drawMushrooms() {
         ctx.fill();
     });
 }
+// Draw shields on the canvas
+function drawShields() {
+    gameState.shields.forEach((shield) => {
+        ctx.fillStyle = '#00BFFF'; // Deep sky blue for shield
+        ctx.beginPath();
+        ctx.arc(
+            shield.x * gameState.gridSize + gameState.gridSize / 2,
+            shield.y * gameState.gridSize + gameState.gridSize / 2,
+            gameState.gridSize / 4,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+
+        // Add shield symbol (triangle)
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.moveTo(
+            shield.x * gameState.gridSize + gameState.gridSize / 2,
+            shield.y * gameState.gridSize + gameState.gridSize / 4
+        );
+        ctx.lineTo(
+            shield.x * gameState.gridSize + gameState.gridSize / 4,
+            shield.y * gameState.gridSize + (3 * gameState.gridSize) / 4
+        );
+        ctx.lineTo(
+            shield.x * gameState.gridSize + (3 * gameState.gridSize) / 4,
+            shield.y * gameState.gridSize + (3 * gameState.gridSize) / 4
+        );
+        ctx.closePath();
+        ctx.fill();
+    });
+}
+
+// Draw shield effect around snake when active
+function drawShieldEffect() {
+    if (!gameState.shieldPowerupActive) return;
+
+    // Draw a pulsing shield effect around each snake segment
+    const pulse = Math.sin(performance.now() / 200) * 0.2 + 0.8; // Pulsing effect
+    const shieldColor = `rgba(0, 191, 255, ${pulse * 0.8})`; // Deep sky blue with pulsing opacity
+
+    gameState.snake.forEach((segment, index) => {
+        // Draw a glowing ring around each segment
+        ctx.strokeStyle = shieldColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(
+            segment.x * gameState.gridSize + gameState.gridSize / 2,
+            segment.y * gameState.gridSize + gameState.gridSize / 2,
+            gameState.gridSize / 2 + 3,
+            0,
+            Math.PI * 2
+        );
+        ctx.stroke();
+
+        // Draw small shield symbols around the snake
+        if (index % 3 === 0) {
+            // Every 3rd segment
+            ctx.fillStyle = shieldColor;
+            ctx.beginPath();
+            ctx.moveTo(
+                segment.x * gameState.gridSize + gameState.gridSize / 2,
+                segment.y * gameState.gridSize + gameState.gridSize / 4
+            );
+            ctx.lineTo(
+                segment.x * gameState.gridSize + gameState.gridSize / 4,
+                segment.y * gameState.gridSize + (3 * gameState.gridSize) / 4
+            );
+            ctx.lineTo(
+                segment.x * gameState.gridSize + (3 * gameState.gridSize) / 4,
+                segment.y * gameState.gridSize + (3 * gameState.gridSize) / 4
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+    });
+}
 
 function drawSnake() {
     gameState.snake.forEach((segment, index) => {
@@ -757,48 +1043,276 @@ function drawTrail() {
     }
 }
 
+function shouldBlockMovement(head) {
+    // Check for wall collisions (outer walls)
+    // Note: We don't check outer walls here because wrapping is handled separately
+    // and we want to allow normal wrapping even with shield active
+
+    // Check for maze wall collisions
+    if (gameState.maze[head.y] && gameState.maze[head.y][head.x] === 1) {
+        // With mushroom active, snake can phase through all obstacles
+        if (gameState.mushroomPowerupActive) {
+            return false; // Allow movement through maze walls
+        }
+        // Shield blocks collision with maze walls
+        if (gameState.shieldPowerupActive) {
+            return true; // Block movement
+        }
+        // Without shield or mushroom, collision causes game over
+        gameOver();
+        return true; // Block movement
+    }
+
+    // Check for trail collisions
+    for (let i = 0; i < gameState.trail.length; i++) {
+        if (head.x === gameState.trail[i].x && head.y === gameState.trail[i].y) {
+            // With mushroom active, snake can phase through all obstacles
+            if (gameState.mushroomPowerupActive) {
+                return false; // Allow movement through trail
+            }
+            // Shield blocks collision with trail
+            if (gameState.shieldPowerupActive) {
+                return true; // Block movement
+            }
+            // Without shield or mushroom, collision causes game over
+            gameOver();
+            return true; // Block movement
+        }
+    }
+
+    return false; // Don't block movement
+}
+// Helper function to try random movement when snake is blocked
+function tryRandomMovement() {
+    const head = gameState.snake[0];
+
+    // Define all possible directions
+    const directions = [
+        { dx: 0, dy: -1 }, // Up
+        { dx: 1, dy: 0 }, // Right
+        { dx: 0, dy: 1 }, // Down
+        { dx: -1, dy: 0 }, // Left
+    ];
+
+    // Array to hold valid directions
+    const validDirections = [];
+
+    // Check each direction for validity
+    for (let i = 0; i < directions.length; i++) {
+        const dir = directions[i];
+        const nextX = head.x + dir.dx;
+        const nextY = head.y + dir.dy;
+
+        // Handle wrapping
+        let wrappedX = nextX;
+        let wrappedY = nextY;
+        if (wrappedX < 0) wrappedX = gameState.tileCount - 1;
+        if (wrappedX >= gameState.tileCount) wrappedX = 0;
+        if (wrappedY < 0) wrappedY = gameState.tileCount - 1;
+        if (wrappedY >= gameState.tileCount) wrappedY = 0;
+
+        // Create test head position
+        const testHead = { x: wrappedX, y: wrappedY };
+
+        // Check if this direction is blocked
+        let blocked = false;
+
+        // Check for maze walls (unless mushroom powerup is active)
+        if (
+            !gameState.mushroomPowerupActive &&
+            gameState.maze[testHead.y] &&
+            gameState.maze[testHead.y][testHead.x] === 1
+        ) {
+            blocked = true;
+        }
+
+        // Check for trail (unless mushroom powerup is active)
+        if (!gameState.mushroomPowerupActive) {
+            for (let j = 0; j < gameState.trail.length; j++) {
+                if (testHead.x === gameState.trail[j].x && testHead.y === gameState.trail[j].y) {
+                    blocked = true;
+                    break;
+                }
+            }
+        }
+
+        // Check for snake body (excluding head)
+        for (let j = 1; j < gameState.snake.length; j++) {
+            if (testHead.x === gameState.snake[j].x && testHead.y === gameState.snake[j].y) {
+                blocked = true;
+                break;
+            }
+        }
+
+        // If not blocked, add to valid directions
+        if (!blocked) {
+            validDirections.push(dir);
+        }
+    }
+
+    // If we have valid directions, choose one randomly
+    if (validDirections.length > 0) {
+        // Shuffle the valid directions
+        for (let i = validDirections.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [validDirections[i], validDirections[j]] = [validDirections[j], validDirections[i]];
+        }
+
+        // Set the new direction
+        const chosenDir = validDirections[0];
+        gameState.dx = chosenDir.dx;
+        gameState.dy = chosenDir.dy;
+
+        return true; // Successfully moved
+    }
+
+    // No valid directions - snake is trapped
+    return false; // Failed to move
+}
+
 function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
+    // Deadlock detection to prevent infinite trapping
+    // Check if snake is surrounded by walls/trail and cannot move
+    if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
+        const head = gameState.snake[0];
+        let escapeRoutes = 0;
+
+        // Check all four directions
+        const directions = [
+            { dx: 0, dy: -1 }, // Up
+            { dx: 1, dy: 0 }, // Right
+            { dx: 0, dy: 1 }, // Down
+            { dx: -1, dy: 0 }, // Left
+        ];
+
+        for (let i = 0; i < directions.length; i++) {
+            const nextX = head.x + directions[i].dx;
+            const nextY = head.y + directions[i].dy;
+
+            // Handle wrapping
+            let wrappedX = nextX;
+            let wrappedY = nextY;
+            if (wrappedX < 0) wrappedX = gameState.tileCount - 1;
+            if (wrappedX >= gameState.tileCount) wrappedX = 0;
+            if (wrappedY < 0) wrappedY = gameState.tileCount - 1;
+            if (wrappedY >= gameState.tileCount) wrappedY = 0;
+
+            // Create a test head position
+            const testHead = { x: wrappedX, y: wrappedY };
+
+            // Check if this direction is blocked
+            let blocked = false;
+
+            // Check for maze walls
+            if (gameState.maze[testHead.y] && gameState.maze[testHead.y][testHead.x] === 1) {
+                blocked = true;
+            }
+
+            // Check for trail
+            for (let j = 0; j < gameState.trail.length; j++) {
+                if (testHead.x === gameState.trail[j].x && testHead.y === gameState.trail[j].y) {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            // If not blocked, this is an escape route
+            if (!blocked) {
+                escapeRoutes++;
+            }
+        }
+
+        // If no escape routes, game over
+        if (escapeRoutes === 0) {
+            // Check if snake is in a death trap (completely surrounded by wall+trail)
+            // If so, and there's no mushroom, the snake should die
+            let wallAndTrailCount = 0;
+            const head = gameState.snake[0];
+
+            // Check all four directions for wall or trail
+            const directions = [
+                { dx: 0, dy: -1 }, // Up
+                { dx: 1, dy: 0 }, // Right
+                { dx: 0, dy: 1 }, // Down
+                { dx: -1, dy: 0 }, // Left
+            ];
+
+            for (let i = 0; i < directions.length; i++) {
+                const nextX = head.x + directions[i].dx;
+                const nextY = head.y + directions[i].dy;
+
+                // Handle wrapping
+                let wrappedX = nextX;
+                let wrappedY = nextY;
+                if (wrappedX < 0) wrappedX = gameState.tileCount - 1;
+                if (wrappedX >= gameState.tileCount) wrappedX = 0;
+                if (wrappedY < 0) wrappedY = gameState.tileCount - 1;
+                if (wrappedY >= gameState.tileCount) wrappedY = 0;
+
+                // Create a test head position
+                const testHead = { x: wrappedX, y: wrappedY };
+
+                // Check if this direction is blocked by wall or trail
+                let blocked = false;
+
+                // Check for maze walls
+                if (gameState.maze[testHead.y] && gameState.maze[testHead.y][testHead.x] === 1) {
+                    blocked = true;
+                }
+
+                // Check for trail
+                for (let j = 0; j < gameState.trail.length; j++) {
+                    if (
+                        testHead.x === gameState.trail[j].x &&
+                        testHead.y === gameState.trail[j].y
+                    ) {
+                        blocked = true;
+                        break;
+                    }
+                }
+
+                // If blocked, increment counter
+                if (blocked) {
+                    wallAndTrailCount++;
+                }
+            }
+
+            // If all directions are blocked by wall/trail and no mushroom, game over
+            if (wallAndTrailCount === 4 && !gameState.mushroomPowerupActive) {
+                gameOver();
+                return;
+            }
+            // If no escape routes, move randomly to prevent standing still
+            const randomDirections = [
+                { dx: 0, dy: -1 }, // Up
+                { dx: 1, dy: 0 }, // Right
+                { dx: 0, dy: 1 }, // Down
+                { dx: -1, dy: 0 }, // Left
+            ];
+
+            // Shuffle directions randomly
+            for (let i = randomDirections.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [randomDirections[i], randomDirections[j]] = [
+                    randomDirections[j],
+                    randomDirections[i],
+                ];
+            }
+
+            // Try the first direction
+            const dir = randomDirections[0];
+            gameState.dx = dir.dx;
+            gameState.dy = dir.dy;
+        }
+    }
+
     // Update rainbow trail hue for animation effect
     gameState.rainbowHue = (gameState.rainbowHue + 0.5) % HUE_FULL_CIRCLE;
 
     updateSpatialGrid(); // Update spatial grid for accurate collision detection
     const head = { x: gameState.snake[0].x + gameState.dx, y: gameState.snake[0].y + gameState.dy };
-
-    // Collision with outer walls
-    if (
-        head.x < 0 ||
-        head.x >= gameState.tileCount ||
-        head.y < 0 ||
-        head.y >= gameState.tileCount
-    ) {
-        if (gameState.level < LEVEL_THRESHOLD_BASE && !gameState.mushroomPowerupActive) {
-            // Only check for outer wall collisions on level below LEVEL_THRESHOLD_BASE and without mushroom
-            gameOver();
-            return;
-        }
-        if (head.x < 0) {
-            head.x = gameState.tileCount - 1;
-        }
-        if (head.x >= gameState.tileCount) {
-            head.x = 0;
-        }
-        if (head.y < 0) {
-            head.y = gameState.tileCount - 1;
-        }
-        if (head.y >= gameState.tileCount) {
-            head.y = 0;
-        }
-    }
-
-    // Collision with walls (maze)
-    if (gameState.maze[head.y][head.x] === 1 && !gameState.mushroomPowerupActive) {
-        gameOver();
-        return;
-    }
-
-    // Collision with self
     for (let i = 1; i < gameState.snake.length; i++) {
         if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
             if (i <= SCORE_REDUCTION_FACTOR && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
@@ -837,10 +1351,125 @@ function update() {
         }
     }
 
-    // Collision with trail
+    // Check if movement should be blocked due to collision and active shield
+
+    // Update shield timer if active
+    if (gameState.shieldPowerupActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.shieldLastUpdate;
+        gameState.shieldTimer -= deltaTime;
+        gameState.shieldLastUpdate = currentTime;
+
+        // Deactivate shield when timer expires
+        if (gameState.shieldTimer <= 0) {
+            gameState.shieldPowerupActive = false;
+            gameState.shieldTimer = 0;
+        }
+    }
+
+    // Helper function to check if collision should be ignored due to active shield
+
+    // Update shield timer if active
+    if (gameState.shieldPowerupActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.shieldLastUpdate;
+        gameState.shieldTimer -= deltaTime;
+        gameState.shieldLastUpdate = currentTime;
+
+        // Deactivate shield when timer expires
+        if (gameState.shieldTimer <= 0) {
+            gameState.shieldPowerupActive = false;
+            gameState.shieldTimer = 0;
+        }
+    }
+
+    // Helper function to handle collisions with shield logic
+
+    // Update shield timer if active
+    if (gameState.shieldPowerupActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.shieldLastUpdate;
+        gameState.shieldTimer -= deltaTime;
+        gameState.shieldLastUpdate = currentTime;
+
+        // Deactivate shield when timer expires
+        if (gameState.shieldTimer <= 0) {
+            gameState.shieldPowerupActive = false;
+            gameState.shieldTimer = 0;
+        }
+    }
+
+    // Update shield timer if active
+    if (gameState.shieldPowerupActive) {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - gameState.shieldLastUpdate;
+        gameState.shieldTimer -= deltaTime;
+        gameState.shieldLastUpdate = currentTime;
+
+        // Deactivate shield when timer expires
+        if (gameState.shieldTimer <= 0) {
+            gameState.shieldPowerupActive = false;
+            gameState.shieldTimer = 0;
+        }
+    }
+
+    // Collision with outer walls
+    // Handle board wrapping normally regardless of shield status
+    if (head.x < 0) head.x = gameState.tileCount - 1;
+    if (head.x >= gameState.tileCount) head.x = 0;
+    if (head.y < 0) head.y = gameState.tileCount - 1;
+    if (head.y >= gameState.tileCount) head.y = 0;
+
+    // Check for collisions with walls and trail AFTER wrapping
+    // Shield should block collisions but not interfere with wrapping
+    if (shouldBlockMovement(head)) {
+        // For shielded snakes (unless mushroom active), try random movement instead of blocking
+        if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
+            // Try random movement
+            if (tryRandomMovement()) {
+                // Successfully moved in a random direction, continue with update
+                // We need to recalculate head position with new direction
+                head.x = gameState.snake[0].x + gameState.dx;
+                head.y = gameState.snake[0].y + gameState.dy;
+
+                // Handle wrapping for new head position
+                if (head.x < 0) head.x = gameState.tileCount - 1;
+                if (head.x >= gameState.tileCount) head.x = 0;
+                if (head.y < 0) head.y = gameState.tileCount - 1;
+                if (head.y >= gameState.tileCount) head.y = 0;
+
+                // Continue with update function instead of returning
+            } else {
+                // No valid directions - snake is trapped despite having shield
+                gameOver();
+                return; // Return early from update function
+            }
+        } else {
+            // For unshielded snakes or when mushroom is active, block movement as before
+            return; // Block movement by returning early
+        }
+    }
+
+    // Collision with walls (maze)
+    if (
+        gameState.maze[head.y][head.x] === 1 &&
+        !gameState.mushroomPowerupActive &&
+        !gameState.shieldPowerupActive
+    ) {
+        gameOver();
+        return;
+    }
+
+    // Collision with self
+    // Collision with self
+
     for (let i = 0; i < gameState.trail.length; i++) {
-        if (head.x === gameState.trail[i].x && head.y === gameState.trail[i].y) {
-            if (!gameState.mushroomPowerupActive) {
+        if (
+            head.x === gameState.trail[i].x &&
+            head.y === gameState.trail[i].y &&
+            !gameState.shieldPowerupActive
+        ) {
+            if (!gameState.mushroomPowerupActive && !gameState.shieldPowerupActive) {
                 gameOver();
             }
         }
@@ -864,6 +1493,18 @@ function update() {
             // Update game speed based on increased snake length
             clearInterval(gameState.gameInterval);
             gameState.gameInterval = setInterval(update, calculateGameSpeed());
+            break;
+        }
+    }
+
+    // Check for shield eating
+    for (let i = 0; i < gameState.shields.length; i++) {
+        if (head.x === gameState.shields[i].x && head.y === gameState.shields[i].y) {
+            gameState.shields.splice(i, 1);
+            // Activate shield powerup for 6 seconds
+            gameState.shieldPowerupActive = true;
+            gameState.shieldTimer = SHIELD_POWERUP_DURATION;
+            gameState.shieldLastUpdate = performance.now(); // Store start time for accurate timer
             break;
         }
     }
@@ -953,13 +1594,17 @@ function update() {
                 (head.x < 0 ||
                     head.x >= gameState.tileCount ||
                     head.y < 0 ||
-                    head.y >= gameState.tileCount)
+                    (head.y >= gameState.tileCount && !gameState.shieldPowerupActive))
             ) {
                 gameOver();
                 return;
             }
             // Check maze wall collision
-            if (gameState.maze[head.y] && gameState.maze[head.y][head.x] === 1) {
+            if (
+                gameState.maze[head.y] &&
+                gameState.maze[head.y][head.x] === 1 &&
+                !gameState.shieldPowerupActive
+            ) {
                 gameOver();
                 return;
             }
@@ -1017,7 +1662,8 @@ function update() {
         levelUp();
     }
 
-    spawnRandomMushroom(); // Random mushroom spawning during gameplay
+    spawnRandomMushroom(); // Random mushroom spawning during game
+    spawnRandomShield(); // Random shield spawning during gameplayplay
     spawnRandomLightningBolt(); // Random lightning bolt spawning during gameplay
     spawnRandomHourglass();
     spawnRandomStar();
@@ -1034,11 +1680,13 @@ function drawGame() {
     drawMaze();
     drawPellets();
     drawTrail();
-    drawMushrooms(); // Draw mushroom powerups
+    drawMushrooms(); // Draw mushroom power
+    drawShields(); // Draw shield powerupsups
     drawLightningBolts(); // Draw lightning bolt powerups
     drawHourglasses();
     drawStars();
     drawSnake();
+    drawShieldEffect(); // Draw shield effect when active
 
     // Draw mushroom powerup indicator if active
     if (gameState.mushroomPowerupActive) {
@@ -1050,6 +1698,18 @@ function drawGame() {
         const timerWidth = (gameState.mushroomTimer / MUSHROOM_POWERUP_DURATION) * BASE_SPEED;
         ctx.fillStyle = 'red';
         ctx.fillRect(10, 25, timerWidth, 5);
+    }
+
+    // Draw shield powerup indicator if active
+    if (gameState.shieldPowerupActive) {
+        ctx.fillStyle = 'rgba(0, 191, 255, 0.7)';
+        ctx.font = '12px Arial';
+        ctx.fillText('SHIELD ACTIVE!', 10, 70);
+
+        // Draw timer bar
+        const timerWidth = (gameState.shieldTimer / SHIELD_POWERUP_DURATION) * 20;
+        ctx.fillStyle = '#00BFFF';
+        ctx.fillRect(10, 75, timerWidth, 5);
     }
 
     // Draw the minimap showing the entire game board
@@ -1233,6 +1893,7 @@ function gameOver() {
         gameState.trail = []; // Clear trail
         updateSpatialGrid(); // FIX: Update spatial grid immediately after clearing trail
         // Clear all powerups when respawning
+        gameState.shields = []; // Clear shields when respawning
         gameState.lightningBolts = [];
         gameState.mushrooms = [];
         gameState.hourglasses = [];
@@ -1273,6 +1934,9 @@ function gameOver() {
 }
 
 function levelUp() {
+    // Clear shields when level changes
+    gameState.shields = [];
+
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
     gameState.level++;
@@ -1288,7 +1952,8 @@ function levelUp() {
     generateMaze();
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
     generatePellets();
-    generateMushrooms(); // Generate mushrooms for powerups
+    generateMushrooms(); // Generate mushrooms for power
+    generateShields(); // Generate shields for powerupsups
     generateLightningBolts(); // Generate lightning bolts for speed boost powerups
     generateHourglasses();
     generateStars();
@@ -1298,6 +1963,9 @@ function levelUp() {
 }
 
 function resetGame() {
+    // Clear shields when game resets
+    gameState.shields = [];
+
     // FIX: Clear any existing game interval when resetting the game
     if (gameState.gameInterval) {
         clearInterval(gameState.gameInterval);
@@ -1318,7 +1986,8 @@ function resetGame() {
     generatePellets();
     generateLightningBolts(); // Generate lightning bolts for speed boost powerups
     generateHourglasses();
-    generateMushrooms(); // Generate mushrooms for powerups
+    generateMushrooms();
+    generateShields(); // Generate shields for powerups // Generate mushrooms for powerups
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
