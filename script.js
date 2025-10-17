@@ -1,3 +1,35 @@
+// REMEDY: Centralized timer management for better accuracy
+function updatePowerupTimers() {
+    const currentTime = performance.now();
+
+    // Update shield timer
+    if (gameState.shieldPowerupActive) {
+        const deltaTime = currentTime - gameState.shieldLastUpdate;
+        gameState.shieldTimer -= deltaTime;
+        gameState.shieldLastUpdate = currentTime;
+
+        if (gameState.shieldTimer <= 0) {
+            gameState.shieldPowerupActive = false;
+            gameState.shieldTimer = 0;
+        }
+    }
+
+    // Update mushroom timer
+    if (gameState.mushroomPowerupActive) {
+        const deltaTime = currentTime - gameState.mushroomLastUpdate;
+        gameState.mushroomTimer -= deltaTime;
+        gameState.mushroomLastUpdate = currentTime;
+
+        if (gameState.mushroomTimer <= 0) {
+            gameState.mushroomPowerupActive = false;
+            gameState.mushroomTimer = 0;
+            // Handle mushroom expiry safely (see Remedy 1)
+        }
+    }
+
+    // Update other timers similarly...
+}
+
 // Color conversion constants
 
 // 📝 Magic numbers replaced with constant names for better readability
@@ -118,7 +150,10 @@ function generateMushrooms() {
     gameState.mushrooms = [];
 
     // Only spawn mushrooms on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.15) {
+    if (
+        gameState.level >= 5 &&
+        Math.random() < 0.15 + (gameState.level > 10 ? 0.05 : 0) - (gameState.level > 20 ? 0.03 : 0)
+    ) {
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
@@ -171,7 +206,10 @@ function generateMushrooms() {
 // Generate shields for powerups
 function generateShields() {
     // Only spawn shields on level 6+ with some probability
-    if (gameState.level >= 6 && Math.random() < 0.12) {
+    if (
+        gameState.level >= 6 &&
+        Math.random() < 0.12 + (gameState.level > 15 ? 0.03 : 0) - (gameState.level > 25 ? 0.02 : 0)
+    ) {
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars/shields)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
@@ -273,7 +311,7 @@ function generateShields() {
 // Random mushroom spawning during gameplay
 function spawnRandomMushroom() {
     // Only spawn mushrooms on higher levels with 0.3% probability
-    if (gameState.level >= 5 && Math.random() < 0.003) {
+    if (gameState.level >= 5 && Math.random() < 0.003 + (gameState.level > 10 ? 0.002 : 0)) {
         // 0.3% chance per update
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms)
@@ -331,7 +369,7 @@ function spawnRandomMushroom() {
 // Random shield spawning during gameplay
 function spawnRandomShield() {
     // Only spawn shields on level 6+ with 0.5% probability
-    if (gameState.level >= 6 && Math.random() < 0.005) {
+    if (gameState.level >= 6 && Math.random() < 0.005 + (gameState.level > 15 ? 0.003 : 0)) {
         // 0.5% chance per update
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars/shields)
@@ -1173,6 +1211,11 @@ function tryRandomMovement() {
 function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
+
+    // REMEDY: Centralized timer updates for accuracy
+    updatePowerupTimers();
+
+    // Continue with existing logic...
     // Deadlock detection to prevent infinite trapping
     // Check if snake is surrounded by walls/trail and cannot move
     if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
@@ -1413,14 +1456,30 @@ function update() {
         }
     }
 
-    // Collision with outer walls
-    // Handle board wrapping normally regardless of shield status
+    // REMEDY: Check for collisions BEFORE wrapping for more accurate detection
+    // Check for collisions with walls and trail BEFORE wrapping
+    if (shouldBlockMovement(head)) {
+        // Handle shielded snake random movement
+        if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
+            if (tryRandomMovement()) {
+                // Recalculate head position with new direction
+                head.x = gameState.snake[0].x + gameState.dx;
+                head.y = gameState.snake[0].y + gameState.dy;
+            } else {
+                // No valid directions - game over
+                gameOver();
+                return;
+            }
+        } else {
+            return; // Block movement
+        }
+    }
+
+    // Handle board wrapping AFTER collision checks
     if (head.x < 0) head.x = gameState.tileCount - 1;
     if (head.x >= gameState.tileCount) head.x = 0;
     if (head.y < 0) head.y = gameState.tileCount - 1;
     if (head.y >= gameState.tileCount) head.y = 0;
-
-    // Check for collisions with walls and trail AFTER wrapping
     // Shield should block collisions but not interfere with wrapping
     if (shouldBlockMovement(head)) {
         // For shielded snakes (unless mushroom active), try random movement instead of blocking
@@ -1586,8 +1645,35 @@ function update() {
         if (gameState.mushroomTimer <= 0) {
             gameState.mushroomPowerupActive = false;
             gameState.mushroomTimer = 0;
-            // Check if snake head is now inside a wall after power-up ends
+
+            // REMEDY: Add grace period and safe position check after mushroom expires
             const head = gameState.snake[0];
+            let isInDanger = false;
+
+            // Check if head is in a dangerous position
+            if (gameState.maze[head.y] && gameState.maze[head.y][head.x] === 1) {
+                isInDanger = true;
+            }
+
+            // Check trail collision
+            for (let i = 0; i < gameState.trail.length; i++) {
+                if (head.x === gameState.trail[i].x && head.y === gameState.trail[i].y) {
+                    isInDanger = true;
+                    break;
+                }
+            }
+
+            // If in danger and no shield, try to move to safety
+            if (isInDanger && !gameState.shieldPowerupActive) {
+                // Try random movement to escape
+                if (!tryRandomMovement()) {
+                    // If no escape possible, give brief invulnerability
+                    gameState.shieldPowerupActive = true;
+                    gameState.shieldTimer = 1000; // 1 second grace period
+                    gameState.shieldLastUpdate = performance.now();
+                }
+            }
+            // REMOVED DUPLICATE: const head = gameState.snake[0];
             // Check outer wall collision
             if (
                 gameState.level < LEVEL_THRESHOLD_BASE &&
@@ -2224,7 +2310,7 @@ function generateLightningBolts() {
     gameState.lightningBolts = [];
 
     // Only spawn lightning bolts on level 3+ with some probability
-    if (gameState.level >= 3 && Math.random() < 0.2) {
+    if (gameState.level >= 3 && Math.random() < 0.2 - (gameState.level > 10 ? 0.05 : 0)) {
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
@@ -2294,7 +2380,7 @@ function generateHourglasses() {
     gameState.hourglasses = [];
 
     // Only spawn hourglasses on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.2) {
+    if (gameState.level >= 5 && Math.random() < 0.2 - (gameState.level > 10 ? 0.05 : 0)) {
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
@@ -2375,7 +2461,7 @@ function generateStars() {
     gameState.stars = [];
 
     // Only spawn stars on level 4+
-    if (gameState.level >= 4 && Math.random() < 0.2) {
+    if (gameState.level >= 4 && Math.random() < 0.2 - (gameState.level > 10 ? 0.05 : 0)) {
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
