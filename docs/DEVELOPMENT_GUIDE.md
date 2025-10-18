@@ -1,263 +1,201 @@
-# Development Guide
+# Snake Game Development Guide
 
-## 👋 Welcome, Fellow Developer!
+This guide provides everything you need to know to develop, modify, and extend the Snake Game.
 
-## 🛠️ Development Constraints
+## 📁 Project Structure
 
-To maintain `file://` execution capability, the following constraints apply:
-
-- No ES6 modules (import/export) allowed
-- All code must be in a single script.js file or loaded via traditional script tags
-- No external dependencies that require bundling
-- Use IIFE pattern for namespacing instead of modules
-- No build/bundling requirements for basic execution
-
-These constraints ensure the game can be distributed and run simply by sharing the folder.
-
-Hey there! I'm excited you're interested in contributing to this project. This guide will help you understand how I built this game and how you can extend it.
-
-### My Development Approach
-
-I built this game with a few key principles in mind:
-
-1. **Readability over cleverness** - I'd rather have clear code than "smart" code
-2. **Test as you go** - The test suite has saved me countless times
-3. **Incremental improvements** - Start simple, then add complexity
-4. **Learn through breaking things** - Don't be afraid to experiment!
-
-### A Quick Story
-
-This project started as a weekend experiment and grew organically. The password system was actually the last major feature I added - originally it was just a classic snake game. Sometimes the best features come from late-night "what if" ideas!
-
-## Quick Start for AI Agents
-
-### 1. Environment Setup
-
-```bash
-# Navigate to project directory
-cd /a0/projects/snakegame/
-
-# Verify project structure
-ls -la
-
-# Check dependencies
-cat package.json
-
-# Run tests to verify everything works
-npm test
+```
+snakegame/
+├── index.html          # Main game page
+├── style.css           # Styling for the game
+├── script.js           # Main game logic (82KB)
+├── docs/
+│   └── compatibility_test.html  # Compatibility testing page
+├── tests/
+│   ├── script.test.js           # Main game tests
+│   └── password_system.test.js  # Password system tests
+├── package.json        # Project metadata and scripts
+├── README.md           # Project overview
+├── DEVELOPMENT_GUIDE.md # This file
+├── SPECIFICATIONS.md   # Detailed specifications
+└── IMPROVEMENTS_SUMMARY.md # Summary of improvements
 ```
 
-### 2. Understanding the Codebase
+## 🛠️ Development Environment Setup
 
-#### Entry Points
+### Prerequisites
 
-- **index.html**: Application entry point
-- **script.js**: Main game logic
-- **style.css**: Styling and layout
+- A modern web browser (Chrome, Firefox, Safari, Edge)
+- A text editor (VS Code, Sublime Text, Atom, etc.)
+- Node.js and npm (for running tests and linting)
 
-#### Key Areas to Focus On
+### Installation
 
-1. **Game State Management**: Core game state initialization and management functions
-2. **Game Loop**: Main game loop and timing control functions
-3. **Rendering System**: Canvas rendering and visual update functions
-4. **Input Handling**: Keyboard input and user interaction functions
+1. Clone or download the repository
+2. Navigate to the project directory
+3. Install dependencies (if any are added in the future):
+    ```bash
+    npm install
+    ```
 
-### 3. Making Changes
+### Running the Game
 
-#### Code Style Guidelines
+The game is designed to run directly from the file system without a web server:
 
-- **ESLint Rules**: Follow .eslintrc.js configuration
-- **Prettier Formatting**: Use .prettierrc.js settings
-- **Function Naming**: camelCase for functions, PascalCase for classes
-- **Variable Naming**: Descriptive names, avoid abbreviations
+1. Open `index.html` in your browser
+2. Start playing immediately
 
-#### Testing Requirements
+### Development Scripts
 
-- **Before Changes**: Run `npm test` to establish baseline
-- **After Changes**: Run `npm test` to verify no regressions
-- **New Features**: Add corresponding tests in script.test.js
-- **Edge Cases**: Always test boundary conditions
+```bash
+# Run tests
+npm run test
 
-#### Common Modification Patterns
+# Run ESLint to check for code issues
+npm run lint
 
-##### Adding New Game Objects
+# Run ESLint and automatically fix issues
+npm run lint -- --fix
+```
 
-1. Add to gameState object initialization section
-2. Add rendering function to canvas rendering module
-3. Add collision detection to physics engine module
-4. Add tests in script.test.js
+## 🎮 Game Architecture
 
-##### Modifying Game Rules
+### Core Components
 
-1. Identify relevant function (use API_REFERENCE.md)
-2. Make changes incrementally
-3. Test each change with `npm test`
-4. Verify visual behavior in browser
+1. **Game State Management**
 
-##### Adding New Levels
+    - Single global gameState object containing all game data
+    - Functions to initialize, update, and reset game state
 
-1. Modify maze generation algorithm in level design module
-2. Update level progression logic in game progression module
-3. Test password generation for new levels
-4. Verify backward compatibility
+2. **Rendering System**
 
-### 4. Testing Strategy
+    - Canvas-based rendering
+    - Separate functions for drawing different game elements
+    - Efficient redraw only when necessary
 
-#### Test Categories
+3. **Input Handling**
 
-- **Unit Tests**: Individual function testing
-- **Integration Tests**: Component interaction testing
-- **Visual Tests**: Manual browser testing
-- **Performance Tests**: Frame rate monitoring
+    - Keyboard event listeners
+    - Support for arrow keys and WASD
+    - Pause/resume with Spacebar
 
-#### Test Commands
+4. **Game Loop**
+    - RequestAnimationFrame for smooth animation
+    - Consistent timing regardless of frame rate
+
+### File Organization
+
+The main game logic is contained in `script.js`, which is organized into sections:
+
+1. Configuration and Constants
+2. Game State Initialization
+3. Rendering Functions
+4. Game Logic Functions
+5. Input Handling
+6. Game Loop
+7. Utility Functions
+
+## 🧪 Testing
+
+### Test Framework
+
+- Jest for JavaScript testing
+- Tests located in the `tests/` directory
+
+### Running Tests
 
 ```bash
 # Run all tests
-npm test
+npm run test
 
-# Run specific test
-npm test -- --testNamePattern="collision"
+# Run tests in watch mode
+npm run test -- --watch
 
-# Run with coverage
-npm test -- --coverage
-
-# Watch mode for development
-npm test -- --watch
+# Run specific test file
+npm run test -- tests/script.test.js
 ```
 
-#### Manual Testing Checklist
+### Writing Tests
 
-- [ ] Snake movement in all directions
-- [ ] Food collection and growth
-- [ ] Collision detection (walls, self, obstacles)
-- [ ] Level progression and password system
-- [ ] Game over and restart functionality
-- [ ] Visual rendering accuracy
+1. Create test files matching the pattern `*.test.js`
+2. Use Jest's `describe`, `it`, and `expect` functions
+3. Mock any external dependencies
+4. Test both positive and negative cases
 
-### 5. Debugging Guide
+## 🎨 Styling Guidelines
 
-#### Browser Debugging
+### CSS Variables
 
-1. **Console Logging**: Add console.log() statements
-2. **Breakpoints**: Use browser dev tools
-3. **Canvas Inspection**: Check rendering context
-4. **Performance**: Monitor frame rate
+The game uses CSS variables for consistent theming:
 
-#### Common Issues and Solutions
-
-##### Snake Not Moving
-
-- Check gameState.dx/dy values
-- Verify game loop is running (setInterval)
-- Check for gameState.gameOver = true
-
-##### Collision Not Working
-
-- Verify tileCount calculation
-- Check boundary conditions
-- Ensure collision detection is called in update()
-
-##### Rendering Issues
-
-- Check canvas context
-- Verify color constants
-- Ensure draw functions are called in correct order
-
-### 6. Performance Optimization
-
-#### Profiling Tools
-
-- **Chrome DevTools**: Performance tab
-- **Firefox DevTools**: Performance panel
-- **console.time()**: Manual timing
-
-#### Optimization Targets
-
-- **Rendering**: Minimize canvas operations
-- **Collision Detection**: Use efficient algorithms
-- **Memory Usage**: Avoid memory leaks
-- **Frame Rate**: Maintain 60 FPS
-
-#### Performance Metrics
-
-- **Target FPS**: 60
-- **Maximum Snake Length**: 400 segments
-- **Maximum Maze Complexity**: 100 obstacles
-- **Memory Usage**: < 10MB
-
-### 7. Deployment
-
-#### Local Development
-
-```bash
-# Serve locally (requires http-server)
-npx http-server .
-# Then open http://localhost:8080
+```css
+:root {
+    --snake-color: #4caf50;
+    --food-color: #ff5722;
+    --background-color: #222;
+    --text-color: #eee;
+    --border-color: #333;
+    --powerup-color: #ffc107; /* Amber, less bright than yellow */
+    --mushroom-color: #9c27b0;
+    --wall-color: #ff9800;
+}
 ```
 
-#### Production Build
+### Responsive Design
 
-- No build process required (vanilla JS)
-- Minify files for production if needed
-- Test in target browsers
+The game layout adapts to different screen sizes using relative units and media queries.
 
-#### Browser Compatibility
+## 🔧 Coding Standards
 
-- **Chrome**: 60+
-- **Firefox**: 55+
-- **Safari**: 11+
-- **Edge**: 79+
+### JavaScript Style
 
-### 8. AI Agent Development Workflow
+- Use camelCase for variables and functions
+- Use UPPER_CASE for constants
+- Indent with 4 spaces
+- Use descriptive variable and function names
+- Comment complex logic
+- Keep functions focused on a single responsibility
 
-#### Step 1: Analysis
+### File:// Protocol Compatibility
 
-1. Read current gameState structure
-2. Understand existing function signatures
-3. Check test coverage for target area
-4. Review API_REFERENCE.md
+To maintain compatibility with the file:// protocol:
 
-#### Step 2: Planning
+1. No ES6 modules (import/export)
+2. No external dependencies
+3. Relative paths for all resources
+4. No server-specific features
 
-1. Identify change requirements
-2. Plan test cases
-3. Consider backward compatibility
-4. Document intended changes
+## 🚀 Contributing
 
-#### Step 3: Implementation
+### Making Changes
 
-1. Make incremental changes
-2. Run tests after each change
-3. Verify visual behavior
-4. Update documentation
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests to ensure nothing is broken
+5. Commit your changes with descriptive messages
+6. Push to your fork
+7. Create a pull request
 
-#### Step 4: Validation
+### Code Review Process
 
-1. Run full test suite
-2. Manual browser testing
-3. Performance verification
-4. Code review (if applicable)
+All changes should:
 
-### 9. Extension Points
+1. Pass all existing tests
+2. Follow the coding standards
+3. Include new tests for new functionality
+4. Be reviewed by at least one other developer
 
-#### Easy Extensions
+## 🐛 Debugging Tips
 
-- **New Power-ups**: Add to gameState and rendering
-- **Visual Themes**: Modify color constants
-- **Sound Effects**: Add audio API calls
-- **High Score**: Add localStorage persistence
+1. Use browser developer tools to inspect the canvas
+2. Add console.log statements to trace execution
+3. Use the debugger statement to pause execution
+4. Check the browser console for errors
+5. Test in multiple browsers
 
-#### Medium Extensions
+## 📚 Resources
 
-- **Multiplayer**: Add WebSocket communication
-- **Mobile Controls**: Add touch event handlers
-- **Level Editor**: Add maze creation UI
-- **AI Opponent**: Add computer-controlled snake
-
-#### Advanced Extensions
-
-- **3D Graphics**: WebGL implementation
-- **Online Leaderboard**: Backend API integration
-- **Real-time Multiplayer**: WebRTC implementation
-- **Machine Learning**: AI training integration
+- [MDN Web Docs - Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+- [MDN Web Docs - JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
