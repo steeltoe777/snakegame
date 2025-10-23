@@ -14,7 +14,6 @@ Detailed specifications for the Snake Game implementation.
 ### Game Elements
 
 1. **Snake**
-
     - Starts with 3 segments
     - Grows by 1 segment when eating food
     - Moves continuously in the current direction
