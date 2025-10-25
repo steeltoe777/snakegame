@@ -53,6 +53,7 @@ const HUE_FULL_CIRCLE = 360;
 // Named constants for magic numbers
 const GRID_SIZE = 20;
 const BASE_SPEED = 100; // Base movement speed in ms
+const MIN_SPEED = 225; // Minimum movement speed in ms
 // Probability constants for power-up spawning
 
 // Timing constants for power-ups in milliseconds
@@ -2190,6 +2191,9 @@ function calculateGameSpeed() {
         maxSpeed = baseSpeed + GRID_SIZE; // 120ms interval minimum
     }
 
+    // Ensure speed is at least MIN_SPEED and at most the calculated maxSpeed
+    speed = Math.min(Math.max(speed, maxSpeed), MIN_SPEED);
+
     // Apply speed modifiers
     // When both speed boost and time slow are active, they should cancel each other out
     if (gameState.speedBoostActive && gameState.timeSlowActive) {
@@ -2197,14 +2201,12 @@ function calculateGameSpeed() {
     } else if (gameState.speedBoostActive) {
         // Only speed boost active
         speed *= 0.75;
-        maxSpeed *= 0.75;
     } else if (gameState.timeSlowActive) {
         // Only time slow active
         speed *= 1.25;
-        maxSpeed *= 1.25;
     }
 
-    return Math.max(speed, maxSpeed);
+    return speed;
 }
 function startGame() {
     // FIX: Clear any existing game interval before starting a new one
