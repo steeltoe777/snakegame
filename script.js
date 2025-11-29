@@ -2196,16 +2196,16 @@ function calculateGameSpeed() {
 
     if (level >= 850) {
       // Slower speed for highest levels
-      speed *= 1.5;
+      speed *= 1.25;
     } else if (level >= 750) {
       // Slower speed for very high levels
-      speed *= 1.3;
+      speed *= 1.15;
     } else if (level >= 500) {
       // Slower speed for higher levels
-      speed *= 1.2;
+      speed *= 1.1;
     } else if (level >= 200) {
       // Slower speed for high levels
-      speed *= 1.1;
+      speed *= 1.05;
     }
 
     // Apply speed modifiers
