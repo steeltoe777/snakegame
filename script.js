@@ -2194,19 +2194,19 @@ function calculateGameSpeed() {
     // Ensure speed is at least MIN_SPEED and at most the calculated maxSpeed
     speed = Math.min(Math.max(speed, maxSpeed), MIN_SPEED);
 
-    // if (level >= 850) {
-    //   // Slower speed for highest levels
-    //   speed *= 1.25;
-    // } else if (level >= 750) {
-    //   // Slower speed for very high levels
-    //   speed *= 1.15;
-    // } else if (level >= 500) {
-    //   // Slower speed for higher levels
-    //   speed *= 1.1;
-    // } else if (level >= 200) {
-    //   // Slower speed for high levels
-    //   speed *= 1.05;
-    // }
+    if (level >= 850) {
+        // Slower speed for highest levels
+        speed *= 1.1;
+    } else if (level >= 750) {
+        // Slower speed for very high levels
+        speed *= 1.05;
+    } else if (level >= 500) {
+        // Slower speed for higher levels
+        speed *= 1.025;
+    } else if (level >= 200) {
+        // Slower speed for high levels
+        speed *= 1.0125;
+    }
 
     // Apply speed modifiers
     // When both speed boost and time slow are active, they should cancel each other out
