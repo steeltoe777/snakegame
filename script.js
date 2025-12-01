@@ -41,7 +41,7 @@ function updatePowerupTimers() {
 const COLOR_MAX_VALUE = 255;
 
 // Level progression constants
-const LEVEL_THRESHOLD_BASE = 1000;
+const LEVEL_THRESHOLD_BASE = 100000;
 const WALL_COUNT_LIMIT = 15;
 
 // Position calculation constants
