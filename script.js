@@ -41,8 +41,9 @@ function updatePowerupTimers() {
 const COLOR_MAX_VALUE = 255;
 
 // Level progression constants
-const LEVEL_THRESHOLD_BASE = 1000000;
+const PASSWORD_LEVEL_MAX = 1000000;
 const WALL_COUNT_LIMIT = 15;
+const WALL_LEVEL_MAX = 1000;
 
 // Position calculation constants
 const HUE_FULL_CIRCLE = 360;
@@ -643,7 +644,7 @@ function handlePasswordKey(e) {
         passwordSystem.addKey(key);
 
         // Only check passwords for levels divisible by 10 (and not level 1)
-        for (let level = 10; level <= LEVEL_THRESHOLD_BASE; level += 10) {
+        for (let level = 10; level <= PASSWORD_LEVEL_MAX; level += 10) {
             const levelPassword = passwordSystem.generatePassword(level);
             if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
                 // Reset to PREVIOUS level (level - 1)
@@ -721,8 +722,8 @@ function generateMaze() {
         .fill(0)
         .map(() => Array(gameState.tileCount).fill(0));
 
-    if (gameState.level < LEVEL_THRESHOLD_BASE) {
-        // Create outer walls to define the game area when level is below LEVEL_THRESHOLD_BASE
+    if (gameState.level < WALL_LEVEL_MAX) {
+        // Create outer walls to define the game area when level is below WALL_LEVEL_MAX
         for (let i = 0; i < gameState.tileCount; i++) {
             gameState.maze[0][i] = 1; // Top wall
             gameState.maze[gameState.tileCount - 1][i] = 1; // Bottom wall
@@ -740,13 +741,13 @@ function generateMaze() {
         if (gameState.level >= WALL_COUNT_LIMIT) {
             numInternalWalls += Math.min(
                 WALL_COUNT_LIMIT,
-                (gameState.level - WALL_COUNT_LIMIT) / LEVEL_THRESHOLD_BASE
+                (gameState.level - WALL_COUNT_LIMIT) / WALL_LEVEL_MAX
             ); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
         if (gameState.level >= 5000) {
             numInternalWalls += Math.min(
                 WALL_COUNT_LIMIT,
-                (gameState.level - 5000) / LEVEL_THRESHOLD_BASE
+                (gameState.level - 5000) / WALL_LEVEL_MAX
             ); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
 
@@ -1677,7 +1678,7 @@ function update() {
             // REMOVED DUPLICATE: const head = gameState.snake[0];
             // Check outer wall collision
             if (
-                gameState.level < LEVEL_THRESHOLD_BASE &&
+                gameState.level < WALL_LEVEL_MAX &&
                 (head.x < 0 ||
                     head.x >= gameState.tileCount ||
                     head.y < 0 ||
