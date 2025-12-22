@@ -1953,6 +1953,9 @@ function drawGame() {
             canvas.width / SCORE_REDUCTION_FACTOR,
             canvas.height / SCORE_REDUCTION_FACTOR + 50
         );
+
+        // Reset textAlign to default
+        ctx.textAlign = 'left';
     }
 }
 
