@@ -13,7 +13,7 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **🐍 Grow and Survive**: Collect pellets to grow, but watch out—your own tail is your biggest enemy.
 - **💙 Tron Trails**: Your movement leaves a blue trail that acts as a solid wall. Use it to trap yourself or navigate carefully.
 - **🟡 Pac-Man Pellets**: Clear the entire board of pellets to advance. No more random spawns; every pellet counts.
-- **🔐 Secret Passwords**: Every 10 levels, you'll uncover a secret code. Type it in anytime (even while paused!) to jump back to that milestone.
+- **🔐 Secret Passwords**: Every 10 levels, you'll uncover a secret code. Type it in anytime (even while paused!) to jump back to that milestone. **Important:** Write these down! They are not saved between browser sessions.
 - **🍄 Dynamic Power-Ups**: From speed boosts to invincibility, collect random spawns to gain the upper hand.
 - **🗺️ Minimap Navigation**: Keep an eye on the radar to locate that last elusive pellet or a distant power-up.
 
@@ -31,6 +31,7 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 3. Collect all **Yellow Pellets** to clear the level.
 4. Avoid the **Grey Walls** and your **Blue Trail**.
 5. Watch the top-right for **Secret Passwords** at level 10, 20, etc.
+6. **Important**: Write down your passwords! They are not saved if you refresh the page or change browsers.
 
 ## 💡 Quick Pro-Tips
 - **Trap Yourself?** Your trail disappears over time, but in tight spots, it's a solid wall. Plan your loops!
