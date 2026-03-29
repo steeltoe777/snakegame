@@ -2093,7 +2093,7 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-    gameState.level = 9;
+    gameState.level = 1;
     gameState.lastMilestoneLevel = 0;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
