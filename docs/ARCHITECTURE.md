@@ -1,174 +1,74 @@
-# Architecture Documentation
+# 🏗️ Technical Architecture
 
-## System Overview
+This document describes the high-level architecture of the **Snake Game Engine**. It is intended for developers who want to understand the data flow, rendering cycle, and collision detection logic.
 
-The Snake Game follows a **State-Driven Architecture** pattern with clear separation of concerns:
+---
 
-### Core Architecture Layers
+## 🏗️ Core Design Pattern: Single Source of Truth
+The entire engine revolves around a single, global **`gameState`** object. All game-related data—snake coordinates, pellets, maze walls, and timers—live here.
 
-```
-┌─────────────────────────────────────────┐
-│           Presentation Layer            │
-│         (index.html + style.css)        │
-├─────────────────────────────────────────┤
-│            Game Engine Layer            │
-│              (script.js)                │
-│  ┌─────────────────────────────────────┐ │
-│  │         Game State Manager          │ │
-│  │         Rendering Engine            │ │
-│  │         Input Handler               │ │
-│  │         Collision Detection         │ │
-│  │         Level Generator             │ │
-│  └─────────────────────────────────────┘ │
-├─────────────────────────────────────────┤
-│            Testing Layer                │
-│           (script.test.js)              │
-└─────────────────────────────────────────┘
-```
-
-## Game Loop Architecture
-
-### Update Cycle (60 FPS)
-
-```
-1. Process Input → 2. Update State → 3. Check Collisions → 4. Render Frame
-```
-
-### State Management Pattern
-
-- **Single Source of Truth**: All game state in `gameState` object
-- **Immutable Updates**: State changes through controlled functions
-- **Event-Driven**: Keyboard input triggers state transitions
-- **Frame-Based**: Consistent 60 FPS update cycle
-
-## Component Architecture
-
-### 1. Game State Manager
-
-**Component**: Game State Manager
-**File**: script.js
-
-````javascript
+### **Game State Interface**
 ```javascript
 const gameState = {
-    // Snake properties
-    snake: [{x: 10, y: 10}],
-    dx: 0, dy: 0,
-
-    // Game objects
-    food: {x: 15, y: 15},
-    maze: [],
-    pellets: [],
-
-    // Game progression
-    score: 0,
-    level: 1,
-    password: "",
-
-    // State flags
-    gameOver: false,
-    paused: false
+    snake: [{ x: 10, y: 10 }], // Array of coordinates
+    level: 1, // Current progression
+    maze: [[]], // 2D array (0=path, 1=wall)
+    spatialGrid: [[]], // Collision-optimized grid
+    paused: false,
+    // ...other flags and timers
 }
-````
-
-### 2. Rendering Engine
-
-**Functions**: `drawGame()`, `drawSnake()`, `drawMaze()`, `drawPellets()`
-
-- **Canvas API**: 2D rendering context
-- **Layered Rendering**: Background → Maze → Pellets → Snake → UI
-- **Optimized Drawing**: Minimal redraw operations
-
-### 3. Input Handler
-
-**Function**: `handleDirectionChange(event)`
-
-- **Event Type**: KeyboardEvent (Arrow keys)
-- **Debouncing**: Prevents rapid direction changes
-- **Validation**: Prevents 180-degree turns
-
-### 4. Collision Detection
-
-**Functions**: `checkCollision()`, `checkFoodCollision()`, `checkWallCollision()`
-
-- **Grid-Based**: 20x20 tile system
-- **Efficient Checking**: O(1) complexity per frame
-- **Comprehensive**: Snake-to-wall, snake-to-self, snake-to-food
-
-### 5. Level Generator
-
-**Functions**: `generateMaze()`, `generatePellets()`, `getRandomPosition()`
-
-- **Procedural Generation**: Deterministic based on level seed
-- **Balanced Difficulty**: Increasing complexity per level
-- **Valid Position Guarantee**: Collision-free placement
-
-## Data Flow
-
-### Input Flow
-
-```
-Keyboard Event → handleDirectionChange() → Update gameState.dx/dy → Update cycle
 ```
 
-### Game Loop Flow
+---
 
-```
-setInterval() → update() → [Collision Check] → [State Update] → drawGame() → Render
-```
+## 🔄 The Game Loop
+The game uses a **Hybrid Update-Render Cycle**. While the graphics could run at 60 FPS, the movement is throttled to create that classic "grid-based" feel.
 
-### Password System Flow
+1. **Input Stage**: `handleDirectionChange` and `handlePasswordKey` catch raw events.
+2. **Update Stage**: `update()` moves the snake, clears old trail segments, and checks for collisions.
+3. **Render Stage**: `drawGame()` clears the canvas and draws the grid, maze, pellets, trail, and finally the snake.
 
-```
-Level Complete → generatePassword() → Update gameState.password → Display to user
-```
+---
 
-## Memory Management
+## 🎯 Collision Detection: The Spatial Grid
+To avoid the performance hit of checking every snake segment against every wall for every frame, the engine uses a **Spatial Grid**.
 
-### Object Lifecycle
+- **How it works**: A 2D array mirroring the 20x20 tile grid is maintained. When a wall is spawned, its coordinates are marked in the grid.
+- **The Check**: The engine simply checks `gameState.spatialGrid[head.y][head.x]`. If the value is `1`, a collision occurred.
+- **Why it's better**: This turns an $O(n^2)$ search into an $O(1)$ lookup, ensuring the game stays smooth even at Level 1000+.
 
-- **Game State**: Persistent throughout session
-- **Maze Data**: Regenerated per level
-- **Pellets**: Regenerated per level
-- **Snake**: Reset on game over
+---
 
-### Performance Optimization
+## 🔐 Deterministic Password Engine
+Passwords are not stored in a database. Instead, they are **generated on the fly** using a deterministic algorithm seeded with the level number.
 
-- **Efficient Arrays**: Pre-allocated where possible
-- **Minimal GC Pressure**: Reuse objects when feasible
-- **Optimized Rendering**: Only redraw changed elements
+- **Formula**: `seed = (level * 9301 + 49297) % 233280`.
+- **Result**: The same level always produces the same 6-character alphanumeric code.
+- **Advantage**: Players can "save" their progress using a simple pen and paper, and the game requires zero local storage to function.
 
-## Error Handling
+---
 
-### Input Validation
+## 🎨 Rendering System: HTML5 Canvas
+All graphics are drawn directly to two `<canvas>` elements:
+1. **Main Canvas**: 600x600px grid for the actual game.
+2. **Minimap**: 100x100px scaled-down version that renders in the corner.
 
-- **Boundary Checking**: Prevent out-of-bounds access
-- **Direction Validation**: Prevent invalid moves
-- **State Consistency**: Ensure valid game state transitions
+We use **Pure Vanilla JS** with the 2D Context (`ctx`). No WebGL or external libraries are required.
 
-### Recovery Mechanisms
+---
 
-- **Game Over**: Clean reset to initial state
-- **Level Progression**: Preserves score, resets level-specific data
-- **Error Logging**: Console output for debugging
+## 🛠️ How to Extend the Game
 
-## 🏗️ System Architecture Patterns
+### **Adding a New Power-Up**
+To add a new power-up (e.g., "Mega Shrink"), follow this pattern:
+1.  **State**: Add `megaShrinkActive: false` and `megaShrinkTimer: 0` to `gameState`.
+2.  **Generator**: Create a `generateMegaShrinks()` function (copy the logic from `generateMushrooms`).
+3.  **Collision**: In `update()`, check if the head coordinate matches a mega-shrink.
+4.  **Effect**: Set `megaShrinkActive = true` and reset its timer.
+5.  **Logic**: Modify `update()` or `drawGame()` to react to the active state (e.g., reduce snake length).
+6.  **UI**: Update `updatePasswordDisplay()` (or create a dedicated UI function) to show the new active power-up timer.
 
-### Design Patterns Used
-
-- **Module Pattern**: Game functionality organized into logical modules (state, rendering, input, collision)
-- **Observer Pattern**: Event-driven architecture for game state changes and UI updates
-- **Factory Pattern**: Level and maze generation using factory functions
-- **Strategy Pattern**: Configurable collision detection and rendering strategies
-
-### Data Flow Architecture
-
-- **Unidirectional Data Flow**: User input → Game state update → Rendering → Display
-- **Immutable State Updates**: Game state changes create new state objects rather than mutating existing ones
-- **Event-Driven Updates**: Canvas rendering triggered by state change events
-
-### Performance Optimization Patterns
-
-- **Spatial Partitioning**: Grid-based collision detection for O(1) lookups
-- **Object Pooling**: Reusable game object instances to minimize garbage collection
-- **Debounced Input**: Input handling with timing controls to prevent overflow
+### **Adding a New Input**
+All inputs are managed in `manageEventListeners`. If you add a new control:
+1.  Add it to the whitelist in `handleDirectionChange` or `handlePasswordKey`.
+2.  Ensure you call `e.preventDefault()` to avoid conflicting with browser behavior.

@@ -625,8 +625,8 @@ function updatePasswordDisplay() {
     const passwordElement = document.getElementById('password');
     if (!passwordElement) return;
 
-    // Update last milestone level if current level is a multiple of 10
-    if (gameState.level % 10 === 0 && gameState.level > 1) {
+    // Update last milestone level ONLY if it's a new personal best for this session
+    if (gameState.level % 10 === 0 && gameState.level > gameState.lastMilestoneLevel) {
         gameState.lastMilestoneLevel = gameState.level;
     }
 
@@ -673,7 +673,10 @@ function handlePasswordKey(e) {
                 // Reset to PREVIOUS level (level - 1)
                 const targetLevel = Math.max(1, level - 1);
                 gameState.level = targetLevel;
-                gameState.lastMilestoneLevel = level; // Update last milestone to the one just typed
+                // Update last milestone ONLY if it's higher than the current recorded milestone
+                if (level > gameState.lastMilestoneLevel) {
+                    gameState.lastMilestoneLevel = level;
+                }
                 gameState.score = 0;
                 document.getElementById('score').innerText = `Score: ${gameState.score}`;
                 document.getElementById('level').innerText = `Level: ${gameState.level}`;
@@ -695,7 +698,16 @@ function handlePasswordKey(e) {
                 // Update password display
                 updatePasswordDisplay();
 
-                // Stop current game and restart
+                // Hide Game Over overlay if it was visible
+                const gameOverOverlay = document.getElementById('gameOverOverlay');
+                if (gameOverOverlay) {
+                    gameOverOverlay.classList.add('hidden');
+                }
+
+                // Ensure game is not paused after teleporting via password
+                gameState.paused = false;
+
+                // Stop current game and restart at the new level
                 if (gameState.gameInterval) {
                     clearInterval(gameState.gameInterval);
                     gameState.gameInterval = null;
@@ -2094,7 +2106,7 @@ function resetGame() {
     gameState.dy = 0;
     gameState.score = 0;
     gameState.level = 1;
-    gameState.lastMilestoneLevel = 0;
+    // Keep lastMilestoneLevel intact so it stays visible on reset
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
