@@ -19,6 +19,11 @@ open /a0/projects/snakegame/index.html
 
 # Method 2: Local server
 npx http-server .         # Then visit http://localhost:8080
+
+# Method 3: Online previews
+# Primary: https://steeltoe777.github.io/snakegame/
+# Alternative 1: https://rawcdn.githack.com/steeltoe777/snakegame/master/index.html
+# Alternative 2: http://htmlpreview.github.io/?https://github.com/steeltoe777/snakegame/blob/master/index.html
 ```
 
 ### 3. Key Files for AI Understanding

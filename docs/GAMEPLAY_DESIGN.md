@@ -385,6 +385,9 @@ window.drawGame(); // Rendering verification
 ### **Quick Start**
 
 1. **Open** `index.html` in any modern web browser
+   - **Primary**: [GitHub Pages](https://steeltoe777.github.io/snakegame/)
+   - **Alternative 1**: [GitHack](https://rawcdn.githack.com/steeltoe777/snakegame/master/index.html)
+   - **Alternative 2**: [HTMLPreview](http://htmlpreview.github.io/?https://github.com/steeltoe777/snakegame/blob/master/index.html)
 2. **Use arrow keys** to control snake movement
 3. **Collect all pellets** to advance levels
 4. **Discover passwords** at strategic intervals
