@@ -930,11 +930,11 @@ function drawMushrooms() {
         ctx.beginPath();
         ctx.arc(
             mushroom.x * gameState.gridSize +
-                gameState.gridSize / SCORE_REDUCTION_FACTOR -
-                SCORE_REDUCTION_FACTOR,
+            gameState.gridSize / SCORE_REDUCTION_FACTOR -
+            SCORE_REDUCTION_FACTOR,
             mushroom.y * gameState.gridSize +
-                gameState.gridSize / SCORE_REDUCTION_FACTOR -
-                SCORE_REDUCTION_FACTOR,
+            gameState.gridSize / SCORE_REDUCTION_FACTOR -
+            SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
@@ -944,11 +944,11 @@ function drawMushrooms() {
         ctx.beginPath();
         ctx.arc(
             mushroom.x * gameState.gridSize +
-                gameState.gridSize / SCORE_REDUCTION_FACTOR +
-                SCORE_REDUCTION_FACTOR,
+            gameState.gridSize / SCORE_REDUCTION_FACTOR +
+            SCORE_REDUCTION_FACTOR,
             mushroom.y * gameState.gridSize +
-                gameState.gridSize / SCORE_REDUCTION_FACTOR -
-                SCORE_REDUCTION_FACTOR,
+            gameState.gridSize / SCORE_REDUCTION_FACTOR -
+            SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
@@ -1985,7 +1985,7 @@ function drawGame() {
         // Resume instruction
         ctx.font = 'normal normal 24px Arial, Helvetica, sans-serif';
         ctx.fillText(
-            'Press P to resume',
+            'Press SPACE or ESC to resume',
             canvas.width / SCORE_REDUCTION_FACTOR,
             canvas.height / SCORE_REDUCTION_FACTOR + 50
         );
