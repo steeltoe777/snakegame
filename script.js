@@ -1779,7 +1779,7 @@ function drawGame() {
     // Draw mushroom powerup indicator if active
     if (gameState.mushroomPowerupActive) {
         ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, 0, 0, 0.5)';
-        ctx.font = '12px Arial';
+        ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('MUSHROOM POWER!', 10, GRID_SIZE);
 
         // Draw timer bar
@@ -1791,7 +1791,7 @@ function drawGame() {
     // Draw shield powerup indicator if active
     if (gameState.shieldPowerupActive) {
         ctx.fillStyle = 'rgba(0, 191, 255, 0.7)';
-        ctx.font = '12px Arial';
+        ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('SHIELD ACTIVE!', 10, 70);
 
         // Draw timer bar
@@ -1896,7 +1896,7 @@ function drawGame() {
     // Draw speed boost powerup indicator if active
     if (gameState.speedBoostActive) {
         ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, COLOR_MAX_VALUE, 0, 0.5)';
-        ctx.font = '12px Arial';
+        ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('SPEED BOOST!', 10, 45);
 
         // Draw timer bar
@@ -1908,7 +1908,7 @@ function drawGame() {
     // Draw time slow powerup indicator if active
     if (gameState.timeSlowActive) {
         ctx.fillStyle = 'rgba(128, 0, 128, 0.7)';
-        ctx.font = '12px Arial';
+        ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('TIME SLOW!', 10, 45);
 
         // Draw timer bar
@@ -1920,7 +1920,7 @@ function drawGame() {
     // Draw score multiplier powerup indicator if active
     if (gameState.scoreMultiplierActive) {
         ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, 30, 0, 0.7)'; // Gold color with transparency
-        ctx.font = '12px Arial';
+        ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('SCORE X2', 10, 65);
 
         // Draw timer bar
@@ -1938,7 +1938,7 @@ function drawGame() {
 
         // Pause text
         ctx.fillStyle = 'white';
-        ctx.font = 'bold 48px Arial';
+        ctx.font = 'normal bold 48px Arial, Helvetica, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(
             'PAUSED',
@@ -1947,7 +1947,7 @@ function drawGame() {
         );
 
         // Resume instruction
-        ctx.font = '24px Arial';
+        ctx.font = 'normal normal 24px Arial, Helvetica, sans-serif';
         ctx.fillText(
             'Press P to resume',
             canvas.width / SCORE_REDUCTION_FACTOR,

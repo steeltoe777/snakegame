@@ -2,8 +2,9 @@
 /* This improves themeability while maintaining file:// compatibility */
 
 * {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+    font-family: Arial, Helvetica, sans-serif !important;
     font-style: normal !important;
+    font-weight: normal !important;
 }
 
 :root {
