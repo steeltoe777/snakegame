@@ -78,8 +78,9 @@ npm test -- --coverage
 
 - **↑ ↓ ← →**: Snake movement
 - **Restart Button**: Click "Press OK to restart" after game over
-- **P**: Pause/resume game
-- **Password**: Type password to skip levels
+- **Space / Escape**: Pause/resume game
+- **Password**: Type alphanumeric characters to skip levels (visible in UI)
+- **Backspace**: Delete last typed character
 
 ### 9. Debug Mode
 

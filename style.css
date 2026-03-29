@@ -63,9 +63,18 @@ canvas {
 }
 
 #score,
-#level {
+#level,
+#password {
     margin-top: 10px;
     font-size: 1.2em;
+    min-height: 1.2em; /* Ensure single line height */
+    text-align: center;
+}
+
+#password {
+    color: #aaa; /* Slightly dimmer for password info */
+    min-height: 2.4em; /* Ensure two lines height for the new layout */
+    line-height: 1.2em;
 }
 
 /* Game Over Overlay Styles */

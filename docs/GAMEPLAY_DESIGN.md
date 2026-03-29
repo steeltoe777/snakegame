@@ -271,14 +271,15 @@ Advanced snake head with visual direction feedback.
 
 ### **Keyboard Controls**
 
-| Key          | Action         | Description                                       |
-| ------------ | -------------- | ------------------------------------------------- |
-| **↑**        | Move Up        | Change snake direction upward                     |
-| **↓**        | Move Down      | Change snake direction downward                   |
-| **←**        | Move Left      | Change snake direction leftward                   |
-| **→**        | Move Right     | Change snake direction rightward                  |
-| **A-Z, 0-9** | Password Input | Type discovered passwords for level access        |
-| **P**        | Pause/Resume   | Toggle pause/resume game state (case-insensitive) |
+| Key               | Action         | Description                                        |
+| ----------------- | -------------- | -------------------------------------------------- |
+| **↑**             | Move Up        | Change snake direction upward                      |
+| **↓**             | Move Down      | Change snake direction downward                    |
+| **←**             | Move Left      | Change snake direction leftward                    |
+| **→**             | Move Right     | Change snake direction rightward                   |
+| **A-Z, 0-9**      | Password Input | Type discovered passwords (visible while typing)   |
+| **Backspace**     | Correct Typo   | Remove last typed character from password          |
+| **Space / Escape**| Pause/Resume   | Toggle pause/resume game state                     |
 
 ### **UI Elements**
 

@@ -113,8 +113,8 @@ Navigate large game boards with ease using the real-time minimap that shows your
 ### **Controls**
 
 - **Arrow Keys**: Control snake movement and start game when not running
-- **A-Z, 0-9**: Type discovered passwords for level access
-- **P**: Pause/resume game (case-insensitive)
+- **A-Z, 0-9**: Type discovered passwords for level access (including Backspace for corrections)
+- **Spacebar / Escape**: Pause/resume game
 
 ### **Game Flow**
 

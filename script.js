@@ -547,6 +547,7 @@ const gameState = {
     dy: 0,
     score: 0,
     level: 1,
+    lastMilestoneLevel: 0, // Track the last milestone level reached
     gameRunning: false,
     gameInterval: null,
     maze: [],
@@ -624,24 +625,46 @@ function updatePasswordDisplay() {
     const passwordElement = document.getElementById('password');
     if (!passwordElement) return;
 
-    // Only show passwords for levels divisible by 10 (and not level 1)
+    // Update last milestone level if current level is a multiple of 10
     if (gameState.level % 10 === 0 && gameState.level > 1) {
-        const password = passwordSystem.generatePassword(gameState.level);
-        passwordElement.innerText = `Password: ${password}`;
-        passwordElement.style.display = 'block';
-    } else {
-        passwordElement.innerText = '';
-        passwordElement.style.display = 'none';
+        gameState.lastMilestoneLevel = gameState.level;
     }
+
+    let levelStr = '\u00A0'; // Use non-breaking space as empty line placeholder
+    // Show the last reached milestone password if it exists
+    if (gameState.lastMilestoneLevel > 0) {
+        const milestoneLevel = gameState.lastMilestoneLevel;
+        const levelPassword = passwordSystem.generatePassword(milestoneLevel);
+        levelStr = `Level ${milestoneLevel - 1} password: ${levelPassword}`;
+    }
+
+    // Always show typed buffer - use non-breaking space for empty
+    const typedBuffer = passwordSystem.keySequence.join('') || '\u00A0';
+    const typedStr = `Typed password: ${typedBuffer}`;
+
+    // Combine into two lines
+    passwordElement.innerText = `${levelStr}\n${typedStr}`;
 }
 
 // Handle key press for password system
 function handlePasswordKey(e) {
+    // Support backspace
+    if (e.key === 'Backspace') {
+        e.preventDefault();
+        if (passwordSystem.keySequence.length > 0) {
+            passwordSystem.keySequence.pop();
+            updatePasswordDisplay();
+        }
+        return;
+    }
+
     const key = e.key.toUpperCase();
     const validKeys = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
     if (validKeys.includes(key)) {
+        e.preventDefault();
         passwordSystem.addKey(key);
+        updatePasswordDisplay(); // Update display on every valid key press
 
         // Only check passwords for levels divisible by 10 (and not level 1)
         for (let level = 10; level <= PASSWORD_LEVEL_MAX; level += 10) {
@@ -650,6 +673,7 @@ function handlePasswordKey(e) {
                 // Reset to PREVIOUS level (level - 1)
                 const targetLevel = Math.max(1, level - 1);
                 gameState.level = targetLevel;
+                gameState.lastMilestoneLevel = level; // Update last milestone to the one just typed
                 gameState.score = 0;
                 document.getElementById('score').innerText = `Score: ${gameState.score}`;
                 document.getElementById('level').innerText = `Level: ${gameState.level}`;
@@ -2007,6 +2031,8 @@ function gameOver() {
         generateMaze(); // Regenerate maze for the new (previous) level
         initializeSpatialGrid(); // Initialize spatial grid for collision detection
         generatePellets(); // Regenerate pellets for the new (previous) level
+        passwordSystem.resetSequence(); // Clear typed password on respawn
+        updatePasswordDisplay(); // Update password display
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Explicit clear before respawn draw
         drawGame(); // Draw initial state for the respawned level
         if (gameState.level >= BASE_SPEED) {
@@ -2050,6 +2076,7 @@ function levelUp() {
     generateStars();
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
+    passwordSystem.resetSequence(); // Clear typed password on level transition
     updatePasswordDisplay();
 }
 
@@ -2066,7 +2093,8 @@ function resetGame() {
     gameState.dx = 0;
     gameState.dy = 0;
     gameState.score = 0;
-    gameState.level = 1;
+    gameState.level = 9;
+    gameState.lastMilestoneLevel = 0;
     gameState.trail = [];
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
@@ -2081,16 +2109,19 @@ function resetGame() {
     generateShields(); // Generate shields for powerups // Generate mushrooms for powerups
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
+    passwordSystem.resetSequence(); // Clear typed password on game reset
+    updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
-
-    // Re-enable keyboard controls
-    updatePasswordDisplay();
     // Manage event listeners centrally
     manageEventListeners('remove');
     manageEventListeners('add');
 }
 
 function handleDirectionChange(e) {
+    // Prevent default browser behavior for navigation keys
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Escape'].includes(e.key)) {
+        e.preventDefault();
+    }
     // Ignore arrow keys when game is paused to prevent direction changes during pause
     if (
         gameState.paused &&
@@ -2154,9 +2185,13 @@ function handleDirectionChange(e) {
                 gameState.dy = 0;
             }
             break;
-        case 'P':
-        case 'p':
+        case ' ':
+        case 'Escape':
             gameState.paused = !gameState.paused;
+            if (gameState.paused === false) {
+                passwordSystem.resetSequence();
+                updatePasswordDisplay();
+            }
             drawGame(); // Redraw to show/hide pause indicator
             break;
         default:
@@ -2234,6 +2269,8 @@ function startGame() {
     }
     if (gameState.gameRunning) return;
     gameState.gameRunning = true;
+    passwordSystem.resetSequence(); // Clear typed password when snake starts moving
+    updatePasswordDisplay();
     gameState.gameInterval = setInterval(update, calculateGameSpeed()); // Dynamic speed based on snake length
 }
 
