@@ -5,7 +5,7 @@ Welcome to the world of **Snake, Tron, Pac-Man Hybrid**. This guide explains the
 ---
 
 ## 🐍 Growth & Movement
-- **Movement**: You move on a 20x20 fixed grid. Use the **Arrow Keys** to steer.
+- **Movement**: You move on a 30x30 fixed grid. Use the **Arrow Keys** to steer.
 - **Growth**: Every pellet you eat increases your length by one segment.
 - **The Trail**: Unlike classic snake games, your movement leaves a temporary blue trail. This trail acts as a solid obstacle, so you must plan your route carefully to avoid trapping yourself.
 
@@ -57,7 +57,7 @@ Keep an eye on the **Top-Right Radar**:
 ## 🔄 Death & Respawn
 Don't worry—death isn't the end.
 - **Regression**: If you die on any level higher than Level 1, you'll respawn at the **previous level**.
-- **Penalty**: Your score is halved, and your snake length is reduced to 3 segments.
+- **Penalty**: Your score is halved, and your snake length is also **reduced by half** (minimum 1 segment).
 - **Forgiveness**: This system allows you to keep playing without losing all your progress, as long as you can manage the regression!
 
 ---

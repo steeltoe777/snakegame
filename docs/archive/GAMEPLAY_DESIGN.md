@@ -18,7 +18,7 @@ This is **not** a traditional snake game. It's a revolutionary hybrid that combi
 
 - **Platform**: HTML5 Canvas + JavaScript ES6+
 - **Rendering**: 2D Canvas API with optimized drawing cycles
-- **Grid System**: Fixed 20x20 tile grid (600x600px canvas)
+- **Grid System**: Fixed 30x30 tile grid (600x600px canvas)
 - **Frame Rate**: 60 FPS game loop with 150ms update intervals
 - **Responsive**: Canvas resizes with window, grid remains fixed
 
@@ -334,7 +334,7 @@ window.drawGame(); // Rendering verification
 ### **Layout Specifications**
 
 - **Canvas Size**: 600x600 pixels (fixed)
-- **Grid System**: 20x20 tiles (30px per tile)
+- **Grid System**: 30x30 tiles (20px per tile)
 - **Responsive**: Canvas resizes with window, grid remains fixed
 - **Centering**: Canvas centered in viewport
 

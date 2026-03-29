@@ -13,7 +13,7 @@ const gameState = {
     snake: [{ x: 10, y: 10 }], // Array of coordinates
     level: 1, // Current progression
     maze: [[]], // 2D array (0=path, 1=wall)
-    spatialGrid: [[]], // Collision-optimized grid
+    spatialGrid: [[]], // Collision-optimized grid (30x30)
     paused: false,
     // ...other flags and timers
 }
@@ -33,7 +33,7 @@ The game uses a **Hybrid Update-Render Cycle**. While the graphics could run at 
 ## 🎯 Collision Detection: The Spatial Grid
 To avoid the performance hit of checking every snake segment against every wall for every frame, the engine uses a **Spatial Grid**.
 
-- **How it works**: A 2D array mirroring the 20x20 tile grid is maintained. When a wall is spawned, its coordinates are marked in the grid.
+- **How it works**: A 2D array mirroring the 30x30 tile grid is maintained. When a wall is spawned, its coordinates are marked in the grid.
 - **The Check**: The engine simply checks `gameState.spatialGrid[head.y][head.x]`. If the value is `1`, a collision occurred.
 - **Why it's better**: This turns an $O(n^2)$ search into an $O(1)$ lookup, ensuring the game stays smooth even at Level 1000+.
 
@@ -50,7 +50,7 @@ Passwords are not stored in a database. Instead, they are **generated on the fly
 
 ## 🎨 Rendering System: HTML5 Canvas
 All graphics are drawn directly to two `<canvas>` elements:
-1. **Main Canvas**: 600x600px grid for the actual game.
+1. **Main Canvas**: 600x600px grid (30x30 tiles) for the actual game.
 2. **Minimap**: 100x100px scaled-down version that renders in the corner.
 
 We use **Pure Vanilla JS** with the 2D Context (`ctx`). No WebGL or external libraries are required.
