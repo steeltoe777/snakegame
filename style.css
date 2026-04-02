@@ -37,7 +37,7 @@ body {
     background-color: var(--custom-color-3);
     color: var(--custom-color-7);
     position: relative; /* Needed for absolute positioning of overlay */
-    overflow-x: hidden;
+    overflow: hidden; /* Prevent any scrolling */
 }
 
 /* On wide screens, add side margins for comfortable viewing */
@@ -94,6 +94,7 @@ canvas {
     width: auto;
     height: auto;
     aspect-ratio: 1 / 1;
+    touch-action: none; /* Prevent touch scrolling/zooming on canvas */
 }
 
 #minimapCanvas {
