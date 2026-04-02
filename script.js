@@ -2288,24 +2288,44 @@ document.body.addEventListener('click', (e) => {
     // If click exactly on head, ignore (no direction)
     if (dx === 0 && dy === 0) return;
 
-    // Determine direction: snap to nearest cardinal based on larger component
-    let newDx; let newDy;
-    if (Math.abs(dx) > Math.abs(dy)) {
-        newDx = dx > 0 ? 1 : -1;
-        newDy = 0;
-    } else {
-        newDx = 0;
-        newDy = dy > 0 ? 1 : -1;
+    // Build candidate directions from both axes
+    const candidates = [];
+    if (dx !== 0) {
+        candidates.push({ dx: dx > 0 ? 1 : -1, dy: 0 });
+    }
+    if (dy !== 0) {
+        candidates.push({ dx: 0, dy: dy > 0 ? 1 : -1 });
     }
 
-    // Prevent 180-degree turns
-    if (
-        newDx === -gameState.dx &&
-        newDy === -gameState.dy &&
-        (gameState.dx !== 0 || gameState.dy !== 0)
-    ) {
-        return;
+    // Filter out 180-degree turns
+    const validCandidates = candidates.filter((cand) => {
+        const isOpposite =
+            cand.dx === -gameState.dx &&
+            cand.dy === -gameState.dy &&
+            (gameState.dx !== 0 || gameState.dy !== 0);
+        return !isOpposite;
+    });
+
+    // If no valid candidates, ignore click
+    if (validCandidates.length === 0) return;
+
+    // Choose candidate with larger component magnitude to prefer the axis the user clicked more on
+    let chosen = validCandidates[0];
+    if (validCandidates.length === 2) {
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+        // Match candidate to its axis magnitude
+        if (chosen.dx !== 0) {
+            // First candidate is horizontal, compare absDx vs absDy
+            chosen = absDx >= absDy ? chosen : validCandidates[1];
+        } else {
+            // First candidate is vertical
+            chosen = absDy >= absDx ? chosen : validCandidates[1];
+        }
     }
+
+    const newDx = chosen.dx;
+    const newDy = chosen.dy;
 
     // Queue the direction
     gameState.dxPrev = gameState.dx;
