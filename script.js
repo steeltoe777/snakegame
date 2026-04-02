@@ -545,9 +545,8 @@ const gameState = {
     dyPrev: 0,
     dx: 0,
     dy: 0,
-    // Direction queue for responsive controls
-    nextDx: null,
-    nextDy: null,
+    // Direction queue for responsive controls - stores multiple rapid key presses
+    directionQueue: [],
     score: 0,
     level: 1,
     lastMilestoneLevel: 0, // Track the last milestone level reached
@@ -688,8 +687,7 @@ function handlePasswordKey(e) {
                 gameState.snake = [{ x: 10, y: 10 }];
                 gameState.dx = 0;
                 gameState.dy = 0;
-                gameState.nextDx = null;
-                gameState.nextDy = null;
+                gameState.directionQueue = [];
                 gameState.trail = [];
 
                 // Regenerate maze and pellets for the target level
@@ -1255,12 +1253,22 @@ function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
 
-    // Apply queued direction if any
-    if (gameState.nextDx !== null && gameState.nextDy !== null) {
-        gameState.dx = gameState.nextDx;
-        gameState.dy = gameState.nextDy;
-        gameState.nextDx = null;
-        gameState.nextDy = null;
+    // Process ONE direction from queue per game tick
+    // This ensures each key press moves the snake one tile
+    if (gameState.directionQueue.length > 0) {
+        const nextDir = gameState.directionQueue.shift();
+
+        // Validate the direction - prevent 180-degree turns
+        if (
+            !(
+                nextDir.dx === -gameState.dx &&
+                nextDir.dy === -gameState.dy &&
+                (gameState.dx !== 0 || gameState.dy !== 0)
+            )
+        ) {
+            gameState.dx = nextDir.dx;
+            gameState.dy = nextDir.dy;
+        }
     }
 
     // REMEDY: Centralized timer updates for accuracy
@@ -2064,8 +2072,7 @@ function gameOver() {
             // Reset snake direction after death on level BASE_SPEED and above
             gameState.dx = 0;
             gameState.dy = 0;
-            gameState.nextDx = null;
-            gameState.nextDy = null;
+            gameState.directionQueue = [];
         } else {
             startGame(); // Start game loop after respawn on levels below 100
         }
@@ -2091,8 +2098,7 @@ function levelUp() {
     // Snake will appear as single segment initially, but body will show as it moves
     gameState.dx = 0; // Reset direction
     gameState.dy = 0; // Reset direction
-    gameState.nextDx = null; // Clear queued direction
-    gameState.nextDy = null;
+    gameState.directionQueue = []; // Clear direction queue
     gameState.trail = []; // Clear trail
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
     generateMaze();
@@ -2121,8 +2127,7 @@ function resetGame() {
     gameState.snake = [{ x: 10, y: 10 }];
     gameState.dx = 0;
     gameState.dy = 0;
-    gameState.nextDx = null;
-    gameState.nextDy = null;
+    gameState.directionQueue = [];
     gameState.score = 0;
     gameState.level = 1;
     // Keep lastMilestoneLevel intact so it stays visible on reset
@@ -2183,39 +2188,25 @@ function handleDirectionChange(e) {
         // Continue to allow normal arrow key processing
     }
 
+    let newDx = null;
+    let newDy = null;
+
     switch (e.key) {
         case 'ArrowUp':
-            // Queue up direction - check against current direction AND queued direction
-            if ((gameState.nextDy !== null ? gameState.nextDy : gameState.dy) !== 1) {
-                gameState.dxPrev = gameState.dx;
-                gameState.dyPrev = gameState.dy;
-                gameState.nextDx = 0;
-                gameState.nextDy = -1;
-            }
+            newDx = 0;
+            newDy = -1;
             break;
         case 'ArrowDown':
-            if ((gameState.nextDy !== null ? gameState.nextDy : gameState.dy) !== -1) {
-                gameState.dxPrev = gameState.dx;
-                gameState.dyPrev = gameState.dy;
-                gameState.nextDx = 0;
-                gameState.nextDy = 1;
-            }
+            newDx = 0;
+            newDy = 1;
             break;
         case 'ArrowLeft':
-            if ((gameState.nextDx !== null ? gameState.nextDx : gameState.dx) !== 1) {
-                gameState.dxPrev = gameState.dx;
-                gameState.dyPrev = gameState.dy;
-                gameState.nextDx = -1;
-                gameState.nextDy = 0;
-            }
+            newDx = -1;
+            newDy = 0;
             break;
         case 'ArrowRight':
-            if ((gameState.nextDx !== null ? gameState.nextDx : gameState.dx) !== -1) {
-                gameState.dxPrev = gameState.dx;
-                gameState.dyPrev = gameState.dy;
-                gameState.nextDx = 1;
-                gameState.nextDy = 0;
-            }
+            newDx = 1;
+            newDy = 0;
             break;
         case ' ':
         case 'Escape':
@@ -2225,9 +2216,29 @@ function handleDirectionChange(e) {
                 updatePasswordDisplay();
             }
             drawGame(); // Redraw to show/hide pause indicator
-            break;
+            return;
         default:
-            break;
+            return;
+    }
+
+    // Direction buffer system: captures rapid key sequences
+    // Check against current actual direction for 180-degree prevention
+    const currentDx = gameState.dx;
+    const currentDy = gameState.dy;
+
+    // Prevent 180-degree turns (can't go opposite of current movement)
+    if (newDx === -currentDx && newDy === -currentDy && (currentDx !== 0 || currentDy !== 0)) {
+        return;
+    }
+
+    // Store the direction with timestamp
+    gameState.dxPrev = currentDx;
+    gameState.dyPrev = currentDy;
+
+    // Add to direction queue - limit to 2 to prevent buildup
+    gameState.directionQueue.push({ dx: newDx, dy: newDy });
+    if (gameState.directionQueue.length > 2) {
+        gameState.directionQueue.shift(); // Remove oldest if more than 2
     }
 }
 
