@@ -2272,18 +2272,33 @@ document.body.addEventListener('click', (e) => {
         // Continue to also set direction based on click
     }
 
+    const canvas = document.getElementById('gameCanvas');
+    if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
 
-    // Get snake head position (center of tile)
+    // Only process direction if click is within canvas bounds
+    if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+    ) {
+        return;
+    }
+
+    // Convert click coordinates to internal canvas coordinates
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+
+    // Get snake head position (center of tile) in internal canvas coordinates
     const head = gameState.snake[0];
-    const headX = head.x * GRID_SIZE + GRID_SIZE / 2;
-    const headY = head.y * GRID_SIZE + GRID_SIZE / 2;
+    const headPxX = head.x * GRID_SIZE + GRID_SIZE / 2;
+    const headPxY = head.y * GRID_SIZE + GRID_SIZE / 2;
 
-    // Calculate pixel differences
-    const dx = clickX - headX;
-    const dy = clickY - headY;
+    const dx = clickX - headPxX;
+    const dy = clickY - headPxY;
 
     // If click exactly on head, ignore (no direction)
     if (dx === 0 && dy === 0) return;
@@ -2306,7 +2321,6 @@ document.body.addEventListener('click', (e) => {
         return !isOpposite;
     });
 
-    // If no valid candidates, ignore click
     if (validCandidates.length === 0) return;
 
     // Choose candidate with larger component magnitude to prefer the axis the user clicked more on
@@ -2316,10 +2330,8 @@ document.body.addEventListener('click', (e) => {
         const absDy = Math.abs(dy);
         // Match candidate to its axis magnitude
         if (chosen.dx !== 0) {
-            // First candidate is horizontal, compare absDx vs absDy
             chosen = absDx >= absDy ? chosen : validCandidates[1];
         } else {
-            // First candidate is vertical
             chosen = absDy >= absDx ? chosen : validCandidates[1];
         }
     }
