@@ -545,6 +545,9 @@ const gameState = {
     dyPrev: 0,
     dx: 0,
     dy: 0,
+    // Direction queue for responsive controls
+    nextDx: null,
+    nextDy: null,
     score: 0,
     level: 1,
     lastMilestoneLevel: 0, // Track the last milestone level reached
@@ -685,6 +688,8 @@ function handlePasswordKey(e) {
                 gameState.snake = [{ x: 10, y: 10 }];
                 gameState.dx = 0;
                 gameState.dy = 0;
+                gameState.nextDx = null;
+                gameState.nextDy = null;
                 gameState.trail = [];
 
                 // Regenerate maze and pellets for the target level
@@ -930,11 +935,11 @@ function drawMushrooms() {
         ctx.beginPath();
         ctx.arc(
             mushroom.x * gameState.gridSize +
-            gameState.gridSize / SCORE_REDUCTION_FACTOR -
-            SCORE_REDUCTION_FACTOR,
+                gameState.gridSize / SCORE_REDUCTION_FACTOR -
+                SCORE_REDUCTION_FACTOR,
             mushroom.y * gameState.gridSize +
-            gameState.gridSize / SCORE_REDUCTION_FACTOR -
-            SCORE_REDUCTION_FACTOR,
+                gameState.gridSize / SCORE_REDUCTION_FACTOR -
+                SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
@@ -944,11 +949,11 @@ function drawMushrooms() {
         ctx.beginPath();
         ctx.arc(
             mushroom.x * gameState.gridSize +
-            gameState.gridSize / SCORE_REDUCTION_FACTOR +
-            SCORE_REDUCTION_FACTOR,
+                gameState.gridSize / SCORE_REDUCTION_FACTOR +
+                SCORE_REDUCTION_FACTOR,
             mushroom.y * gameState.gridSize +
-            gameState.gridSize / SCORE_REDUCTION_FACTOR -
-            SCORE_REDUCTION_FACTOR,
+                gameState.gridSize / SCORE_REDUCTION_FACTOR -
+                SCORE_REDUCTION_FACTOR,
             gameState.gridSize / 8,
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
@@ -1249,6 +1254,14 @@ function tryRandomMovement() {
 function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
+
+    // Apply queued direction if any
+    if (gameState.nextDx !== null && gameState.nextDy !== null) {
+        gameState.dx = gameState.nextDx;
+        gameState.dy = gameState.nextDy;
+        gameState.nextDx = null;
+        gameState.nextDy = null;
+    }
 
     // REMEDY: Centralized timer updates for accuracy
     updatePowerupTimers();
@@ -2051,6 +2064,8 @@ function gameOver() {
             // Reset snake direction after death on level BASE_SPEED and above
             gameState.dx = 0;
             gameState.dy = 0;
+            gameState.nextDx = null;
+            gameState.nextDy = null;
         } else {
             startGame(); // Start game loop after respawn on levels below 100
         }
@@ -2076,6 +2091,8 @@ function levelUp() {
     // Snake will appear as single segment initially, but body will show as it moves
     gameState.dx = 0; // Reset direction
     gameState.dy = 0; // Reset direction
+    gameState.nextDx = null; // Clear queued direction
+    gameState.nextDy = null;
     gameState.trail = []; // Clear trail
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
     generateMaze();
@@ -2104,6 +2121,8 @@ function resetGame() {
     gameState.snake = [{ x: 10, y: 10 }];
     gameState.dx = 0;
     gameState.dy = 0;
+    gameState.nextDx = null;
+    gameState.nextDy = null;
     gameState.score = 0;
     gameState.level = 1;
     // Keep lastMilestoneLevel intact so it stays visible on reset
@@ -2166,35 +2185,36 @@ function handleDirectionChange(e) {
 
     switch (e.key) {
         case 'ArrowUp':
-            if (gameState.dy !== 1) {
+            // Queue up direction - check against current direction AND queued direction
+            if ((gameState.nextDy !== null ? gameState.nextDy : gameState.dy) !== 1) {
                 gameState.dxPrev = gameState.dx;
                 gameState.dyPrev = gameState.dy;
-                gameState.dx = 0;
-                gameState.dy = -1;
+                gameState.nextDx = 0;
+                gameState.nextDy = -1;
             }
             break;
         case 'ArrowDown':
-            if (gameState.dy !== -1) {
+            if ((gameState.nextDy !== null ? gameState.nextDy : gameState.dy) !== -1) {
                 gameState.dxPrev = gameState.dx;
                 gameState.dyPrev = gameState.dy;
-                gameState.dx = 0;
-                gameState.dy = 1;
+                gameState.nextDx = 0;
+                gameState.nextDy = 1;
             }
             break;
         case 'ArrowLeft':
-            if (gameState.dx !== 1) {
+            if ((gameState.nextDx !== null ? gameState.nextDx : gameState.dx) !== 1) {
                 gameState.dxPrev = gameState.dx;
                 gameState.dyPrev = gameState.dy;
-                gameState.dx = -1;
-                gameState.dy = 0;
+                gameState.nextDx = -1;
+                gameState.nextDy = 0;
             }
             break;
         case 'ArrowRight':
-            if (gameState.dx !== -1) {
+            if ((gameState.nextDx !== null ? gameState.nextDx : gameState.dx) !== -1) {
                 gameState.dxPrev = gameState.dx;
                 gameState.dyPrev = gameState.dy;
-                gameState.dx = 1;
-                gameState.dy = 0;
+                gameState.nextDx = 1;
+                gameState.nextDy = 0;
             }
             break;
         case ' ':
