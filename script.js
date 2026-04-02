@@ -2253,6 +2253,69 @@ function handleDirectionChange(e) {
 
 restartButton.addEventListener('click', resetGame);
 
+// Mouse/touch click control - click anywhere to change snake direction
+document.body.addEventListener('click', (e) => {
+    // Ignore clicks on buttons and interactive elements
+    if (e.target.closest('button') || e.target.closest('.key') || e.target.closest('.arrow')) {
+        return;
+    }
+
+    // Paused games ignore clicks
+    if (gameState.paused) return;
+
+    // If game is not running, try to start it (unless game over)
+    if (!gameState.gameRunning) {
+        if (!gameOverOverlay.classList.contains('hidden')) {
+            return; // Can't start during game over
+        }
+        startGame();
+        // Continue to also set direction based on click
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    // Get snake head position (center of tile)
+    const head = gameState.snake[0];
+    const headX = head.x * GRID_SIZE + GRID_SIZE / 2;
+    const headY = head.y * GRID_SIZE + GRID_SIZE / 2;
+
+    // Calculate pixel differences
+    const dx = clickX - headX;
+    const dy = clickY - headY;
+
+    // If click exactly on head, ignore (no direction)
+    if (dx === 0 && dy === 0) return;
+
+    // Determine direction: snap to nearest cardinal based on larger component
+    let newDx; let newDy;
+    if (Math.abs(dx) > Math.abs(dy)) {
+        newDx = dx > 0 ? 1 : -1;
+        newDy = 0;
+    } else {
+        newDx = 0;
+        newDy = dy > 0 ? 1 : -1;
+    }
+
+    // Prevent 180-degree turns
+    if (
+        newDx === -gameState.dx &&
+        newDy === -gameState.dy &&
+        (gameState.dx !== 0 || gameState.dy !== 0)
+    ) {
+        return;
+    }
+
+    // Queue the direction
+    gameState.dxPrev = gameState.dx;
+    gameState.dyPrev = gameState.dy;
+    gameState.directionQueue.push({ dx: newDx, dy: newDy });
+    if (gameState.directionQueue.length > 10) {
+        gameState.directionQueue.shift();
+    }
+});
+
 // Calculate speed based on level and snake length with reasonable limits
 // Level-based speed limits: Higher levels have slower maximum speeds for better navigation
 // on cluttered maps. This prevents the snake from becoming too fast on difficult levels.
