@@ -1254,20 +1254,27 @@ function update() {
     if (!gameState.gameRunning) return;
 
     // Process ONE direction from queue per game tick
-    // This ensures each key press moves the snake one tile
+    // Validates each direction at execution time to allow complex sequences
     if (gameState.directionQueue.length > 0) {
-        const nextDir = gameState.directionQueue.shift();
+        while (gameState.directionQueue.length > 0) {
+            const nextDir = gameState.directionQueue.shift();
 
-        // Validate the direction - prevent 180-degree turns
-        if (
-            !(
+            // Validate: prevent 180-degree turns (can't go opposite of current direction)
+            const isOpposite =
                 nextDir.dx === -gameState.dx &&
                 nextDir.dy === -gameState.dy &&
-                (gameState.dx !== 0 || gameState.dy !== 0)
-            )
-        ) {
-            gameState.dx = nextDir.dx;
-            gameState.dy = nextDir.dy;
+                (gameState.dx !== 0 || gameState.dy !== 0);
+
+            if (!isOpposite) {
+                // Update previous direction before applying new one (for neck collision)
+                gameState.dxPrev = gameState.dx;
+                gameState.dyPrev = gameState.dy;
+                // Apply valid direction
+                gameState.dx = nextDir.dx;
+                gameState.dy = nextDir.dy;
+                break; // Processed one direction this tick
+            }
+            // If opposite, skip and try next queued direction
         }
     }
 
@@ -2221,24 +2228,26 @@ function handleDirectionChange(e) {
             return;
     }
 
-    // Direction buffer system: captures rapid key sequences
-    // Check against current actual direction for 180-degree prevention
-    const currentDx = gameState.dx;
-    const currentDy = gameState.dy;
+    // Simply queue the direction - validation happens at execution time
+    // This allows sequences like UP -> LEFT when moving RIGHT
+    // (UP becomes valid, then LEFT is valid against the new direction UP)
 
-    // Prevent 180-degree turns (can't go opposite of current movement)
-    if (newDx === -currentDx && newDy === -currentDy && (currentDx !== 0 || currentDy !== 0)) {
-        return;
+    // Prevent consecutive duplicate directions (optional optimization)
+    if (gameState.directionQueue.length > 0) {
+        const lastDir = gameState.directionQueue[gameState.directionQueue.length - 1];
+        if (lastDir.dx === newDx && lastDir.dy === newDy) {
+            return; // Skip duplicate consecutive direction
+        }
     }
 
-    // Store the direction with timestamp
-    gameState.dxPrev = currentDx;
-    gameState.dyPrev = currentDy;
+    // Store previous direction for neck collision detection
+    gameState.dxPrev = gameState.dx;
+    gameState.dyPrev = gameState.dy;
 
-    // Add to direction queue - limit to 2 to prevent buildup
+    // Add to queue with generous limit to capture fast sequences
     gameState.directionQueue.push({ dx: newDx, dy: newDy });
-    if (gameState.directionQueue.length > 2) {
-        gameState.directionQueue.shift(); // Remove oldest if more than 2
+    if (gameState.directionQueue.length > 10) {
+        gameState.directionQueue.shift(); // Remove oldest if queue gets too large
     }
 }
 
