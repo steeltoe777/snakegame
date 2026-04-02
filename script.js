@@ -2254,81 +2254,55 @@ function handleDirectionChange(e) {
 restartButton.addEventListener('click', resetGame);
 
 // Mouse/touch click control - click anywhere to change snake direction
-document.body.addEventListener('click', (e) => {
-    // Ignore clicks on buttons and interactive elements
-    if (e.target.closest('button') || e.target.closest('.key') || e.target.closest('.arrow')) {
-        return;
-    }
-
-    // Paused games ignore clicks
+// Mouse click: allows clicking anywhere on screen to steer
+function handleMouseInput(e) {
     if (gameState.paused) return;
-
-    // If game is not running, try to start it (unless game over)
     if (!gameState.gameRunning) {
-        if (!gameOverOverlay.classList.contains('hidden')) {
-            return; // Can't start during game over
-        }
+        if (!gameOverOverlay.classList.contains('hidden')) return;
         startGame();
-        // Continue to also set direction based on click
     }
 
     const canvas = document.getElementById('gameCanvas');
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
 
-    // Only process direction if click is within canvas bounds
-    if (
-        e.clientX < rect.left ||
-        e.clientX > rect.right ||
-        e.clientY < rect.top ||
-        e.clientY > rect.bottom
-    ) {
-        return;
-    }
+    const { clientX } = e;
+    const { clientY } = e;
 
-    // Convert click coordinates to internal canvas coordinates
+    // Convert to internal canvas coordinates (no bounds check - any screen position works)
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const clickX = (e.clientX - rect.left) * scaleX;
-    const clickY = (e.clientY - rect.top) * scaleY;
+    const inputX = (clientX - rect.left) * scaleX;
+    const inputY = (clientY - rect.top) * scaleY;
 
     // Get snake head position (center of tile) in internal canvas coordinates
     const head = gameState.snake[0];
     const headPxX = head.x * GRID_SIZE + GRID_SIZE / 2;
     const headPxY = head.y * GRID_SIZE + GRID_SIZE / 2;
 
-    const dx = clickX - headPxX;
-    const dy = clickY - headPxY;
+    const dx = inputX - headPxX;
+    const dy = inputY - headPxY;
 
-    // If click exactly on head, ignore (no direction)
     if (dx === 0 && dy === 0) return;
 
-    // Build candidate directions from both axes
     const candidates = [];
-    if (dx !== 0) {
-        candidates.push({ dx: dx > 0 ? 1 : -1, dy: 0 });
-    }
-    if (dy !== 0) {
-        candidates.push({ dx: 0, dy: dy > 0 ? 1 : -1 });
-    }
+    if (dx !== 0) candidates.push({ dx: dx > 0 ? 1 : -1, dy: 0 });
+    if (dy !== 0) candidates.push({ dx: 0, dy: dy > 0 ? 1 : -1 });
 
-    // Filter out 180-degree turns
-    const validCandidates = candidates.filter((cand) => {
-        const isOpposite =
-            cand.dx === -gameState.dx &&
-            cand.dy === -gameState.dy &&
-            (gameState.dx !== 0 || gameState.dy !== 0);
-        return !isOpposite;
-    });
-
+    const validCandidates = candidates.filter(
+        (cand) =>
+            !(
+                cand.dx === -gameState.dx &&
+                cand.dy === -gameState.dy &&
+                (gameState.dx !== 0 || gameState.dy !== 0)
+            )
+    );
     if (validCandidates.length === 0) return;
 
-    // Choose candidate with larger component magnitude to prefer the axis the user clicked more on
     let chosen = validCandidates[0];
     if (validCandidates.length === 2) {
         const absDx = Math.abs(dx);
         const absDy = Math.abs(dy);
-        // Match candidate to its axis magnitude
         if (chosen.dx !== 0) {
             chosen = absDx >= absDy ? chosen : validCandidates[1];
         } else {
@@ -2336,16 +2310,100 @@ document.body.addEventListener('click', (e) => {
         }
     }
 
-    const newDx = chosen.dx;
-    const newDy = chosen.dy;
-
-    // Queue the direction
     gameState.dxPrev = gameState.dx;
     gameState.dyPrev = gameState.dy;
-    gameState.directionQueue.push({ dx: newDx, dy: newDy });
-    if (gameState.directionQueue.length > 10) {
-        gameState.directionQueue.shift();
+    gameState.directionQueue.push({ dx: chosen.dx, dy: chosen.dy });
+    if (gameState.directionQueue.length > 10) gameState.directionQueue.shift();
+}
+
+// Touch input: only active on canvas, with bounds check
+function handleTouchInput(e) {
+    e.preventDefault();
+    if (gameState.paused) return;
+    if (!gameState.gameRunning) {
+        if (!gameOverOverlay.classList.contains('hidden')) return;
+        startGame();
     }
+
+    const canvas = e.target;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const { clientX } = touch;
+    const { clientY } = touch;
+
+    // Bounds check: only process if touch started on canvas
+    if (
+        clientX < rect.left ||
+        clientX > rect.right ||
+        clientY < rect.top ||
+        clientY > rect.bottom
+    ) {
+        return;
+    }
+
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const inputX = (clientX - rect.left) * scaleX;
+    const inputY = (clientY - rect.top) * scaleY;
+
+    const head = gameState.snake[0];
+    const headPxX = head.x * GRID_SIZE + GRID_SIZE / 2;
+    const headPxY = head.y * GRID_SIZE + GRID_SIZE / 2;
+
+    const dx = inputX - headPxX;
+    const dy = inputY - headPxY;
+
+    if (dx === 0 && dy === 0) return;
+
+    const candidates = [];
+    if (dx !== 0) candidates.push({ dx: dx > 0 ? 1 : -1, dy: 0 });
+    if (dy !== 0) candidates.push({ dx: 0, dy: dy > 0 ? 1 : -1 });
+
+    const validCandidates = candidates.filter(
+        (cand) =>
+            !(
+                cand.dx === -gameState.dx &&
+                cand.dy === -gameState.dy &&
+                (gameState.dx !== 0 || gameState.dy !== 0)
+            )
+    );
+    if (validCandidates.length === 0) return;
+
+    let chosen = validCandidates[0];
+    if (validCandidates.length === 2) {
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+        if (chosen.dx !== 0) {
+            chosen = absDx >= absDy ? chosen : validCandidates[1];
+        } else {
+            chosen = absDy >= absDx ? chosen : validCandidates[1];
+        }
+    }
+
+    gameState.dxPrev = gameState.dx;
+    gameState.dyPrev = gameState.dy;
+    gameState.directionQueue.push({ dx: chosen.dx, dy: chosen.dy });
+    if (gameState.directionQueue.length > 10) gameState.directionQueue.shift();
+}
+
+// Touch on canvas - prevent scrolling
+document.getElementById('gameCanvas').addEventListener(
+    'touchstart',
+    (e) => {
+        e.preventDefault();
+        handleTouchInput(e);
+    },
+    { passive: false }
+);
+
+// Click anywhere on body (except buttons) - for PC mouse control
+document.body.addEventListener('click', (e) => {
+    if (e.target.closest('button') || e.target.closest('.key') || e.target.closest('.arrow')) {
+        return;
+    }
+    handleMouseInput(e);
 });
 
 // Calculate speed based on level and snake length with reasonable limits
