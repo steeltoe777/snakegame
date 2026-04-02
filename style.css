@@ -29,12 +29,53 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100vh;
     margin: 0;
+    padding: 10px;
+    box-sizing: border-box;
     background-color: var(--custom-color-3);
     color: var(--custom-color-7);
     position: relative; /* Needed for absolute positioning of overlay */
+    overflow-x: hidden;
+}
+
+/* On wide screens, add side margins for comfortable viewing */
+@media (min-width: 1024px) {
+    body {
+        max-width: 1024px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px 40px;
+    }
+}
+
+/* On small screens, adjust layout to fit */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    #score,
+    #level,
+    #password {
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    .mobile-pause {
+        top: 10px;
+        left: 10px;
+        font-size: 20px;
+        padding: 8px;
+    }
+
+    /* Add bottom padding to body to account for mobile controls */
+    body {
+        padding-bottom: 250px;
+    }
 }
 
 h1 {
@@ -48,18 +89,33 @@ h1 {
 canvas {
     background-color: var(--custom-color-5);
     border: 2px solid var(--custom-color-7);
+    max-width: 100%;
+    max-height: 70vh;
+    width: auto;
+    height: auto;
+    aspect-ratio: 1 / 1;
 }
 
 #minimapCanvas {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     opacity: 0.7;
     border: 1px solid var(--custom-color-7);
     background-color: var(--custom-color-2);
     z-index: 100;
+}
+
+/* Make minimap smaller on mobile */
+@media (max-width: 768px) {
+    #minimapCanvas {
+        width: 60px;
+        height: 60px;
+        top: 10px;
+        right: 10px;
+    }
 }
 
 #score,
@@ -172,4 +228,162 @@ canvas {
 
 .gameOverContent button:hover {
     background-color: var(--custom-color-4);
+}
+
+/* Mobile Controls */
+.mobile-pause {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+    display: none;
+}
+
+#mobileControls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.d-pad {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 5px;
+    justify-items: center;
+}
+
+.arrow {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    background: var(--custom-color-5);
+    color: var(--custom-color-7);
+    border: 2px solid var(--custom-color-7);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.arrow:active {
+    background: var(--custom-color-4);
+    transform: scale(0.95);
+}
+
+.middle-row {
+    display: grid;
+    grid-template-columns: 50px 50px;
+    gap: 5px;
+}
+
+.mobile-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.control-btn {
+    padding: 15px 20px;
+    font-size: 16px;
+    background: var(--custom-color-1);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    touch-action: manipulation;
+}
+
+.control-btn:active {
+    background: var(--custom-color-4);
+    transform: scale(0.95);
+}
+
+#mobileKeyboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 10px;
+    z-index: 1001;
+    max-height: 40vh;
+    overflow-y: auto;
+    display: none;
+}
+
+.keyboard-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    max-width: 100%;
+}
+
+.key {
+    padding: 10px 2px;
+    font-size: 12px;
+    background: var(--custom-color-5);
+    color: var(--custom-color-7);
+    border: 1px solid var(--custom-color-7);
+    border-radius: 3px;
+    cursor: pointer;
+    touch-action: manipulation;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key:active {
+    background: var(--custom-color-4);
+    transform: scale(0.95);
+}
+
+.close-keyboard-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background: var(--custom-color-1);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.close-keyboard-btn:active {
+    background: var(--custom-color-4);
+    transform: scale(0.95);
+}
+
+/* Show mobile controls on touch devices */
+@media (max-width: 768px) {
+    .mobile-pause,
+    #mobileControls,
+    #mobileKeyboard {
+        display: flex !important;
+    }
+
+    #mobileKeyboard {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
 }
