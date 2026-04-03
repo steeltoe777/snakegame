@@ -641,16 +641,81 @@ function updatePasswordDisplay() {
         levelStr = `Level ${milestoneLevel - 1} password: ${levelPassword}`;
     }
 
-    // Always show typed buffer - use non-breaking space for empty
-    const typedBuffer = passwordSystem.keySequence.join('') || '\u00A0';
-    const typedStr = `Typed password: ${typedBuffer}`;
+    // Get typed buffer for input field sync
+    const typedBufferRaw = passwordSystem.keySequence.join('');
 
-    // Combine into two lines
-    passwordElement.innerText = `${levelStr}\n${typedStr}`;
+    // Show only milestone password in the text display (input field shows typed buffer)
+    passwordElement.innerText = levelStr;
+
+    // Sync password input field (if present)
+    if (passwordInput) {
+        passwordInput.value = typedBufferRaw;
+    }
 }
 
 // Handle key press for password system
+function tryPasswordTeleport() {
+    // Only check passwords for levels divisible by 10 (and not level 1)
+    for (let level = 10; level <= PASSWORD_LEVEL_MAX; level += 10) {
+        const levelPassword = passwordSystem.generatePassword(level);
+        if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
+            // Reset to PREVIOUS level (level - 1)
+            const targetLevel = Math.max(1, level - 1);
+            gameState.level = targetLevel;
+            // Update last milestone ONLY if it's higher than the current recorded milestone
+            if (level > gameState.lastMilestoneLevel) {
+                gameState.lastMilestoneLevel = level;
+            }
+            gameState.score = 0;
+            document.getElementById('score').innerText = `Score: ${gameState.score}`;
+            document.getElementById('level').innerText = `Level: ${gameState.level}`;
+
+            // Reset snake position and clear trail
+            gameState.snake = [{ x: 10, y: 10 }];
+            gameState.dx = 0;
+            gameState.dy = 0;
+            gameState.directionQueue = [];
+            gameState.trail = [];
+
+            // Regenerate maze and pellets for the target level
+            generateMaze();
+            initializeSpatialGrid(); // Initialize spatial grid for collision detection
+            generatePellets();
+
+            // Reset key sequence
+            passwordSystem.resetSequence();
+
+            // Update password display
+            updatePasswordDisplay();
+
+            // Hide Game Over overlay if it was visible
+            const gameOverOverlay = document.getElementById('gameOverOverlay');
+            if (gameOverOverlay) {
+                gameOverOverlay.classList.add('hidden');
+            }
+
+            // Ensure game is not paused after teleporting via password
+            gameState.paused = false;
+
+            // Stop current game and restart at the new level
+            if (gameState.gameInterval) {
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = null;
+            }
+            gameState.gameRunning = false;
+            drawGame();
+
+            break; // Found matching password, exit loop
+        }
+    }
+}
+
 function handlePasswordKey(e) {
+    // If password input field is focused, ignore to avoid duplication
+    if (passwordInput && document.activeElement === passwordInput) {
+        return;
+    }
+
     // Support backspace
     if (e.key === 'Backspace') {
         e.preventDefault();
@@ -668,61 +733,27 @@ function handlePasswordKey(e) {
         e.preventDefault();
         passwordSystem.addKey(key);
         updatePasswordDisplay(); // Update display on every valid key press
-
-        // Only check passwords for levels divisible by 10 (and not level 1)
-        for (let level = 10; level <= PASSWORD_LEVEL_MAX; level += 10) {
-            const levelPassword = passwordSystem.generatePassword(level);
-            if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
-                // Reset to PREVIOUS level (level - 1)
-                const targetLevel = Math.max(1, level - 1);
-                gameState.level = targetLevel;
-                // Update last milestone ONLY if it's higher than the current recorded milestone
-                if (level > gameState.lastMilestoneLevel) {
-                    gameState.lastMilestoneLevel = level;
-                }
-                gameState.score = 0;
-                document.getElementById('score').innerText = `Score: ${gameState.score}`;
-                document.getElementById('level').innerText = `Level: ${gameState.level}`;
-
-                // Reset snake position and clear trail
-                gameState.snake = [{ x: 10, y: 10 }];
-                gameState.dx = 0;
-                gameState.dy = 0;
-                gameState.directionQueue = [];
-                gameState.trail = [];
-
-                // Regenerate maze and pellets for the target level
-                generateMaze();
-                initializeSpatialGrid(); // Initialize spatial grid for collision detection
-                generatePellets();
-
-                // Reset key sequence
-                passwordSystem.resetSequence();
-
-                // Update password display
-                updatePasswordDisplay();
-
-                // Hide Game Over overlay if it was visible
-                const gameOverOverlay = document.getElementById('gameOverOverlay');
-                if (gameOverOverlay) {
-                    gameOverOverlay.classList.add('hidden');
-                }
-
-                // Ensure game is not paused after teleporting via password
-                gameState.paused = false;
-
-                // Stop current game and restart at the new level
-                if (gameState.gameInterval) {
-                    clearInterval(gameState.gameInterval);
-                    gameState.gameInterval = null;
-                }
-                gameState.gameRunning = false;
-                drawGame();
-
-                break; // Found matching password, exit loop
-            }
-        }
+        tryPasswordTeleport();
     }
+}
+
+// Handle input field changes for password entry (mobile friendly)
+function handlePasswordInputChange() {
+    if (!passwordInput) return;
+    const raw = passwordInput.value;
+    // Filter to uppercase alphanumeric and enforce max length
+    let filtered = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (filtered.length > passwordSystem.maxSequenceLength) {
+        filtered = filtered.slice(-passwordSystem.maxSequenceLength);
+    }
+    // Update input if filtering changed anything
+    if (raw !== filtered) {
+        passwordInput.value = filtered;
+    }
+    // Update key sequence
+    passwordSystem.keySequence = filtered.split('');
+    updatePasswordDisplay();
+    tryPasswordTeleport();
 }
 
 // Listen for password key presses - managed centrally to prevent accumulation
@@ -745,6 +776,12 @@ manageEventListeners('add');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
 const finalScoreDisplay = document.getElementById('finalScore');
 const restartButton = document.getElementById('restartButton');
+const passwordInput = document.getElementById('passwordInput');
+
+// Attach input listener for password field (mobile support)
+if (passwordInput) {
+    passwordInput.addEventListener('input', handlePasswordInputChange);
+}
 
 function calculateTileCount() {
     if (canvas && canvas.width && gameState.gridSize > 0) {

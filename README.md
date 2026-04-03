@@ -27,7 +27,8 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 | **Mouse Click**    | Change Direction (anywhere). **Only starts game when clicking on the canvas**. |
 | **Touch**          | Change Direction (on canvas only). Starts game on canvas touch.                |
 | **Space / Escape** | Pause or Resume                                                                |
-| **A-Z, 0-9**       | Type Password (visible on screen)                                              |
+| **Password Field** | Enter password (mobile-friendly). Works alongside keyboard.                    |
+| **A-Z, 0-9**       | Type Password (alternative method)                                             |
 | **Backspace**      | Correct password entry                                                         |
 
 **Note**: Using only mouse/touch for two consecutive clicks makes the snake **20% slower** to compensate for the difficulty of precise steering. Using any arrow key resets this slowdown.
