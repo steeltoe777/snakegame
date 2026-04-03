@@ -578,6 +578,7 @@ const gameState = {
     scoreMultiplierLastUpdate: 0, // Timestamp reference
     rainbowHue: 0, // Current hue value for rainbow trail effect
     paused: false,
+    consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
 };
 
 // Password system for level progression
@@ -2152,6 +2153,7 @@ function resetGame() {
     generateShields(); // Generate shields for powerups // Generate mushrooms for powerups
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
+    gameState.consecutiveMouseClicks = 0; // Reset mouse click counter on game reset
     passwordSystem.resetSequence(); // Clear typed password on game reset
     updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
@@ -2202,18 +2204,35 @@ function handleDirectionChange(e) {
         case 'ArrowUp':
             newDx = 0;
             newDy = -1;
+            // Reset mouse-only mode and restart if penalty was active
+            if (gameState.consecutiveMouseClicks >= 2) {
+                restartGameLoop();
+            }
+            gameState.consecutiveMouseClicks = 0;
             break;
         case 'ArrowDown':
             newDx = 0;
             newDy = 1;
+            if (gameState.consecutiveMouseClicks >= 2) {
+                restartGameLoop();
+            }
+            gameState.consecutiveMouseClicks = 0;
             break;
         case 'ArrowLeft':
             newDx = -1;
             newDy = 0;
+            if (gameState.consecutiveMouseClicks >= 2) {
+                restartGameLoop();
+            }
+            gameState.consecutiveMouseClicks = 0;
             break;
         case 'ArrowRight':
             newDx = 1;
             newDy = 0;
+            if (gameState.consecutiveMouseClicks >= 2) {
+                restartGameLoop();
+            }
+            gameState.consecutiveMouseClicks = 0;
             break;
         case ' ':
         case 'Escape':
@@ -2276,6 +2295,8 @@ function handleMouseInput(e) {
         if (!gameOverOverlay.classList.contains('hidden')) return;
         // Only start game if click is on the canvas
         if (!isClickOnCanvas) return;
+        // Starting via mouse click counts as 2 clicks for slowdown
+        gameState.consecutiveMouseClicks = 2;
         startGame();
     }
 
@@ -2324,6 +2345,14 @@ function handleMouseInput(e) {
     gameState.dyPrev = gameState.dy;
     gameState.directionQueue.push({ dx: chosen.dx, dy: chosen.dy });
     if (gameState.directionQueue.length > 10) gameState.directionQueue.shift();
+
+    // Increment mouse click counter for slowdown
+    const prevClicks = gameState.consecutiveMouseClicks;
+    gameState.consecutiveMouseClicks++;
+    // Restart game loop with new speed if we just crossed the threshold
+    if (prevClicks < 2 && gameState.consecutiveMouseClicks >= 2) {
+        restartGameLoop();
+    }
 }
 
 // Touch input: only active on canvas, with bounds check
@@ -2332,6 +2361,8 @@ function handleTouchInput(e) {
     if (gameState.paused) return;
     if (!gameState.gameRunning) {
         if (!gameOverOverlay.classList.contains('hidden')) return;
+        // Starting via touch counts as 2 clicks for slowdown
+        gameState.consecutiveMouseClicks = 2;
         startGame();
     }
 
@@ -2396,6 +2427,14 @@ function handleTouchInput(e) {
     gameState.dyPrev = gameState.dy;
     gameState.directionQueue.push({ dx: chosen.dx, dy: chosen.dy });
     if (gameState.directionQueue.length > 10) gameState.directionQueue.shift();
+
+    // Increment mouse click counter for slowdown
+    const prevClicks = gameState.consecutiveMouseClicks;
+    gameState.consecutiveMouseClicks++;
+    // Restart game loop with new speed if we just crossed the threshold
+    if (prevClicks < 2 && gameState.consecutiveMouseClicks >= 2) {
+        restartGameLoop();
+    }
 }
 
 // Touch on canvas - prevent scrolling
@@ -2474,8 +2513,22 @@ function calculateGameSpeed() {
         speed *= 1.25;
     }
 
+    // Apply mouse-only slowdown: if player used only mouse/touch for 2+ consecutive clicks
+    if (gameState.consecutiveMouseClicks >= 2) {
+        speed *= 1.2; // 20% slower than normal
+    }
+
     return speed;
 }
+
+// Restart the game loop timer with current speed settings
+function restartGameLoop() {
+    if (gameState.gameInterval) {
+        clearInterval(gameState.gameInterval);
+        gameState.gameInterval = setInterval(update, calculateGameSpeed());
+    }
+}
+
 function startGame() {
     // FIX: Clear any existing game interval before starting a new one
     if (gameState.gameInterval) {
