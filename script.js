@@ -580,6 +580,7 @@ const gameState = {
     paused: false,
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
+    deathImminent: false, // Flag for 1-tick grace period before death in mouse mode
 };
 
 // Password system for level progression
@@ -1873,6 +1874,11 @@ function update() {
         if (gameState.pellets.length === 0) {
             levelUp();
         }
+
+        // Clear deathImminent after surviving a tick during grace period
+        if (gameState.deathImminent) {
+            gameState.deathImminent = false;
+        }
     } // end skipMovement block
 
     spawnRandomMushroom(); // Random mushroom spawning during game
@@ -2084,7 +2090,18 @@ function drawGame() {
     }
 }
 
+// Grace period for mouse/touch mode: one-tick pause before actual death to allow steering
 function gameOver() {
+    if (gameState.consecutiveMouseClicks >= 2) {
+        if (!gameState.deathImminent) {
+            gameState.deathImminent = true;
+            return; // Delay death by one tick; snake pauses this tick
+        }
+    }
+    realGameOver();
+}
+
+function realGameOver() {
     gameState.gameRunning = false;
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
@@ -2179,6 +2196,7 @@ function levelUp() {
     generateStars();
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
+    gameState.deathImminent = false; // Reset death grace flag on level up
     passwordSystem.resetSequence(); // Clear typed password on level transition
     updatePasswordDisplay();
 }
@@ -2215,6 +2233,7 @@ function resetGame() {
     gameState.gameRunning = false;
     gameState.consecutiveMouseClicks = 0; // Reset mouse click counter on game reset
     gameState.skipNextMovement = false; // Reset movement skip flag
+    gameState.deathImminent = false; // Reset death grace flag
     passwordSystem.resetSequence(); // Clear typed password on game reset
     updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset

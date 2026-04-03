@@ -78,4 +78,4 @@ Don't worry—death isn't the end.
 2. **Precision Pause**: If you find yourself in a tight spot, press **Space** to pause and plan your next move.
 3. **Password Management**: Always write down or remember your milestone passwords. They are your safety net.
 4. **Minimap Reading**: Always glance at the radar when a level starts to see the best route for pellets.
-5. **Mouse/Touch Penalty**: After **two consecutive clicks** without using arrow keys, the snake slows down by **40%** and **skips one movement turn after each direction change** to improve steering precision on mobile/touch. Switch back to arrow keys immediately to restore normal speed.
+5. **Mouse/Touch Penalty**: After **two consecutive clicks** without using arrow keys, the snake becomes **40% slower** and **skips one movement turn after each direction change**. Additionally, when a collision with a wall or your trail would normally cause death, the snake **pauses for one turn** giving you a final chance to steer away. Switch back to arrow keys to reset all effects.

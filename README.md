@@ -31,7 +31,7 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 | **A-Z, 0-9**       | Type Password (alternative method)                                             |
 | **Backspace**      | Correct password entry                                                         |
 
-**Note**: Using only mouse/touch for two consecutive clicks makes the snake **40% slower** and causes it to **wait one turn after each direction change** to improve steering precision. Using any arrow key resets these effects.
+**Note**: Using only mouse/touch for two consecutive clicks makes the snake **40% slower** and causes it to **skip one movement turn after each direction change** to improve steering precision. Additionally, when about to die from wall/trail collision, the snake **pauses for one turn** to give you a chance to steer away. Using any arrow key resets these effects.
 
 ## 🚀 Getting Started
 
@@ -49,7 +49,7 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **Milestones**: The game remembers your **highest achieved password**. If you die or reset, you can always jump back to your best milestone instantly.
 - **Ghost Mode**: Collecting a **Mushroom** makes you invincible to walls (but not your own tail!).
 - **Pause & Think**: Use **Space** to freeze time and check the minimap if you're lost in a maze.
-- **Mouse/Touch Difficulty**: If you're playing with mouse/touch only, after two consecutive clicks the snake becomes **40% slower** and **pauses one movement turn after each direction change** to improve precision. Switch to arrow keys to reset to normal speed.
+- **Mouse/Touch Difficulty**: In mouse/touch-only mode (2+ clicks), the snake is **40% slower**, **skips one turn after direction changes**, and gets a **one-turn grace period before death** to allow last-second steering corrections. Switch to arrow keys to reset to normal speed.
 
 ## 🛠️ Development & Philosophy
 

@@ -105,6 +105,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - **New state properties**:
     - `consecutiveMouseClicks: 0` - Tracks consecutive mouse/touch inputs to apply slowdown (40% slower) and skip-turn precision mechanics at 2+ clicks. Reset to 0 when arrow keys are used.
     - `skipNextMovement: false` - When true, the snake will not move on the next game tick. Set automatically after a direction change in mouse mode (consecutiveMouseClicks >= 2) to improve steering precision. Cleared when arrow keys are used or after the skip occurs.
+    - `deathImminent: false` - When a collision would normally cause death in mouse mode (consecutiveMouseClicks >= 2), this flag is set to true and the death is delayed by one turn, allowing the player a final steering chance. If still colliding on the next tick, the game ends.
 
 ### Testing Patterns
 
