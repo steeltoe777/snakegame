@@ -2257,10 +2257,6 @@ restartButton.addEventListener('click', resetGame);
 // Mouse click: allows clicking anywhere on screen to steer
 function handleMouseInput(e) {
     if (gameState.paused) return;
-    if (!gameState.gameRunning) {
-        if (!gameOverOverlay.classList.contains('hidden')) return;
-        startGame();
-    }
 
     const canvas = document.getElementById('gameCanvas');
     if (!canvas) return;
@@ -2269,7 +2265,21 @@ function handleMouseInput(e) {
     const { clientX } = e;
     const { clientY } = e;
 
-    // Convert to internal canvas coordinates (no bounds check - any screen position works)
+    // Check if click is on canvas (only needed for starting the game)
+    const isClickOnCanvas =
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom;
+
+    if (!gameState.gameRunning) {
+        if (!gameOverOverlay.classList.contains('hidden')) return;
+        // Only start game if click is on the canvas
+        if (!isClickOnCanvas) return;
+        startGame();
+    }
+
+    // Convert to internal canvas coordinates
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     const inputX = (clientX - rect.left) * scaleX;
