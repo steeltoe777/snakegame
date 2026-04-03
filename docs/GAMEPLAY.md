@@ -75,7 +75,7 @@ Don't worry—death isn't the end.
 ## 💡 Pro Tips
 
 1. **The Trail Trick**: If you have a Mushroom (invincibility), your trail turns **rainbow**. You can still collide with your tail, so be careful!
-2. **Precision Pause**: If you find yourself in a tight spot, press **Space** to pause and plan your next move.
+2. **Precision Pause**: Press **Space** or **Escape** to pause anytime. On mobile, focusing the password input field auto-pauses; tapping away (unfocusing) auto-unpauses, making it easy to type passwords.
 3. **Password Management**: Always write down or remember your milestone passwords. They are your safety net.
 4. **Minimap Reading**: Always glance at the radar when a level starts to see the best route for pellets.
-5. **Mouse/Touch Penalty**: After **two consecutive clicks** without using arrow keys, the snake becomes **40% slower** and **skips one movement turn after each direction change**. Additionally, when a collision with a wall or your trail would normally cause death, the snake **pauses for one turn** giving you a final chance to steer away. Switch back to arrow keys to reset all effects.
+5. **Mouse/Touch Penalty**: After **two consecutive clicks** without using arrow keys, the snake becomes **40% slower** and **skips one movement turn after each direction change**. Additionally, when a collision with a wall or your trail would normally cause death, the snake **pauses for one turn** giving you a final chance to steer away. Press any arrow key or Space/Escape to reset all effects.

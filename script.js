@@ -581,6 +581,7 @@ const gameState = {
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
     deathImminent: false, // Flag for 1-tick grace period before death in mouse mode
+    pausedByPasswordInput: false, // Tracks if pause was auto-triggered by password input focus
 };
 
 // Password system for level progression
@@ -783,6 +784,22 @@ const passwordInput = document.getElementById('passwordInput');
 // Attach input listener for password field (mobile support)
 if (passwordInput) {
     passwordInput.addEventListener('input', handlePasswordInputChange);
+    // Auto-pause when password input is focused (mobile convenience)
+    passwordInput.addEventListener('focus', () => {
+        if (gameState.gameRunning && !gameState.paused) {
+            gameState.paused = true;
+            gameState.pausedByPasswordInput = true; // Mark that we auto-paused for password
+            drawGame();
+        }
+    });
+    // Auto-unpause when password input loses focus, but only if we were the ones who paused it
+    passwordInput.addEventListener('blur', () => {
+        if (gameState.pausedByPasswordInput) {
+            gameState.paused = false;
+            gameState.pausedByPasswordInput = false;
+            drawGame();
+        }
+    });
 }
 
 function calculateTileCount() {
@@ -2197,6 +2214,7 @@ function levelUp() {
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
     gameState.deathImminent = false; // Reset death grace flag on level up
+    gameState.pausedByPasswordInput = false; // Reset password pause flag
     passwordSystem.resetSequence(); // Clear typed password on level transition
     updatePasswordDisplay();
 }
@@ -2234,6 +2252,7 @@ function resetGame() {
     gameState.consecutiveMouseClicks = 0; // Reset mouse click counter on game reset
     gameState.skipNextMovement = false; // Reset movement skip flag
     gameState.deathImminent = false; // Reset death grace flag
+    gameState.pausedByPasswordInput = false; // Reset password pause flag
     passwordSystem.resetSequence(); // Clear typed password on game reset
     updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
@@ -2320,6 +2339,9 @@ function handleDirectionChange(e) {
             break;
         case ' ':
         case 'Escape':
+            // Disable mouse/touch mode when using keyboard to pause/unpause
+            gameState.consecutiveMouseClicks = 0;
+            gameState.skipNextMovement = false;
             gameState.paused = !gameState.paused;
             if (gameState.paused === false) {
                 passwordSystem.resetSequence();

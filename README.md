@@ -18,20 +18,21 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **🔐 Secret Passwords**: Every 10 levels, you'll uncover a secret code. Type it in anytime (even while paused!) to jump back to that milestone. **Important:** Write these down! They are not saved between browser sessions.
 - **🍄 Dynamic Power-Ups**: From speed boosts to invincibility, collect random spawns to gain the upper hand.
 - **🗺️ Minimap Navigation**: Keep an eye on the radar to locate that last elusive pellet or a distant power-up.
+- **⏸️ Pause Anywhere**: On mobile, focusing the password input field automatically pauses the game; unfocusing (tapping away) unpauses. Press **Space** or **Escape** to pause/resume manually.
 
 ## ⌨️ Controls
 
-| Input              | Action                                                                         |
-| ------------------ | ------------------------------------------------------------------------------ |
-| **Arrow Keys**     | Change Direction / Start Game                                                  |
-| **Mouse Click**    | Change Direction (anywhere). **Only starts game when clicking on the canvas**. |
-| **Touch**          | Change Direction (on canvas only). Starts game on canvas touch.                |
-| **Space / Escape** | Pause or Resume                                                                |
-| **Password Field** | Enter password (mobile-friendly). Works alongside keyboard.                    |
-| **A-Z, 0-9**       | Type Password (alternative method)                                             |
-| **Backspace**      | Correct password entry                                                         |
+| Input              | Action                                                                              |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| **Arrow Keys**     | Change Direction / Start Game                                                       |
+| **Mouse Click**    | Change Direction (anywhere). **Only starts game when clicking on the canvas**.      |
+| **Touch**          | Change Direction (on canvas only). Starts game on canvas touch.                     |
+| **Space / Escape** | Pause or Resume (also resets mouse/touch mode)                                      |
+| **Password Field** | Enter password; focusing auto-pauses, unfocusing auto-unpauses (mobile convenience) |
+| **A-Z, 0-9**       | Type Password (alternative method)                                                  |
+| **Backspace**      | Correct password entry                                                              |
 
-**Note**: Using only mouse/touch for two consecutive clicks makes the snake **40% slower** and causes it to **skip one movement turn after each direction change** to improve steering precision. Additionally, when about to die from wall/trail collision, the snake **pauses for one turn** to give you a chance to steer away. Using any arrow key resets these effects.
+**Note**: Using only mouse/touch for two consecutive clicks makes the snake **40% slower** and causes it to **skip one movement turn after each direction change** to improve steering precision. Additionally, when about to die from wall/trail collision, the snake **pauses for one turn** giving you a final chance to steer away. Using any arrow key or Space/Escape resets these effects.
 
 ## 🚀 Getting Started
 
@@ -48,8 +49,8 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **Trap Yourself?** Your trail disappears over time, but in tight spots, it's a solid wall. Plan your loops!
 - **Milestones**: The game remembers your **highest achieved password**. If you die or reset, you can always jump back to your best milestone instantly.
 - **Ghost Mode**: Collecting a **Mushroom** makes you invincible to walls (but not your own tail!).
-- **Pause & Think**: Use **Space** to freeze time and check the minimap if you're lost in a maze.
-- **Mouse/Touch Difficulty**: In mouse/touch-only mode (2+ clicks), the snake is **40% slower**, **skips one turn after direction changes**, and gets a **one-turn grace period before death** to allow last-second steering corrections. Switch to arrow keys to reset to normal speed.
+- **Pause & Think**: Press **Space** or **Escape** to pause. On mobile, tapping the password input auto-pauses while you type.
+- **Mouse/Touch Difficulty**: In mouse/touch-only mode (2+ clicks), the snake is **40% slower**, **skips one turn after direction changes**, and gets a **one-turn grace period before death**. Press any arrow key or Space/Escape to reset to normal speed.
 
 ## 🛠️ Development & Philosophy
 
