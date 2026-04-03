@@ -102,6 +102,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - Initialize state in a resetGame or levelUp function when needed
 - Use performance.now() for accurate timing (see updatePowerupTimers)
 - Properties to include: snake array, direction, score, level, powerups, maze configuration
+- **New state property**: `consecutiveMouseClicks: 0` - Tracks consecutive mouse/touch inputs to apply slowdown penalty at 2+ clicks. Reset to 0 when arrow keys are used.
 
 ### Testing Patterns
 
@@ -120,6 +121,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - Update functions: updateSnake(), updatePowerupTimers(), checkCollisions()
 - Event listener management with add/remove pattern for cleanup
 - Grid-based positioning with coordinate objects {x, y}
+- Input handling: Keyboard (arrow keys) resets mouse penalty; mouse/touch input increments counter that slows game after 2+ clicks. See `handleMouseInput()`, `handleTouchInput()`, and `handleDirectionChange()`.
 
 ### Canvas and DOM Access
 

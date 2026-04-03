@@ -7,9 +7,11 @@
 ---
 
 ## 🕹️ What is this?
+
 Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and the strategic pellet collection of **Pac-Man**, all wrapped in a level-based progression system with **secret passwords**. This isn't just a clone; it's a strategic arcade experience that evolves as you play.
 
 ## ✨ Core Gameplay
+
 - **🐍 Grow and Survive**: Collect pellets to grow, but watch out—your own tail is your biggest enemy.
 - **💙 Tron Trails**: Your movement leaves a blue trail that acts as a solid wall. Use it to trap yourself or navigate carefully.
 - **🟡 Pac-Man Pellets**: Clear the entire board of pellets to advance. No more random spawns; every pellet counts.
@@ -18,35 +20,47 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **🗺️ Minimap Navigation**: Keep an eye on the radar to locate that last elusive pellet or a distant power-up.
 
 ## ⌨️ Controls
-| Key | Action |
-| --- | --- |
-| **Arrow Keys** | Change Direction / Start Game |
-| **Space / Escape** | Pause or Resume |
-| **A-Z, 0-9** | Type Password (visible on screen) |
-| **Backspace** | Correct password entry |
+
+| Input              | Action                                                                         |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **Arrow Keys**     | Change Direction / Start Game                                                  |
+| **Mouse Click**    | Change Direction (anywhere). **Only starts game when clicking on the canvas**. |
+| **Touch**          | Change Direction (on canvas only). Starts game on canvas touch.                |
+| **Space / Escape** | Pause or Resume                                                                |
+| **A-Z, 0-9**       | Type Password (visible on screen)                                              |
+| **Backspace**      | Correct password entry                                                         |
+
+**Note**: Using only mouse/touch for two consecutive clicks makes the snake **20% slower** to compensate for the difficulty of precise steering. Using any arrow key resets this slowdown.
 
 ## 🚀 Getting Started
+
 1. **Open** `index.html` in any browser or use the [live link](https://steeltoe777.github.io/snakegame/).
-2. Use **Arrow Keys** to move.
-3. Collect all **Yellow Pellets** to clear the level.
-4. Avoid the **Grey Walls** and your **Blue Trail**.
-5. Watch the top-right for **Secret Passwords** at level 10, 20, etc.
-6. **Important**: Write down your passwords! They are not saved if you refresh the page or change browsers.
+2. **Start the game**: Click on the game canvas or use arrow keys.
+3. Use **Arrow Keys** or **click/touch** anywhere to steer (once started).
+4. Collect all **Yellow Pellets** to clear the level.
+5. Avoid the **Grey Walls** and your **Blue Trail**.
+6. Watch the top-right for **Secret Passwords** at level 10, 20, etc.
+7. **Important**: Write down your passwords! They are not saved if you refresh the page or change browsers.
 
 ## 💡 Quick Pro-Tips
+
 - **Trap Yourself?** Your trail disappears over time, but in tight spots, it's a solid wall. Plan your loops!
 - **Milestones**: The game remembers your **highest achieved password**. If you die or reset, you can always jump back to your best milestone instantly.
 - **Ghost Mode**: Collecting a **Mushroom** makes you invincible to walls (but not your own tail!).
 - **Pause & Think**: Use **Space** to freeze time and check the minimap if you're lost in a maze.
+- **Mouse/Touch Difficulty**: If you're playing with mouse/touch only, the snake becomes **20% slower** after two consecutive clicks to balance the precision advantage. Switch to arrow keys to reset to normal speed.
 
 ## 🛠️ Development & Philosophy
+
 This project was born from a love for arcade classics and a "fun-first" development philosophy. It's built with **Pure Vanilla JavaScript**, ensuring it runs anywhere without a server or complex setup.
 
 ### **Documentation Roadmap**
+
 - **[🕹️ Gameplay Guide](docs/GAMEPLAY.md)**: Deep dive into power-ups, level scaling, and strategies.
 - **[🏗️ Technical Architecture](docs/ARCHITECTURE.md)**: How the engine, spatial grid, and rendering work.
 - **[💻 Development Guide](docs/DEVELOPMENT.md)**: Setup, testing, and contribution instructions.
 - **[📜 Project History](docs/HISTORY.md)**: The evolution of the game and technical improvements.
 
 ---
+
 **Game Version**: 1.0.0 | **License**: ISC | **Creator**: steeltoe777

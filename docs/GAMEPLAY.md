@@ -5,14 +5,18 @@ Welcome to the world of **Snake, Tron, Pac-Man Hybrid**. This guide explains the
 ---
 
 ## 🐍 Growth & Movement
-- **Movement**: You move on a 30x30 fixed grid. Use the **Arrow Keys** to steer.
+
+- **Movement**: You move on a 30x30 fixed grid. Use the **Arrow Keys** or **click/touch** anywhere on screen to steer.
+- **Starting**: The game begins when you click on the **canvas** (game board) or press an arrow key. Mouse/touch clicks outside the canvas won't accidentally start the game.
 - **Growth**: Every pellet you eat increases your length by one segment.
 - **The Trail**: Unlike classic snake games, your movement leaves a temporary blue trail. This trail acts as a solid obstacle, so you must plan your route carefully to avoid trapping yourself.
 
 ---
 
 ## 🔐 The Secret Password System
+
 Every 10 levels (10, 20, 30...), the game generates a **Secret Code**.
+
 - **Visibility**: These codes are displayed in the top-right corner of the screen.
 - **Entry**: You can type a password at any time—even while the game is **paused**.
 - **Persistence**: Once you've reached a milestone level (like Level 10), the game will remember its password. This behaves like a **"High Score"**—if you die, regress, or even restart the game from Level 1, your best achieved password remains visible on the screen for instant recovery.
@@ -21,20 +25,22 @@ Every 10 levels (10, 20, 30...), the game generates a **Secret Code**.
 ---
 
 ## 🍄 Power-Ups
+
 Random items spawn during gameplay to help (or challenge) you:
 
-| Power-Up | Visual | Effect | Duration |
-| --- | --- | --- | --- |
-| **Mushroom** | 🍄 | **Invincibility**: Pass through walls without dying. | 8s |
-| **Lightning Bolt** | ⚡ | **Speed Boost**: Move faster to clear pellets. | 6s |
-| **Hourglass** | ⏳ | **Time Slow**: Slow down for precise maneuvers. | 8s |
-| **Golden Star** | ⭐ | **Multiplier**: Earn double points for every pellet eaten. | 10s |
+| Power-Up           | Visual | Effect                                                     | Duration |
+| ------------------ | ------ | ---------------------------------------------------------- | -------- |
+| **Mushroom**       | 🍄     | **Invincibility**: Pass through walls without dying.       | 8s       |
+| **Lightning Bolt** | ⚡     | **Speed Boost**: Move faster to clear pellets.             | 6s       |
+| **Hourglass**      | ⏳     | **Time Slow**: Slow down for precise maneuvers.            | 8s       |
+| **Golden Star**    | ⭐     | **Multiplier**: Earn double points for every pellet eaten. | 10s      |
 
-*Note: Collecting a Mushroom or eating a Pellet always makes the snake grow.*
+_Note: Collecting a Mushroom or eating a Pellet always makes the snake grow._
 
 ---
 
 ## 🌱 Level Evolution
+
 As you progress, the maze itself becomes more complex:
 
 - **Level 1-3**: Open area with minimal boundaries.
@@ -45,7 +51,9 @@ As you progress, the maze itself becomes more complex:
 ---
 
 ## 🗺️ Minimap Navigation
+
 Keep an eye on the **Top-Right Radar**:
+
 - **Bright Green**: Your snake's head.
 - **Dark Green**: Your snake's body.
 - **Red**: Remaining pellets.
@@ -55,7 +63,9 @@ Keep an eye on the **Top-Right Radar**:
 ---
 
 ## 🔄 Death & Respawn
+
 Don't worry—death isn't the end.
+
 - **Regression**: If you die on any level higher than Level 1, you'll respawn at the **previous level**.
 - **Penalty**: Your score is halved, and your snake length is also **reduced by half** (minimum 1 segment).
 - **Forgiveness**: This system allows you to keep playing without losing all your progress, as long as you can manage the regression!
@@ -63,7 +73,9 @@ Don't worry—death isn't the end.
 ---
 
 ## 💡 Pro Tips
+
 1. **The Trail Trick**: If you have a Mushroom (invincibility), your trail turns **rainbow**. You can still collide with your tail, so be careful!
 2. **Precision Pause**: If you find yourself in a tight spot, press **Space** to pause and plan your next move.
 3. **Password Management**: Always write down or remember your milestone passwords. They are your safety net.
 4. **Minimap Reading**: Always glance at the radar when a level starts to see the best route for pellets.
+5. **Mouse/Touch Penalty**: After **two consecutive clicks** without using arrow keys, the snake slows down by **20%** to balance the ease of mouse control. Switch back to arrow keys immediately to restore normal speed.
