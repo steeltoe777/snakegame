@@ -581,7 +581,8 @@ const gameState = {
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
     deathImminent: false, // Flag for 1-tick grace period before death in mouse mode
-    pausedByPasswordInput: false, // Tracks if pause was auto-triggered by password input focus
+    pausedByPasswordInput: false, // Tracks whether pause was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
+    ignoreNextClick: false, // After auto-unpause from password blur, ignore next mouse click to prevent accidental turn
 };
 
 // Password system for level progression
@@ -795,6 +796,7 @@ if (passwordInput) {
     // Auto-unpause when password input loses focus, but only if we were the ones who paused it
     passwordInput.addEventListener('blur', () => {
         if (gameState.pausedByPasswordInput) {
+            gameState.ignoreNextClick = true; // The click that triggered blur will be ignored
             gameState.paused = false;
             gameState.pausedByPasswordInput = false;
             drawGame();
@@ -2215,6 +2217,7 @@ function levelUp() {
     gameState.gameRunning = false; // Set game to idle after level up
     gameState.deathImminent = false; // Reset death grace flag on level up
     gameState.pausedByPasswordInput = false; // Reset password pause flag
+    gameState.ignoreNextClick = false; // Reset click ignore flag
     passwordSystem.resetSequence(); // Clear typed password on level transition
     updatePasswordDisplay();
 }
@@ -2253,6 +2256,7 @@ function resetGame() {
     gameState.skipNextMovement = false; // Reset movement skip flag
     gameState.deathImminent = false; // Reset death grace flag
     gameState.pausedByPasswordInput = false; // Reset password pause flag
+    gameState.ignoreNextClick = false; // Reset click ignore flag
     passwordSystem.resetSequence(); // Clear typed password on game reset
     updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
@@ -2381,6 +2385,11 @@ restartButton.addEventListener('click', resetGame);
 // Mouse/touch click control - click anywhere to change snake direction
 // Mouse click: allows clicking anywhere on screen to steer
 function handleMouseInput(e) {
+    // If we just unpaused from password blur, ignore this click to avoid accidental turn
+    if (gameState.ignoreNextClick) {
+        gameState.ignoreNextClick = false;
+        return;
+    }
     if (gameState.paused) return;
 
     const canvas = document.getElementById('gameCanvas');
@@ -2555,7 +2564,12 @@ document.getElementById('gameCanvas').addEventListener(
 
 // Click anywhere on body (except buttons) - for PC mouse control
 document.body.addEventListener('click', (e) => {
-    if (e.target.closest('button') || e.target.closest('.key') || e.target.closest('.arrow')) {
+    if (
+        e.target.closest('button') ||
+        e.target.closest('.key') ||
+        e.target.closest('.arrow') ||
+        e.target.closest('#passwordInputContainer')
+    ) {
         return;
     }
     handleMouseInput(e);

@@ -127,6 +127,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - Grid-based positioning with coordinate objects {x, y}
 - Input handling: Keyboard (arrow keys) resets mouse penalty; mouse/touch input increments counter that slows game after 2+ clicks. See `handleMouseInput()`, `handleTouchInput()`, and `handleDirectionChange()`.
 - Password system: `updatePasswordDisplay()` syncs both the text display and the `#passwordInput` field. `handlePasswordInputChange()` processes on-screen input. `tryPasswordTeleport()` centralizes password matching logic.
+- Password input field: Clicks on it are ignored by the game to avoid accidental steering. Auto-pauses on focus; auto-unpauses on blur and sets `ignoreNextClick` to prevent the next click (the one that caused the blur) from turning the snake.
 
 ### Canvas and DOM Access
 
