@@ -74,7 +74,7 @@ This ensures the game can be downloaded and played **offline** by simply double-
 
 Inputs are managed centrally to prevent multiple listeners from accumulating. This is critical for supporting both gameplay and password entry simultaneously.
 
-- **`handleDirectionChange`**: Manages snake movement via arrow keys and the **Space/Escape** pause keys. Also resets `consecutiveMouseClicks` counter.
+- **`handleDirectionChange`**: Manages snake movement via arrow keys and the **Space/Escape** pause keys. Also resets `consecutiveMouseClicks` counter and clears `skipNextMovement` to exit mouse precision mode.
 - **`handlePasswordKey`**: Manages all alphanumeric keys and **Backspace** for secret codes.
 - **`handleMouseInput`**: Manages mouse clicks anywhere (except buttons). Starts game only when clicking on canvas. Increments `consecutiveMouseClicks` for slowdown.
 - **`handleTouchInput`**: Manages touch input on canvas only. Also handles start and slowdown.

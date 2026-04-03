@@ -579,6 +579,7 @@ const gameState = {
     rainbowHue: 0, // Current hue value for rainbow trail effect
     paused: false,
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
+    skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
 };
 
 // Password system for level progression
@@ -1291,6 +1292,13 @@ function update() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
 
+    // Determine if we should skip movement this tick (mouse mode precision)
+    let skipMovement = false;
+    if (gameState.skipNextMovement) {
+        skipMovement = true;
+        gameState.skipNextMovement = false;
+    }
+
     // Process ONE direction from queue per game tick
     // Validates each direction at execution time to allow complex sequences
     if (gameState.directionQueue.length > 0) {
@@ -1310,6 +1318,10 @@ function update() {
                 // Apply valid direction
                 gameState.dx = nextDir.dx;
                 gameState.dy = nextDir.dy;
+                // If in mouse-only mode (2+ clicks), skip next movement tick for better precision
+                if (gameState.consecutiveMouseClicks >= 2) {
+                    gameState.skipNextMovement = true;
+                }
                 break; // Processed one direction this tick
             }
             // If opposite, skip and try next queued direction
@@ -1459,398 +1471,409 @@ function update() {
     gameState.rainbowHue = (gameState.rainbowHue + 0.5) % HUE_FULL_CIRCLE;
 
     updateSpatialGrid(); // Update spatial grid for accurate collision detection
-    const head = { x: gameState.snake[0].x + gameState.dx, y: gameState.snake[0].y + gameState.dy };
-    for (let i = 1; i < gameState.snake.length; i++) {
-        if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
-            if (i <= SCORE_REDUCTION_FACTOR && (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)) {
-                // Avoid collision with neck segments of self.
-                gameState.dx = gameState.dxPrev;
-                gameState.dy = gameState.dyPrev;
-                // Only for the first touch though.
-                gameState.dxPrev = 0;
-                gameState.dyPrev = 0;
-            } else {
-                const newDirection = Math.round(Math.random() * 3) + 1; // Direction 1-4
-                switch (newDirection) {
-                    case 1:
-                        gameState.dx = 0;
-                        gameState.dy = -1;
-                        break;
-                    case 2:
-                        gameState.dx = 0;
-                        gameState.dy = 1;
-                        break;
-                    case 3:
-                        gameState.dx = -1;
-                        gameState.dy = 0;
-                        break;
-                    case 4:
-                        gameState.dx = 1;
-                        gameState.dy = 0;
-                        break;
-                    default:
-                        break;
+    if (!skipMovement) {
+        const head = {
+            x: gameState.snake[0].x + gameState.dx,
+            y: gameState.snake[0].y + gameState.dy,
+        };
+        for (let i = 1; i < gameState.snake.length; i++) {
+            if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
+                if (
+                    i <= SCORE_REDUCTION_FACTOR &&
+                    (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)
+                ) {
+                    // Avoid collision with neck segments of self.
+                    gameState.dx = gameState.dxPrev;
+                    gameState.dy = gameState.dyPrev;
+                    // Only for the first touch though.
+                    gameState.dxPrev = 0;
+                    gameState.dyPrev = 0;
+                } else {
+                    const newDirection = Math.round(Math.random() * 3) + 1; // Direction 1-4
+                    switch (newDirection) {
+                        case 1:
+                            gameState.dx = 0;
+                            gameState.dy = -1;
+                            break;
+                        case 2:
+                            gameState.dx = 0;
+                            gameState.dy = 1;
+                            break;
+                        case 3:
+                            gameState.dx = -1;
+                            gameState.dy = 0;
+                            break;
+                        case 4:
+                            gameState.dx = 1;
+                            gameState.dy = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                    gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
                 }
-                gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
-            }
-            drawGame();
-            return;
-        }
-    }
-
-    // Check if movement should be blocked due to collision and active shield
-
-    // Update shield timer if active
-    if (gameState.shieldPowerupActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.shieldLastUpdate;
-        gameState.shieldTimer -= deltaTime;
-        gameState.shieldLastUpdate = currentTime;
-
-        // Deactivate shield when timer expires
-        if (gameState.shieldTimer <= 0) {
-            gameState.shieldPowerupActive = false;
-            gameState.shieldTimer = 0;
-        }
-    }
-
-    // Helper function to check if collision should be ignored due to active shield
-
-    // Update shield timer if active
-    if (gameState.shieldPowerupActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.shieldLastUpdate;
-        gameState.shieldTimer -= deltaTime;
-        gameState.shieldLastUpdate = currentTime;
-
-        // Deactivate shield when timer expires
-        if (gameState.shieldTimer <= 0) {
-            gameState.shieldPowerupActive = false;
-            gameState.shieldTimer = 0;
-        }
-    }
-
-    // Helper function to handle collisions with shield logic
-
-    // Update shield timer if active
-    if (gameState.shieldPowerupActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.shieldLastUpdate;
-        gameState.shieldTimer -= deltaTime;
-        gameState.shieldLastUpdate = currentTime;
-
-        // Deactivate shield when timer expires
-        if (gameState.shieldTimer <= 0) {
-            gameState.shieldPowerupActive = false;
-            gameState.shieldTimer = 0;
-        }
-    }
-
-    // Update shield timer if active
-    if (gameState.shieldPowerupActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.shieldLastUpdate;
-        gameState.shieldTimer -= deltaTime;
-        gameState.shieldLastUpdate = currentTime;
-
-        // Deactivate shield when timer expires
-        if (gameState.shieldTimer <= 0) {
-            gameState.shieldPowerupActive = false;
-            gameState.shieldTimer = 0;
-        }
-    }
-
-    // REMEDY: Check for collisions BEFORE wrapping for more accurate detection
-    // Check for collisions with walls and trail BEFORE wrapping
-    if (shouldBlockMovement(head)) {
-        // Handle shielded snake random movement
-        if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
-            if (tryRandomMovement()) {
-                // Recalculate head position with new direction
-                head.x = gameState.snake[0].x + gameState.dx;
-                head.y = gameState.snake[0].y + gameState.dy;
-            } else {
-                // No valid directions - game over
-                gameOver();
+                drawGame();
                 return;
             }
-        } else {
-            return; // Block movement
         }
-    }
 
-    // Handle board wrapping AFTER collision checks
-    if (head.x < 0) head.x = gameState.tileCount - 1;
-    if (head.x >= gameState.tileCount) head.x = 0;
-    if (head.y < 0) head.y = gameState.tileCount - 1;
-    if (head.y >= gameState.tileCount) head.y = 0;
-    // Shield should block collisions but not interfere with wrapping
-    if (shouldBlockMovement(head)) {
-        // For shielded snakes (unless mushroom active), try random movement instead of blocking
-        if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
-            // Try random movement
-            if (tryRandomMovement()) {
-                // Successfully moved in a random direction, continue with update
-                // We need to recalculate head position with new direction
-                head.x = gameState.snake[0].x + gameState.dx;
-                head.y = gameState.snake[0].y + gameState.dy;
+        // Check if movement should be blocked due to collision and active shield
 
-                // Handle wrapping for new head position
-                if (head.x < 0) head.x = gameState.tileCount - 1;
-                if (head.x >= gameState.tileCount) head.x = 0;
-                if (head.y < 0) head.y = gameState.tileCount - 1;
-                if (head.y >= gameState.tileCount) head.y = 0;
+        // Update shield timer if active
+        if (gameState.shieldPowerupActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.shieldLastUpdate;
+            gameState.shieldTimer -= deltaTime;
+            gameState.shieldLastUpdate = currentTime;
 
-                // Continue with update function instead of returning
-            } else {
-                // No valid directions - snake is trapped despite having shield
-                gameOver();
-                return; // Return early from update function
+            // Deactivate shield when timer expires
+            if (gameState.shieldTimer <= 0) {
+                gameState.shieldPowerupActive = false;
+                gameState.shieldTimer = 0;
             }
-        } else {
-            // For unshielded snakes or when mushroom is active, block movement as before
-            return; // Block movement by returning early
         }
-    }
 
-    // Collision with walls (maze)
-    if (
-        gameState.maze[head.y][head.x] === 1 &&
-        !gameState.mushroomPowerupActive &&
-        !gameState.shieldPowerupActive
-    ) {
-        gameOver();
-        return;
-    }
+        // Helper function to check if collision should be ignored due to active shield
 
-    // Collision with self
-    // Collision with self
+        // Update shield timer if active
+        if (gameState.shieldPowerupActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.shieldLastUpdate;
+            gameState.shieldTimer -= deltaTime;
+            gameState.shieldLastUpdate = currentTime;
 
-    for (let i = 0; i < gameState.trail.length; i++) {
+            // Deactivate shield when timer expires
+            if (gameState.shieldTimer <= 0) {
+                gameState.shieldPowerupActive = false;
+                gameState.shieldTimer = 0;
+            }
+        }
+
+        // Helper function to handle collisions with shield logic
+
+        // Update shield timer if active
+        if (gameState.shieldPowerupActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.shieldLastUpdate;
+            gameState.shieldTimer -= deltaTime;
+            gameState.shieldLastUpdate = currentTime;
+
+            // Deactivate shield when timer expires
+            if (gameState.shieldTimer <= 0) {
+                gameState.shieldPowerupActive = false;
+                gameState.shieldTimer = 0;
+            }
+        }
+
+        // Update shield timer if active
+        if (gameState.shieldPowerupActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.shieldLastUpdate;
+            gameState.shieldTimer -= deltaTime;
+            gameState.shieldLastUpdate = currentTime;
+
+            // Deactivate shield when timer expires
+            if (gameState.shieldTimer <= 0) {
+                gameState.shieldPowerupActive = false;
+                gameState.shieldTimer = 0;
+            }
+        }
+
+        // REMEDY: Check for collisions BEFORE wrapping for more accurate detection
+        // Check for collisions with walls and trail BEFORE wrapping
+        if (shouldBlockMovement(head)) {
+            // Handle shielded snake random movement
+            if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
+                if (tryRandomMovement()) {
+                    // Recalculate head position with new direction
+                    head.x = gameState.snake[0].x + gameState.dx;
+                    head.y = gameState.snake[0].y + gameState.dy;
+                } else {
+                    // No valid directions - game over
+                    gameOver();
+                    return;
+                }
+            } else {
+                return; // Block movement
+            }
+        }
+
+        // Handle board wrapping AFTER collision checks
+        if (head.x < 0) head.x = gameState.tileCount - 1;
+        if (head.x >= gameState.tileCount) head.x = 0;
+        if (head.y < 0) head.y = gameState.tileCount - 1;
+        if (head.y >= gameState.tileCount) head.y = 0;
+        // Shield should block collisions but not interfere with wrapping
+        if (shouldBlockMovement(head)) {
+            // For shielded snakes (unless mushroom active), try random movement instead of blocking
+            if (gameState.shieldPowerupActive && !gameState.mushroomPowerupActive) {
+                // Try random movement
+                if (tryRandomMovement()) {
+                    // Successfully moved in a random direction, continue with update
+                    // We need to recalculate head position with new direction
+                    head.x = gameState.snake[0].x + gameState.dx;
+                    head.y = gameState.snake[0].y + gameState.dy;
+
+                    // Handle wrapping for new head position
+                    if (head.x < 0) head.x = gameState.tileCount - 1;
+                    if (head.x >= gameState.tileCount) head.x = 0;
+                    if (head.y < 0) head.y = gameState.tileCount - 1;
+                    if (head.y >= gameState.tileCount) head.y = 0;
+
+                    // Continue with update function instead of returning
+                } else {
+                    // No valid directions - snake is trapped despite having shield
+                    gameOver();
+                    return; // Return early from update function
+                }
+            } else {
+                // For unshielded snakes or when mushroom is active, block movement as before
+                return; // Block movement by returning early
+            }
+        }
+
+        // Collision with walls (maze)
         if (
-            head.x === gameState.trail[i].x &&
-            head.y === gameState.trail[i].y &&
+            gameState.maze[head.y][head.x] === 1 &&
+            !gameState.mushroomPowerupActive &&
             !gameState.shieldPowerupActive
         ) {
-            if (!gameState.mushroomPowerupActive && !gameState.shieldPowerupActive) {
-                gameOver();
-            }
+            gameOver();
+            return;
         }
-    }
 
-    // Add current head to trail before moving
-    gameState.trail.push({ x: gameState.snake[0].x, y: gameState.snake[0].y });
+        // Collision with self
+        // Collision with self
 
-    gameState.snake.unshift(head);
-
-    // Check for pellet eating
-    // Check for item collection
-    let shouldGrow = false; // Only pellets and mushrooms cause growth
-    for (let i = 0; i < gameState.pellets.length; i++) {
-        if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
-            gameState.pellets.splice(i, 1);
-            const points = gameState.scoreMultiplierActive ? GRID_SIZE : 10;
-            gameState.score += points;
-            document.getElementById('score').innerText = `Score: ${gameState.score}`;
-            shouldGrow = true;
-            // Update game speed based on increased snake length
-            clearInterval(gameState.gameInterval);
-            gameState.gameInterval = setInterval(update, calculateGameSpeed());
-            break;
-        }
-    }
-
-    // Check for shield eating
-    for (let i = 0; i < gameState.shields.length; i++) {
-        if (head.x === gameState.shields[i].x && head.y === gameState.shields[i].y) {
-            gameState.shields.splice(i, 1);
-            // Activate shield powerup for 6 seconds
-            gameState.shieldPowerupActive = true;
-            gameState.shieldTimer = SHIELD_POWERUP_DURATION;
-            gameState.shieldLastUpdate = performance.now(); // Store start time for accurate timer
-            break;
-        }
-    }
-
-    // Check for mushroom eating
-    for (let i = 0; i < gameState.mushrooms.length; i++) {
-        if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
-            gameState.mushrooms.splice(i, 1);
-            shouldGrow = true;
-            // Activate mushroom powerup for 8 seconds and make snake grow
-            gameState.mushroomPowerupActive = true;
-            gameState.mushroomTimer = MUSHROOM_POWERUP_DURATION;
-            gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
-            break;
-        }
-    }
-
-    // Check for lightning bolt eating
-    for (let i = 0; i < gameState.lightningBolts.length; i++) {
-        if (head.x === gameState.lightningBolts[i].x && head.y === gameState.lightningBolts[i].y) {
-            gameState.lightningBolts.splice(i, 1);
-
-            // Reduce snake length as bonus for eating speedup
-            const lengthReduction = Math.floor(gameState.snake.length / 3);
-            if (lengthReduction > 0 && gameState.snake.length > 1) {
-                // Ensure snake never becomes shorter than its head
-                const actualReduction = Math.min(lengthReduction, gameState.snake.length - 1);
-                gameState.snake.splice(-actualReduction);
-            }
-
-            // Activate speed boost powerup for PASSWORD_LENGTH seconds
-            gameState.speedBoostActive = true;
-            // Immediately update game speed for instant boost effect
-            clearInterval(gameState.gameInterval);
-            gameState.gameInterval = setInterval(update, calculateGameSpeed());
-            gameState.speedBoostTimer = SPEED_BOOST_DURATION;
-            gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
-            break;
-        }
-    }
-
-    // Check for hourglass eating
-    for (let i = 0; i < gameState.hourglasses.length; i++) {
-        if (head.x === gameState.hourglasses[i].x && head.y === gameState.hourglasses[i].y) {
-            gameState.hourglasses.splice(i, 1);
-
-            // Activate time slow powerup for 8 seconds
-            gameState.timeSlowActive = true;
-            gameState.timeSlowTimer = MUSHROOM_POWERUP_DURATION;
-            gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
-
-            // Immediately update game speed for instant slow effect
-            clearInterval(gameState.gameInterval);
-            gameState.gameInterval = setInterval(update, calculateGameSpeed());
-            break;
-        }
-    }
-
-    // Check for star eating
-    for (let i = 0; i < gameState.stars.length; i++) {
-        if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
-            gameState.stars.splice(i, 1);
-            // Activate score multiplier powerup for 10 seconds
-            gameState.scoreMultiplierActive = true;
-            gameState.scoreMultiplierTimer = SCORE_MULTIPLIER_DURATION;
-            gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
-            break;
-        }
-    }
-
-    // Update mushroom timer if powerup is active
-    if (gameState.mushroomPowerupActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.mushroomLastUpdate;
-
-        // Decrement timer by actual elapsed time
-        gameState.mushroomTimer -= deltaTime;
-        gameState.mushroomLastUpdate = currentTime;
-        if (gameState.mushroomTimer <= 0) {
-            gameState.mushroomPowerupActive = false;
-            gameState.mushroomTimer = 0;
-
-            // REMEDY: Add grace period and safe position check after mushroom expires
-            const head = gameState.snake[0];
-            let isInDanger = false;
-
-            // Check if head is in a dangerous position
-            if (gameState.maze[head.y] && gameState.maze[head.y][head.x] === 1) {
-                isInDanger = true;
-            }
-
-            // Check trail collision
-            for (let i = 0; i < gameState.trail.length; i++) {
-                if (head.x === gameState.trail[i].x && head.y === gameState.trail[i].y) {
-                    isInDanger = true;
-                    break;
-                }
-            }
-
-            // If in danger and no shield, try to move to safety
-            if (isInDanger && !gameState.shieldPowerupActive) {
-                // Try random movement to escape
-                if (!tryRandomMovement()) {
-                    // If no escape possible, give brief invulnerability
-                    gameState.shieldPowerupActive = true;
-                    gameState.shieldTimer = 1000; // 1 second grace period
-                    gameState.shieldLastUpdate = performance.now();
-                }
-            }
-            // REMOVED DUPLICATE: const head = gameState.snake[0];
-            // Check outer wall collision
+        for (let i = 0; i < gameState.trail.length; i++) {
             if (
-                gameState.level < WALL_LEVEL_MAX &&
-                (head.x < 0 ||
-                    head.x >= gameState.tileCount ||
-                    head.y < 0 ||
-                    (head.y >= gameState.tileCount && !gameState.shieldPowerupActive))
-            ) {
-                gameOver();
-                return;
-            }
-            // Check maze wall collision
-            if (
-                gameState.maze[head.y] &&
-                gameState.maze[head.y][head.x] === 1 &&
+                head.x === gameState.trail[i].x &&
+                head.y === gameState.trail[i].y &&
                 !gameState.shieldPowerupActive
             ) {
-                gameOver();
-                return;
+                if (!gameState.mushroomPowerupActive && !gameState.shieldPowerupActive) {
+                    gameOver();
+                }
             }
         }
-    }
-    // Update speed boost timer if powerup is active
-    if (gameState.speedBoostActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.speedBoostLastUpdate;
 
-        // Decrement timer by actual elapsed time
-        gameState.speedBoostTimer -= deltaTime;
-        gameState.speedBoostLastUpdate = currentTime;
-        if (gameState.speedBoostTimer <= 0) {
-            gameState.speedBoostActive = false;
-            gameState.speedBoostTimer = 0;
+        // Add current head to trail before moving
+        gameState.trail.push({ x: gameState.snake[0].x, y: gameState.snake[0].y });
+
+        gameState.snake.unshift(head);
+
+        // Check for pellet eating
+        // Check for item collection
+        let shouldGrow = false; // Only pellets and mushrooms cause growth
+        for (let i = 0; i < gameState.pellets.length; i++) {
+            if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
+                gameState.pellets.splice(i, 1);
+                const points = gameState.scoreMultiplierActive ? GRID_SIZE : 10;
+                gameState.score += points;
+                document.getElementById('score').innerText = `Score: ${gameState.score}`;
+                shouldGrow = true;
+                // Update game speed based on increased snake length
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
+                break;
+            }
         }
-    }
 
-    // Update time slow timer if powerup is active
-    if (gameState.timeSlowActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.timeSlowLastUpdate;
-
-        // Decrement timer by actual elapsed time
-        gameState.timeSlowTimer -= deltaTime;
-        gameState.timeSlowLastUpdate = currentTime;
-        if (gameState.timeSlowTimer <= 0) {
-            gameState.timeSlowActive = false;
-            gameState.timeSlowTimer = 0;
-
-            // Update game speed when time slow ends
-            clearInterval(gameState.gameInterval);
-            gameState.gameInterval = setInterval(update, calculateGameSpeed());
+        // Check for shield eating
+        for (let i = 0; i < gameState.shields.length; i++) {
+            if (head.x === gameState.shields[i].x && head.y === gameState.shields[i].y) {
+                gameState.shields.splice(i, 1);
+                // Activate shield powerup for 6 seconds
+                gameState.shieldPowerupActive = true;
+                gameState.shieldTimer = SHIELD_POWERUP_DURATION;
+                gameState.shieldLastUpdate = performance.now(); // Store start time for accurate timer
+                break;
+            }
         }
-    }
-    // Update score multiplier timer if powerup is active
-    if (gameState.scoreMultiplierActive) {
-        const currentTime = performance.now();
-        const deltaTime = currentTime - gameState.scoreMultiplierLastUpdate;
 
-        // Decrement timer by actual elapsed time
-        gameState.scoreMultiplierTimer -= deltaTime;
-        gameState.scoreMultiplierLastUpdate = currentTime;
-        if (gameState.scoreMultiplierTimer <= 0) {
-            gameState.scoreMultiplierActive = false;
-            gameState.scoreMultiplierTimer = 0;
+        // Check for mushroom eating
+        for (let i = 0; i < gameState.mushrooms.length; i++) {
+            if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
+                gameState.mushrooms.splice(i, 1);
+                shouldGrow = true;
+                // Activate mushroom powerup for 8 seconds and make snake grow
+                gameState.mushroomPowerupActive = true;
+                gameState.mushroomTimer = MUSHROOM_POWERUP_DURATION;
+                gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
+                break;
+            }
         }
-    }
-    if (!shouldGrow) {
-        gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
-    }
 
-    if (gameState.pellets.length === 0) {
-        levelUp();
-    }
+        // Check for lightning bolt eating
+        for (let i = 0; i < gameState.lightningBolts.length; i++) {
+            if (
+                head.x === gameState.lightningBolts[i].x &&
+                head.y === gameState.lightningBolts[i].y
+            ) {
+                gameState.lightningBolts.splice(i, 1);
+
+                // Reduce snake length as bonus for eating speedup
+                const lengthReduction = Math.floor(gameState.snake.length / 3);
+                if (lengthReduction > 0 && gameState.snake.length > 1) {
+                    // Ensure snake never becomes shorter than its head
+                    const actualReduction = Math.min(lengthReduction, gameState.snake.length - 1);
+                    gameState.snake.splice(-actualReduction);
+                }
+
+                // Activate speed boost powerup for PASSWORD_LENGTH seconds
+                gameState.speedBoostActive = true;
+                // Immediately update game speed for instant boost effect
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
+                gameState.speedBoostTimer = SPEED_BOOST_DURATION;
+                gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
+                break;
+            }
+        }
+
+        // Check for hourglass eating
+        for (let i = 0; i < gameState.hourglasses.length; i++) {
+            if (head.x === gameState.hourglasses[i].x && head.y === gameState.hourglasses[i].y) {
+                gameState.hourglasses.splice(i, 1);
+
+                // Activate time slow powerup for 8 seconds
+                gameState.timeSlowActive = true;
+                gameState.timeSlowTimer = MUSHROOM_POWERUP_DURATION;
+                gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
+
+                // Immediately update game speed for instant slow effect
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
+                break;
+            }
+        }
+
+        // Check for star eating
+        for (let i = 0; i < gameState.stars.length; i++) {
+            if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
+                gameState.stars.splice(i, 1);
+                // Activate score multiplier powerup for 10 seconds
+                gameState.scoreMultiplierActive = true;
+                gameState.scoreMultiplierTimer = SCORE_MULTIPLIER_DURATION;
+                gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
+                break;
+            }
+        }
+
+        // Update mushroom timer if powerup is active
+        if (gameState.mushroomPowerupActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.mushroomLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.mushroomTimer -= deltaTime;
+            gameState.mushroomLastUpdate = currentTime;
+            if (gameState.mushroomTimer <= 0) {
+                gameState.mushroomPowerupActive = false;
+                gameState.mushroomTimer = 0;
+
+                // REMEDY: Add grace period and safe position check after mushroom expires
+                const head = gameState.snake[0];
+                let isInDanger = false;
+
+                // Check if head is in a dangerous position
+                if (gameState.maze[head.y] && gameState.maze[head.y][head.x] === 1) {
+                    isInDanger = true;
+                }
+
+                // Check trail collision
+                for (let i = 0; i < gameState.trail.length; i++) {
+                    if (head.x === gameState.trail[i].x && head.y === gameState.trail[i].y) {
+                        isInDanger = true;
+                        break;
+                    }
+                }
+
+                // If in danger and no shield, try to move to safety
+                if (isInDanger && !gameState.shieldPowerupActive) {
+                    // Try random movement to escape
+                    if (!tryRandomMovement()) {
+                        // If no escape possible, give brief invulnerability
+                        gameState.shieldPowerupActive = true;
+                        gameState.shieldTimer = 1000; // 1 second grace period
+                        gameState.shieldLastUpdate = performance.now();
+                    }
+                }
+                // REMOVED DUPLICATE: const head = gameState.snake[0];
+                // Check outer wall collision
+                if (
+                    gameState.level < WALL_LEVEL_MAX &&
+                    (head.x < 0 ||
+                        head.x >= gameState.tileCount ||
+                        head.y < 0 ||
+                        (head.y >= gameState.tileCount && !gameState.shieldPowerupActive))
+                ) {
+                    gameOver();
+                    return;
+                }
+                // Check maze wall collision
+                if (
+                    gameState.maze[head.y] &&
+                    gameState.maze[head.y][head.x] === 1 &&
+                    !gameState.shieldPowerupActive
+                ) {
+                    gameOver();
+                    return;
+                }
+            }
+        }
+        // Update speed boost timer if powerup is active
+        if (gameState.speedBoostActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.speedBoostLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.speedBoostTimer -= deltaTime;
+            gameState.speedBoostLastUpdate = currentTime;
+            if (gameState.speedBoostTimer <= 0) {
+                gameState.speedBoostActive = false;
+                gameState.speedBoostTimer = 0;
+            }
+        }
+
+        // Update time slow timer if powerup is active
+        if (gameState.timeSlowActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.timeSlowLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.timeSlowTimer -= deltaTime;
+            gameState.timeSlowLastUpdate = currentTime;
+            if (gameState.timeSlowTimer <= 0) {
+                gameState.timeSlowActive = false;
+                gameState.timeSlowTimer = 0;
+
+                // Update game speed when time slow ends
+                clearInterval(gameState.gameInterval);
+                gameState.gameInterval = setInterval(update, calculateGameSpeed());
+            }
+        }
+        // Update score multiplier timer if powerup is active
+        if (gameState.scoreMultiplierActive) {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - gameState.scoreMultiplierLastUpdate;
+
+            // Decrement timer by actual elapsed time
+            gameState.scoreMultiplierTimer -= deltaTime;
+            gameState.scoreMultiplierLastUpdate = currentTime;
+            if (gameState.scoreMultiplierTimer <= 0) {
+                gameState.scoreMultiplierActive = false;
+                gameState.scoreMultiplierTimer = 0;
+            }
+        }
+        if (!shouldGrow) {
+            gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
+        }
+
+        if (gameState.pellets.length === 0) {
+            levelUp();
+        }
+    } // end skipMovement block
 
     spawnRandomMushroom(); // Random mushroom spawning during game
     spawnRandomShield(); // Random shield spawning during gameplayplay
@@ -2191,6 +2214,7 @@ function resetGame() {
     drawGame(); // Draw initial state
     gameState.gameRunning = false;
     gameState.consecutiveMouseClicks = 0; // Reset mouse click counter on game reset
+    gameState.skipNextMovement = false; // Reset movement skip flag
     passwordSystem.resetSequence(); // Clear typed password on game reset
     updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
@@ -2246,6 +2270,7 @@ function handleDirectionChange(e) {
                 restartGameLoop();
             }
             gameState.consecutiveMouseClicks = 0;
+            gameState.skipNextMovement = false; // Clear any pending skip for precision
             break;
         case 'ArrowDown':
             newDx = 0;
@@ -2254,6 +2279,7 @@ function handleDirectionChange(e) {
                 restartGameLoop();
             }
             gameState.consecutiveMouseClicks = 0;
+            gameState.skipNextMovement = false; // Clear any pending skip for precision
             break;
         case 'ArrowLeft':
             newDx = -1;
@@ -2262,6 +2288,7 @@ function handleDirectionChange(e) {
                 restartGameLoop();
             }
             gameState.consecutiveMouseClicks = 0;
+            gameState.skipNextMovement = false; // Clear any pending skip for precision
             break;
         case 'ArrowRight':
             newDx = 1;
@@ -2270,6 +2297,7 @@ function handleDirectionChange(e) {
                 restartGameLoop();
             }
             gameState.consecutiveMouseClicks = 0;
+            gameState.skipNextMovement = false; // Clear any pending skip for precision
             break;
         case ' ':
         case 'Escape':
