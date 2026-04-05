@@ -2136,7 +2136,12 @@ function realGameOver() {
     if (level > 1) {
         gameState.gameInterval = null;
         gameState.gameRunning = false; // Ensure game is stopped before respawn
-        gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
+        // On high levels (>= 600), stay on same level to avoid excessive difficulty; otherwise regress
+        if (level >= 600) {
+            gameState.level = level; // Stay on current level
+        } else {
+            gameState.level = Math.max(1, level - 1); // Go back to previous level, min 1
+        }
         gameState.score = Math.floor(score / SCORE_REDUCTION_FACTOR); // Halve the score
         gameState.snake = gameState.snake.slice(
             0,

@@ -50,6 +50,7 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **Milestones**: The game remembers your **highest achieved password**. If you die or reset, you can always jump back to your best milestone instantly.
 - **Ghost Mode**: Collecting a **Mushroom** makes you invincible to walls (but not your own tail!).
 - **Pause & Think**: Press **Space** or **Escape** to pause. On mobile, tapping the password input auto-pauses while you type.
+- **High-Level Tolerance**: At **Level 600+**, dying no longer reduces your level—you respawn on the same level to prevent the game from becoming impossibly difficult.
 - **Mouse/Touch Difficulty**: In mouse/touch-only mode (2+ clicks), the snake is **40% slower**, **skips one turn after direction changes**, and gets a **one-turn grace period before death**. Press any arrow key or Space/Escape to reset to normal speed.
 
 ## 🛠️ Development & Philosophy
