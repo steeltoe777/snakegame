@@ -103,7 +103,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - Use performance.now() for accurate timing (see updatePowerupTimers)
 - Properties to include: snake array, direction, score, level, powerups, maze configuration
 - **New state properties**:
-    - `consecutiveMouseClicks: 0` - Tracks consecutive mouse/touch inputs to apply slowdown (40% slower) and skip-turn precision mechanics at 2+ clicks. Reset to 0 when arrow keys or Space/Escape are used.
+    - `consecutiveMouseClicks: 0` - Tracks consecutive mouse/touch inputs to apply slowdown (20% slower) and skip-turn precision mechanics at 2+ clicks. Reset to 0 when arrow keys or Space/Escape are used.
     - `skipNextMovement: false` - When true, the snake will not move on the next game tick. Set automatically after a direction change in mouse mode (consecutiveMouseClicks >= 2) to improve steering precision. Cleared when arrow keys or Space/Escape are used, or after the skip occurs.
     - `deathImminent: false` - When a collision would normally cause death in mouse mode (consecutiveMouseClicks >= 2), this flag is set to true and the death is delayed by one turn, allowing the player a final steering chance. If still colliding on the next tick, the game ends.
     - `pausedByPasswordInput: false` - Tracks whether the pause state was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
