@@ -443,7 +443,7 @@ describe('Game Over Respawn Logic', () => {
 
     test('gameOver on level > 1 should decrease level by 1, halve score, halve snake length, and restart game', () => {
         window.gameState.level = 3;
-        window.gameState.score = 100;
+        window.gameState.score = 100; // Original test value
         window.gameState.snake = [
             { x: 1, y: 1 },
             { x: 2, y: 1 },
@@ -471,7 +471,7 @@ describe('Game Over Respawn Logic', () => {
 
     test('gameOver on level > 1 with odd snake length should halve and round down to minimum 1', () => {
         window.gameState.level = 2;
-        window.gameState.score = 70;
+        window.gameState.score = 70; // Original test value
         window.gameState.snake = [
             { x: 1, y: 1 },
             { x: 2, y: 1 },
@@ -485,6 +485,44 @@ describe('Game Over Respawn Logic', () => {
         expect(window.gameState.level).toBe(1);
         expect(window.gameState.score).toBe(35); // 70 / 2 = 35
         expect(startGameSpy).toHaveBeenCalled();
+    });
+
+    test('gameOver on high levels (>=600) should still follow score-based level retention', () => {
+        window.gameState.level = 600;
+        window.gameState.score = 1200; // Halves to 600, 600 >= 600, level stays
+        window.gameState.snake = [
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+            { x: 3, y: 1 },
+        ];
+        window.gameState.gameRunning = true;
+        window.gameState.gameInterval = 101;
+
+        window.gameOver();
+
+        expect(window.gameState.level).toBe(600); // Level retained because score >= level
+        expect(window.gameState.score).toBe(600);
+        // Level 600 >= BASE_SPEED (100) so startGame should NOT be called; game stays idle
+        expect(startGameSpy).not.toHaveBeenCalled();
+    });
+
+    test('gameOver on high levels (>=600) with low score should cause level drop', () => {
+        window.gameState.level = 600;
+        window.gameState.score = 500; // Halves to 250, 250 < 600, level drops
+        window.gameState.snake = [
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+            { x: 3, y: 1 },
+        ];
+        window.gameState.gameRunning = true;
+        window.gameState.gameInterval = 102;
+
+        window.gameOver();
+
+        expect(window.gameState.level).toBe(599); // Level decreased
+        expect(window.gameState.score).toBe(250);
+        // Level 599 >= BASE_SPEED (100) so startGame should NOT be called
+        expect(startGameSpy).not.toHaveBeenCalled();
     });
 
     test('gameOver on level 1 should result in true game over (no respawn, overlay visible)', () => {

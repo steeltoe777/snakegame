@@ -66,8 +66,8 @@ Keep an eye on the **Top-Right Radar**:
 
 Don't worry—death isn't the end.
 
-- **Regression**: If you die on any level higher than Level 1 and below **Level 600**, you'll respawn at the **previous level**. At Level 600+, you **stay on the same level** to avoid excessive difficulty.
-- **Penalty**: Your score is halved, and your snake length is also **reduced by half** (minimum 1 segment).
+- **Regression**: When you die, your score is halved. On **levels below 600**, you will always lose one level (minimum 1). On **levels 600+**, you will lose one level **only if** your new score is less than your current level; otherwise you **stay on the same level**.
+- **Penalty**: Your snake length is also **reduced by half** (minimum 1 segment).
 - **Forgiveness**: This system allows you to keep playing without losing all your progress, as long as you can manage the regression!
 
 ---
