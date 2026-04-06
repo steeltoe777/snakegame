@@ -2360,6 +2360,8 @@ function handleDirectionChange(e) {
             gameState.skipNextMovement = false;
             gameState.paused = !gameState.paused;
             if (gameState.paused === false) {
+                // Reset power-up timestamps when unpausing to avoid timer drift
+                resetPowerupTimestamps();
                 passwordSystem.resetSequence();
                 updatePasswordDisplay();
             }
@@ -2661,6 +2663,15 @@ function restartGameLoop() {
     }
 }
 
+function resetPowerupTimestamps() {
+    const now = performance.now();
+    gameState.mushroomLastUpdate = now;
+    gameState.shieldLastUpdate = now;
+    gameState.speedBoostLastUpdate = now;
+    gameState.timeSlowLastUpdate = now;
+    gameState.scoreMultiplierLastUpdate = now;
+}
+
 function startGame() {
     // FIX: Clear any existing game interval before starting a new one
     if (gameState.gameInterval) {
@@ -2668,6 +2679,8 @@ function startGame() {
         gameState.gameInterval = null; // Clear the interval ID
     }
     if (gameState.gameRunning) return;
+    // Reset power-up timestamps to prevent timer from counting idle time
+    resetPowerupTimestamps();
     gameState.gameRunning = true;
     passwordSystem.resetSequence(); // Clear typed password when snake starts moving
     updatePasswordDisplay();
