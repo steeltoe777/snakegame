@@ -2649,7 +2649,7 @@ function calculateGameSpeed() {
 
     // Apply mouse-only slowdown: if player used only mouse/touch for 2+ consecutive clicks
     if (gameState.consecutiveMouseClicks >= 2) {
-        speed *= 1.2; // 20% slower than normal for better mobile precision
+        speed *= 1.0; // No slowdown - mechanics only (skip-turn, grace period)
     }
 
     return speed;
