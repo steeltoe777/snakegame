@@ -682,6 +682,7 @@ function tryPasswordTeleport() {
             gameState.dy = 0;
             gameState.directionQueue = [];
             gameState.trail = [];
+            gameState.superPellets = []; // Clear super-pellets on password teleport
 
             // Regenerate maze and pellets for the target level
             generateMaze();
