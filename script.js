@@ -976,47 +976,93 @@ function drawPellets() {
         );
         ctx.fill();
     });
+}
 
-    // Spawn super-pellet when only 1 regular pellet remains
-    if (gameState.pellets.length === 1 && gameState.superPellets.length === 0) {
-        const availableTiles = getAvailableTiles(gameState);
-        // Filter out tiles occupied by the last pellet, snake, and existing items
-        const lastPellet = gameState.pellets[0];
-        const filteredTiles = availableTiles.filter((tile) => {
+function trySpawnSuperPellet() {
+    // Only spawn when exactly 1 pellet remains and no super-pellet exists yet
+    if (gameState.pellets.length !== 1 || gameState.superPellets.length > 0) {
+        return;
+    }
+
+    const lastPellet = gameState.pellets[0];
+
+    // Find all non-wall, non-edge tiles
+    const allTiles = [];
+    for (let y = 1; y < gameState.tileCount - 1; y++) {
+        for (let x = 1; x < gameState.tileCount - 1; x++) {
+            if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
+                allTiles.push({ x, y });
+            }
+        }
+    }
+
+    // Filter out occupied tiles (snake, powerups, last pellet, AND TRAIL)
+    const filteredTiles = allTiles.filter((tile) => {
+        if (tile.x === lastPellet.x && tile.y === lastPellet.y) return false;
+        for (let i = 0; i < gameState.snake.length; i++) {
+            if (tile.x === gameState.snake[i].x && tile.y === gameState.snake[i].y) return false;
+        }
+        for (let i = 0; i < gameState.trail.length; i++) {
+            if (tile.x === gameState.trail[i].x && tile.y === gameState.trail[i].y) return false;
+        }
+        for (let i = 0; i < gameState.mushrooms.length; i++) {
+            if (tile.x === gameState.mushrooms[i].x && tile.y === gameState.mushrooms[i].y)
+                return false;
+        }
+        for (let i = 0; i < gameState.shields.length; i++) {
+            if (tile.x === gameState.shields[i].x && tile.y === gameState.shields[i].y)
+                return false;
+        }
+        for (let i = 0; i < gameState.lightningBolts.length; i++) {
+            if (
+                tile.x === gameState.lightningBolts[i].x &&
+                tile.y === gameState.lightningBolts[i].y
+            )
+                return false;
+        }
+        for (let i = 0; i < gameState.hourglasses.length; i++) {
+            if (tile.x === gameState.hourglasses[i].x && tile.y === gameState.hourglasses[i].y)
+                return false;
+        }
+        for (let i = 0; i < gameState.stars.length; i++) {
+            if (tile.x === gameState.stars[i].x && tile.y === gameState.stars[i].y) return false;
+        }
+        return true;
+    });
+
+    if (filteredTiles.length > 0) {
+        // Found a valid tile - spawn super-pellet
+        const randomIndex = Math.floor(Math.random() * filteredTiles.length);
+        gameState.superPellets.push(filteredTiles[randomIndex]);
+    } else {
+        // No available tiles - clear all powerups to make room
+        gameState.mushrooms = [];
+        gameState.shields = [];
+        gameState.lightningBolts = [];
+        gameState.hourglasses = [];
+        gameState.stars = [];
+
+        // Retry filtering with only snake, trail, and last pellet excluded
+        const retryTiles = allTiles.filter((tile) => {
             if (tile.x === lastPellet.x && tile.y === lastPellet.y) return false;
             for (let i = 0; i < gameState.snake.length; i++) {
                 if (tile.x === gameState.snake[i].x && tile.y === gameState.snake[i].y)
                     return false;
             }
-            for (let i = 0; i < gameState.mushrooms.length; i++) {
-                if (tile.x === gameState.mushrooms[i].x && tile.y === gameState.mushrooms[i].y)
-                    return false;
-            }
-            for (let i = 0; i < gameState.shields.length; i++) {
-                if (tile.x === gameState.shields[i].x && tile.y === gameState.shields[i].y)
-                    return false;
-            }
-            for (let i = 0; i < gameState.lightningBolts.length; i++) {
-                if (
-                    tile.x === gameState.lightningBolts[i].x &&
-                    tile.y === gameState.lightningBolts[i].y
-                )
-                    return false;
-            }
-            for (let i = 0; i < gameState.hourglasses.length; i++) {
-                if (tile.x === gameState.hourglasses[i].x && tile.y === gameState.hourglasses[i].y)
-                    return false;
-            }
-            for (let i = 0; i < gameState.stars.length; i++) {
-                if (tile.x === gameState.stars[i].x && tile.y === gameState.stars[i].y)
+            for (let i = 0; i < gameState.trail.length; i++) {
+                if (tile.x === gameState.trail[i].x && tile.y === gameState.trail[i].y)
                     return false;
             }
             return true;
         });
-        if (filteredTiles.length > 0) {
-            const randomIndex = Math.floor(Math.random() * filteredTiles.length);
-            gameState.superPellets.push(filteredTiles[randomIndex]);
+
+        if (retryTiles.length > 0) {
+            // Found room after clearing powerups
+            const randomIndex = Math.floor(Math.random() * retryTiles.length);
+            gameState.superPellets.push(retryTiles[randomIndex]);
         }
+        // If still no tiles, the board is completely full - super-pellet won't spawn this frame
+        // It will retry on next frame since snake will have moved
     }
 }
 
@@ -1990,6 +2036,7 @@ function update() {
     spawnRandomLightningBolt(); // Random lightning bolt spawning during gameplay
     spawnRandomHourglass();
     spawnRandomStar();
+    trySpawnSuperPellet(); // Try to spawn super-pellet when 1 pellet remains
     drawGame();
 }
 
@@ -2298,7 +2345,7 @@ function levelUp() {
     // Grant levels based on super-pellet streak
     if (gameState.superPelletEaten) {
         // Calculate level boost: 2^(streak+1)
-        const levelBoost = 2**(gameState.superPelletStreak + 1);
+        const levelBoost = 2 ** (gameState.superPelletStreak + 1);
         const prevLevel = gameState.level;
         gameState.level += levelBoost;
         gameState.superPelletEaten = false; // Reset flag
