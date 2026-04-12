@@ -1904,7 +1904,6 @@ function update() {
         for (let i = 0; i < gameState.superPellets.length; i++) {
             if (head.x === gameState.superPellets[i].x && head.y === gameState.superPellets[i].y) {
                 gameState.superPellets.splice(i, 1);
-                shouldGrow = true;
                 gameState.superPelletEaten = true;
                 gameState.pellets = []; // Clear remaining pellet to trigger level up
                 break;
@@ -2342,10 +2341,11 @@ function levelUp() {
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
 
+    let levelBoost = 0; // Number of extra segments to add to snake
     // Grant levels based on super-pellet streak
     if (gameState.superPelletEaten) {
         // Calculate level boost: 2^(streak+1)
-        const levelBoost = 2 ** (gameState.superPelletStreak + 1);
+        levelBoost = 2 ** (gameState.superPelletStreak + 1);
         const prevLevel = gameState.level;
         gameState.level += levelBoost;
         gameState.superPelletEaten = false; // Reset flag
@@ -2357,18 +2357,30 @@ function levelUp() {
                 gameState.lastMilestoneLevel = milestone;
             }
         }
+
+        // Add extra segments to the tail of the current snake
+        // Insert before the original tail so they become permanent after first move
+        const tailIndex = gameState.snake.length - 1;
+        const tail = gameState.snake[tailIndex];
+        if (gameState.snake.length >= 2) {
+            // Insert all boost segments before the original tail
+            for (let i = 0; i < levelBoost; i++) {
+                gameState.snake.splice(tailIndex, 0, { ...tail });
+            }
+        } else {
+            // Snake length 1: just push copies (they'll be after the single segment)
+            for (let i = 0; i < levelBoost; i++) {
+                gameState.snake.push({ ...tail });
+            }
+        }
     } else {
         gameState.level++;
         gameState.superPelletStreak = 0; // Reset streak on normal level up
     }
 
-    const newSnake = [];
-    newSnake.push({ x: 10, y: 10 }); // Head
-    newSnake.push({ x: 10, y: 10 }); // Body segment 1
-    newSnake.push({ x: 10, y: 10 }); // Body segment 2
-    // Snake will appear as single segment initially, but body will show as it moves
-    gameState.dx = 0; // Reset direction
-    gameState.dy = 0; // Reset direction
+    // Reset direction and clear trail
+    gameState.dx = 0;
+    gameState.dy = 0;
     gameState.directionQueue = []; // Clear direction queue
     gameState.trail = []; // Clear trail
     gameState.superPellets = []; // Clear super-pellets on level up
