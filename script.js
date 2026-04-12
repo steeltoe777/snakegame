@@ -577,6 +577,8 @@ const gameState = {
     scoreMultiplierTimer: 0, // Remaining time in milliseconds
     scoreMultiplierLastUpdate: 0, // Timestamp reference
     rainbowHue: 0, // Current hue value for rainbow trail effect
+    superPellets: [], // Array of {x, y} positions - special pellet when only 1 pellet remains
+    superPelletEaten: false, // Flag to track if super-pellet was eaten for level boost
     paused: false,
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
@@ -969,6 +971,75 @@ function drawPellets() {
             0,
             Math.PI * SCORE_REDUCTION_FACTOR
         );
+        ctx.fill();
+    });
+
+    // Spawn super-pellet when only 1 regular pellet remains
+    if (gameState.pellets.length === 1 && gameState.superPellets.length === 0) {
+        const availableTiles = getAvailableTiles(gameState);
+        // Filter out tiles occupied by the last pellet, snake, and existing items
+        const lastPellet = gameState.pellets[0];
+        const filteredTiles = availableTiles.filter((tile) => {
+            if (tile.x === lastPellet.x && tile.y === lastPellet.y) return false;
+            for (let i = 0; i < gameState.snake.length; i++) {
+                if (tile.x === gameState.snake[i].x && tile.y === gameState.snake[i].y)
+                    return false;
+            }
+            for (let i = 0; i < gameState.mushrooms.length; i++) {
+                if (tile.x === gameState.mushrooms[i].x && tile.y === gameState.mushrooms[i].y)
+                    return false;
+            }
+            for (let i = 0; i < gameState.shields.length; i++) {
+                if (tile.x === gameState.shields[i].x && tile.y === gameState.shields[i].y)
+                    return false;
+            }
+            for (let i = 0; i < gameState.lightningBolts.length; i++) {
+                if (
+                    tile.x === gameState.lightningBolts[i].x &&
+                    tile.y === gameState.lightningBolts[i].y
+                )
+                    return false;
+            }
+            for (let i = 0; i < gameState.hourglasses.length; i++) {
+                if (tile.x === gameState.hourglasses[i].x && tile.y === gameState.hourglasses[i].y)
+                    return false;
+            }
+            for (let i = 0; i < gameState.stars.length; i++) {
+                if (tile.x === gameState.stars[i].x && tile.y === gameState.stars[i].y)
+                    return false;
+            }
+            return true;
+        });
+        if (filteredTiles.length > 0) {
+            const randomIndex = Math.floor(Math.random() * filteredTiles.length);
+            gameState.superPellets.push(filteredTiles[randomIndex]);
+        }
+    }
+}
+
+function drawSuperPellets() {
+    const pulse = Math.sin(performance.now() / 150) * 0.3 + 0.7;
+    gameState.superPellets.forEach((sp) => {
+        const centerX = sp.x * gameState.gridSize + gameState.gridSize / 2;
+        const centerY = sp.y * gameState.gridSize + gameState.gridSize / 2;
+        const baseRadius = gameState.gridSize / 3;
+
+        // Outer glow
+        ctx.fillStyle = `rgba(255, 215, 0, ${pulse * 0.3})`;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, baseRadius + 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Main super-pellet
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, baseRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner highlight
+        ctx.fillStyle = '#FFF8DC';
+        ctx.beginPath();
+        ctx.arc(centerX - 2, centerY - 2, baseRadius / 3, 0, Math.PI * 2);
         ctx.fill();
     });
 }
@@ -1780,6 +1851,17 @@ function update() {
             }
         }
 
+        // Check for super-pellet eating (only spawns when 1 pellet remains)
+        for (let i = 0; i < gameState.superPellets.length; i++) {
+            if (head.x === gameState.superPellets[i].x && head.y === gameState.superPellets[i].y) {
+                gameState.superPellets.splice(i, 1);
+                shouldGrow = true;
+                gameState.superPelletEaten = true;
+                gameState.pellets = []; // Clear remaining pellet to trigger level up
+                break;
+            }
+        }
+
         // Update mushroom timer if powerup is active
         if (gameState.mushroomPowerupActive) {
             const currentTime = performance.now();
@@ -1917,6 +1999,7 @@ function drawGame() {
     }
     drawMaze();
     drawPellets();
+    drawSuperPellets(); // Draw super-pellets after regular pellets
     drawTrail();
     drawMushrooms(); // Draw mushroom power
     drawShields(); // Draw shield powerupsups
@@ -2155,6 +2238,8 @@ function realGameOver() {
             Math.max(1, Math.floor(gameState.snake.length / SNAKE_LENGTH_REDUCTION_FACTOR))
         ); // Reduce snake length by half, minimum 1 segment
         gameState.trail = []; // Clear trail
+        gameState.superPellets = []; // Clear super-pellets on respawn
+        gameState.superPelletEaten = false; // Reset super-pellet flag
         updateSpatialGrid(); // FIX: Update spatial grid immediately after clearing trail
         // Clear all powerups when respawning
         gameState.shields = []; // Clear shields when respawning
@@ -2206,7 +2291,27 @@ function levelUp() {
 
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
-    gameState.level++;
+
+    // Grant 2 levels if super-pellet was eaten, otherwise 1 level
+    if (gameState.superPelletEaten) {
+        gameState.level += 2;
+        gameState.superPelletEaten = false; // Reset flag
+        // Check if we skipped past a milestone level (e.g., 9->11 skips 10)
+        // Update lastMilestoneLevel to the highest milestone we passed
+        const prevLevel = gameState.level - 2;
+        for (let milestone = 10; milestone <= gameState.level; milestone += 10) {
+            if (
+                milestone > prevLevel &&
+                milestone <= gameState.level &&
+                milestone > gameState.lastMilestoneLevel
+            ) {
+                gameState.lastMilestoneLevel = milestone;
+            }
+        }
+    } else {
+        gameState.level++;
+    }
+
     const newSnake = [];
     newSnake.push({ x: 10, y: 10 }); // Head
     newSnake.push({ x: 10, y: 10 }); // Body segment 1
@@ -2216,6 +2321,7 @@ function levelUp() {
     gameState.dy = 0; // Reset direction
     gameState.directionQueue = []; // Clear direction queue
     gameState.trail = []; // Clear trail
+    gameState.superPellets = []; // Clear super-pellets on level up
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
     generateMaze();
     initializeSpatialGrid(); // Initialize spatial grid for collision detection
@@ -2251,6 +2357,8 @@ function resetGame() {
     gameState.level = 1;
     // Keep lastMilestoneLevel intact so it stays visible on reset
     gameState.trail = [];
+    gameState.superPellets = []; // Clear super-pellets on reset
+    gameState.superPelletEaten = false; // Reset super-pellet flag
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
 

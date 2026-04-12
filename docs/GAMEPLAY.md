@@ -39,6 +39,16 @@ _Note: Collecting a Mushroom or eating a Pellet always makes the snake grow._
 
 ---
 
+## ⭐ Super-Pellet
+
+When only **one pellet remains** on a level, a special **Super-Pellet** will spawn:
+
+- **Appearance**: A golden, pulsing pellet with a glowing effect (distinct from regular amber pellets)
+- **Effect**: Eating the Super-Pellet **skips the next level**—you advance 2 levels instead of 1
+- **Strategy**: The choice is yours—eat the last regular pellet to advance normally, or hunt the Super-Pellet for a level skip!
+
+---
+
 ## 🌱 Level Evolution
 
 As you progress, the maze itself becomes more complex:
