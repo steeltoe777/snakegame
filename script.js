@@ -579,6 +579,7 @@ const gameState = {
     rainbowHue: 0, // Current hue value for rainbow trail effect
     superPellets: [], // Array of {x, y} positions - special pellet when only 1 pellet remains
     superPelletEaten: false, // Flag to track if super-pellet was eaten for level boost
+    superPelletStreak: 0, // Consecutive super-pellet completions - 2^(streak+1) levels per streak
     paused: false,
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
@@ -683,6 +684,7 @@ function tryPasswordTeleport() {
             gameState.directionQueue = [];
             gameState.trail = [];
             gameState.superPellets = []; // Clear super-pellets on password teleport
+            gameState.superPelletStreak = 0; // Reset streak on password teleport
 
             // Regenerate maze and pellets for the target level
             generateMaze();
@@ -2293,24 +2295,24 @@ function levelUp() {
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
 
-    // Grant 2 levels if super-pellet was eaten, otherwise 1 level
+    // Grant levels based on super-pellet streak
     if (gameState.superPelletEaten) {
-        gameState.level += 2;
+        // Calculate level boost: 2^(streak+1)
+        const levelBoost = 2**(gameState.superPelletStreak + 1);
+        const prevLevel = gameState.level;
+        gameState.level += levelBoost;
         gameState.superPelletEaten = false; // Reset flag
-        // Check if we skipped past a milestone level (e.g., 9->11 skips 10)
-        // Update lastMilestoneLevel to the highest milestone we passed
-        const prevLevel = gameState.level - 2;
+        gameState.superPelletStreak++; // Increment streak for next time
+
+        // Update lastMilestoneLevel for any milestones we passed
         for (let milestone = 10; milestone <= gameState.level; milestone += 10) {
-            if (
-                milestone > prevLevel &&
-                milestone <= gameState.level &&
-                milestone > gameState.lastMilestoneLevel
-            ) {
+            if (milestone > prevLevel && milestone > gameState.lastMilestoneLevel) {
                 gameState.lastMilestoneLevel = milestone;
             }
         }
     } else {
         gameState.level++;
+        gameState.superPelletStreak = 0; // Reset streak on normal level up
     }
 
     const newSnake = [];
@@ -2360,6 +2362,7 @@ function resetGame() {
     gameState.trail = [];
     gameState.superPellets = []; // Clear super-pellets on reset
     gameState.superPelletEaten = false; // Reset super-pellet flag
+    gameState.superPelletStreak = 0; // Reset streak on game reset
     document.getElementById('score').innerText = `Score: ${gameState.score}`;
     document.getElementById('level').innerText = `Level: ${gameState.level}`;
 
