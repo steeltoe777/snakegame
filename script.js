@@ -2358,18 +2358,16 @@ function levelUp() {
             }
         }
 
-        // Add extra segments to the tail of the current snake
-        // Insert before the original tail so they become permanent after first move
+        // Add extra segments: twice the level boost
+        const segmentCount = levelBoost * 2;
         const tailIndex = gameState.snake.length - 1;
         const tail = gameState.snake[tailIndex];
         if (gameState.snake.length >= 2) {
-            // Insert all boost segments before the original tail
-            for (let i = 0; i < levelBoost; i++) {
+            for (let i = 0; i < segmentCount; i++) {
                 gameState.snake.splice(tailIndex, 0, { ...tail });
             }
         } else {
-            // Snake length 1: just push copies (they'll be after the single segment)
-            for (let i = 0; i < levelBoost; i++) {
+            for (let i = 0; i < segmentCount; i++) {
                 gameState.snake.push({ ...tail });
             }
         }
