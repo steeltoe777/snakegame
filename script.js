@@ -979,8 +979,12 @@ function drawPellets() {
 }
 
 function trySpawnSuperPellet() {
-    // Only spawn when exactly 1 pellet remains and no super-pellet exists yet
-    if (gameState.pellets.length !== 1 || gameState.superPellets.length > 0) {
+    // Only spawn when level 20+ and exactly 1 pellet remains and no super-pellet exists yet
+    if (
+        gameState.level < 20 ||
+        gameState.pellets.length !== 1 ||
+        gameState.superPellets.length > 0
+    ) {
         return;
     }
 
