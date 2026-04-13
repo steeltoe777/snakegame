@@ -2289,6 +2289,7 @@ function realGameOver() {
         gameState.trail = []; // Clear trail
         gameState.superPellets = []; // Clear super-pellets on respawn
         gameState.superPelletEaten = false; // Reset super-pellet flag
+        gameState.superPelletStreak = 0; // Reset super-pellet streak on death
         updateSpatialGrid(); // FIX: Update spatial grid immediately after clearing trail
         // Clear all powerups when respawning
         gameState.shields = []; // Clear shields when respawning
