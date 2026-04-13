@@ -638,6 +638,7 @@ function updatePasswordDisplay() {
     // Update last milestone level ONLY if it's a new personal best for this session
     if (gameState.level % 10 === 0 && gameState.level > gameState.lastMilestoneLevel) {
         gameState.lastMilestoneLevel = gameState.level;
+        localStorage.setItem('snakeGameLastMilestone', gameState.lastMilestoneLevel);
     }
 
     let levelStr = '\u00A0'; // Use non-breaking space as empty line placeholder
@@ -672,6 +673,7 @@ function tryPasswordTeleport() {
             // Update last milestone ONLY if it's higher than the current recorded milestone
             if (level > gameState.lastMilestoneLevel) {
                 gameState.lastMilestoneLevel = level;
+                localStorage.setItem('snakeGameLastMilestone', gameState.lastMilestoneLevel);
             }
             gameState.score = 0;
             document.getElementById('score').innerText = `Score: ${gameState.score}`;
@@ -2362,6 +2364,7 @@ function levelUp() {
                 gameState.lastMilestoneLevel = milestone;
             }
         }
+        localStorage.setItem('snakeGameLastMilestone', gameState.lastMilestoneLevel);
 
         // Add extra segments: twice the level boost
         const segmentCount = levelBoost * 2;
@@ -2862,6 +2865,16 @@ function startGame() {
 }
 
 // Initial setup
+
+// Load saved milestone from localStorage
+const savedMilestone = localStorage.getItem('snakeGameLastMilestone');
+if (savedMilestone !== null) {
+    const parsed = parseInt(savedMilestone, 10);
+    if (!Number.isNaN(parsed)) {
+        gameState.lastMilestoneLevel = parsed;
+    }
+}
+
 resetGame(); // Re-add this line
 
 // Expose gameState object for testing purposes
