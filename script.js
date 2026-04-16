@@ -680,10 +680,8 @@ function tryPasswordTeleport() {
             // Reset to PREVIOUS level (level - 1)
             const targetLevel = Math.max(1, level - 1);
             gameState.level = targetLevel;
-            // Clear disabledLevel if new level differs from penalized one
-            if (gameState.disabledLevel && gameState.level !== gameState.disabledLevel) {
-                gameState.disabledLevel = null;
-            }
+            // Penalty: teleporting via password means this level wasn't earned through normal play
+            gameState.disabledLevel = targetLevel;
             // Save current level to localStorage for persistence
             localStorage.setItem('snakeGameCurrentLevel', gameState.level);
             // Update last milestone ONLY if it's higher than the current recorded milestone
