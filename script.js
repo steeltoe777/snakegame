@@ -584,8 +584,9 @@ const gameState = {
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
     deathImminent: false, // Flag for 1-tick grace period before death in mouse mode
-    pausedByPasswordInput: false, // Tracks whether pause was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
+    pausedByPasswordInput: false, // Tracks whether the pause state was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
     ignoreNextClick: false, // After auto-unpause from password blur, ignore next mouse click to prevent accidental turn
+    disabledLevel: null, // If set, super-pellets are disabled on this exact level (loading from storage)
 };
 
 // Password system for level progression
@@ -679,6 +680,10 @@ function tryPasswordTeleport() {
             // Reset to PREVIOUS level (level - 1)
             const targetLevel = Math.max(1, level - 1);
             gameState.level = targetLevel;
+            // Clear disabledLevel if new level differs from penalized one
+            if (gameState.disabledLevel && gameState.level !== gameState.disabledLevel) {
+                gameState.disabledLevel = null;
+            }
             // Save current level to localStorage for persistence
             localStorage.setItem('snakeGameCurrentLevel', gameState.level);
             // Update last milestone ONLY if it's higher than the current recorded milestone
@@ -992,6 +997,10 @@ function drawPellets() {
 }
 
 function trySpawnSuperPellet() {
+    // Penalty: if this is the exact level that was loaded from storage, prevent super-pellet spawn
+    if (gameState.disabledLevel && gameState.level === gameState.disabledLevel) {
+        return;
+    }
     // Only spawn when level 20+ and exactly 1 pellet remains and no super-pellet exists yet
     if (
         gameState.level < 20 ||
@@ -2299,6 +2308,10 @@ function realGameOver() {
             // For levels below 600: always lose one level (original behavior)
             gameState.level = Math.max(1, level - 1);
         }
+        // Clear disabledLevel if we've moved to a different level (penalty lifted)
+        if (gameState.disabledLevel && gameState.level !== gameState.disabledLevel) {
+            gameState.disabledLevel = null;
+        }
         // Save current level to localStorage for persistence
         localStorage.setItem('snakeGameCurrentLevel', gameState.level);
         gameState.snake = gameState.snake.slice(
@@ -2397,6 +2410,11 @@ function levelUp() {
         gameState.superPelletStreak = 0; // Reset streak on normal level up
     }
 
+    // Clear disabledLevel if we've moved to a different level (penalty lifted)
+    if (gameState.disabledLevel && gameState.level !== gameState.disabledLevel) {
+        gameState.disabledLevel = null;
+    }
+
     // Save current level to localStorage for persistence
     localStorage.setItem('snakeGameCurrentLevel', gameState.level);
 
@@ -2443,6 +2461,8 @@ function resetGame(level = 1) {
     if (level === 1) {
         localStorage.removeItem('snakeGameCurrentLevel');
     }
+    // Penalty: if starting from storage (level > 1), mark this level as disabled for super-pellets
+    gameState.disabledLevel = level > 1 ? level : null;
     // Keep lastMilestoneLevel intact so it stays visible on reset
     gameState.trail = [];
     gameState.superPellets = []; // Clear super-pellets on reset
