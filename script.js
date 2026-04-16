@@ -663,6 +663,15 @@ function updatePasswordDisplay() {
 
 // Handle key press for password system
 function tryPasswordTeleport() {
+    // Check for "restart" command (special case)
+    const typedSequence = passwordSystem.keySequence.join('');
+    if (typedSequence.toUpperCase() === 'RESTART') {
+        passwordSystem.resetSequence();
+        resetGame(1);
+        updatePasswordDisplay();
+        return;
+    }
+
     // Only check passwords for levels divisible by 10 (and not level 1)
     for (let level = 10; level <= PASSWORD_LEVEL_MAX; level += 10) {
         const levelPassword = passwordSystem.generatePassword(level);
@@ -670,6 +679,8 @@ function tryPasswordTeleport() {
             // Reset to PREVIOUS level (level - 1)
             const targetLevel = Math.max(1, level - 1);
             gameState.level = targetLevel;
+            // Save current level to localStorage for persistence
+            localStorage.setItem('snakeGameCurrentLevel', gameState.level);
             // Update last milestone ONLY if it's higher than the current recorded milestone
             if (level > gameState.lastMilestoneLevel) {
                 gameState.lastMilestoneLevel = level;
@@ -2288,6 +2299,8 @@ function realGameOver() {
             // For levels below 600: always lose one level (original behavior)
             gameState.level = Math.max(1, level - 1);
         }
+        // Save current level to localStorage for persistence
+        localStorage.setItem('snakeGameCurrentLevel', gameState.level);
         gameState.snake = gameState.snake.slice(
             0,
             Math.max(1, Math.floor(gameState.snake.length / SNAKE_LENGTH_REDUCTION_FACTOR))
@@ -2384,6 +2397,9 @@ function levelUp() {
         gameState.superPelletStreak = 0; // Reset streak on normal level up
     }
 
+    // Save current level to localStorage for persistence
+    localStorage.setItem('snakeGameCurrentLevel', gameState.level);
+
     // Reset direction and clear trail
     gameState.dx = 0;
     gameState.dy = 0;
@@ -2408,7 +2424,7 @@ function levelUp() {
     updatePasswordDisplay();
 }
 
-function resetGame() {
+function resetGame(level = 1) {
     // Clear shields when game resets
     gameState.shields = [];
 
@@ -2422,7 +2438,11 @@ function resetGame() {
     gameState.dy = 0;
     gameState.directionQueue = [];
     gameState.score = 0;
-    gameState.level = 1;
+    gameState.level = level;
+    // Clear saved level if resetting to level 1 (manual restart)
+    if (level === 1) {
+        localStorage.removeItem('snakeGameCurrentLevel');
+    }
     // Keep lastMilestoneLevel intact so it stays visible on reset
     gameState.trail = [];
     gameState.superPellets = []; // Clear super-pellets on reset
@@ -2866,6 +2886,16 @@ function startGame() {
 
 // Initial setup
 
+// Load saved current level from localStorage
+const savedLevel = localStorage.getItem('snakeGameCurrentLevel');
+let initialLevel = 1;
+if (savedLevel !== null) {
+    const parsed = parseInt(savedLevel, 10);
+    if (!Number.isNaN(parsed) && parsed >= 1) {
+        initialLevel = parsed;
+    }
+}
+
 // Load saved milestone from localStorage
 const savedMilestone = localStorage.getItem('snakeGameLastMilestone');
 if (savedMilestone !== null) {
@@ -2875,7 +2905,7 @@ if (savedMilestone !== null) {
     }
 }
 
-resetGame(); // Re-add this line
+resetGame(initialLevel);
 
 // Expose gameState object for testing purposes
 window.gameState = gameState;
