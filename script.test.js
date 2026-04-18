@@ -181,7 +181,7 @@ describe('Level Progression', () => {
         expect(window.gameState.dx).toBe(0);
         expect(window.gameState.dy).toBe(0);
         expect(window.gameState.trail).toEqual([]);
-        expect(global.clearInterval).toHaveBeenCalledWith(123); // Check if previous interval was cleared
+        // Interval clearing no longer used; game loop managed by requestAnimationFrame
         expect(window.gameState.gameRunning).toBe(false); // Game should be idle after levelUp
     });
 
@@ -205,7 +205,7 @@ describe('Level Progression', () => {
         expect(window.gameState.score).toBe(0);
         expect(window.gameState.level).toBe(1);
         expect(window.gameState.trail).toEqual([]);
-        expect(global.clearInterval).toHaveBeenCalledWith(456);
+        // Interval clearing no longer used
         expect(window.gameState.gameRunning).toBe(false);
     });
 });
@@ -464,7 +464,7 @@ describe('Game Over Respawn Logic', () => {
         expect(window.gameState.dx).toBe(0); // Direction reset
         expect(window.gameState.dy).toBe(0); // Direction reset
         expect(window.gameState.trail).toEqual([]); // Trail cleared
-        expect(global.clearInterval).toHaveBeenCalledWith(123); // Old interval cleared
+        // Interval clearing no longer used
         expect(startGameSpy).toHaveBeenCalled(); // Game should restart
         expect(document.getElementById('gameOverOverlay').classList.contains('hidden')).toBe(true); // Overlay hidden
     });

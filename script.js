@@ -735,10 +735,7 @@ function tryPasswordTeleport() {
             gameState.paused = false;
 
             // Stop current game and restart at the new level
-            if (gameState.gameInterval) {
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = null;
-            }
+            stopGameLoop();
             gameState.gameRunning = false;
             drawGame();
 
@@ -1464,7 +1461,7 @@ function tryRandomMovement() {
     return false; // Failed to move
 }
 
-function update() {
+function tick() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
 
@@ -1854,8 +1851,6 @@ function update() {
                 document.getElementById('score').innerText = `Score: ${gameState.score}`;
                 shouldGrow = true;
                 // Update game speed based on increased snake length
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
                 break;
             }
         }
@@ -1904,8 +1899,6 @@ function update() {
                 // Activate speed boost powerup for PASSWORD_LENGTH seconds
                 gameState.speedBoostActive = true;
                 // Immediately update game speed for instant boost effect
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
                 gameState.speedBoostTimer = SPEED_BOOST_DURATION;
                 gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
@@ -1923,8 +1916,6 @@ function update() {
                 gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
 
                 // Immediately update game speed for instant slow effect
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
                 break;
             }
         }
@@ -2040,8 +2031,6 @@ function update() {
                 gameState.timeSlowTimer = 0;
 
                 // Update game speed when time slow ends
-                clearInterval(gameState.gameInterval);
-                gameState.gameInterval = setInterval(update, calculateGameSpeed());
             }
         }
         // Update score multiplier timer if powerup is active
@@ -2077,7 +2066,6 @@ function update() {
     spawnRandomHourglass();
     spawnRandomStar();
     trySpawnSuperPellet(); // Try to spawn super-pellet when 1 pellet remains
-    drawGame();
 }
 
 function drawGame() {
@@ -2296,8 +2284,7 @@ function gameOver() {
 function realGameOver() {
     stopRefreshSaving(); // Stop periodic refresh state saves on death
     gameState.gameRunning = false;
-    clearInterval(gameState.gameInterval);
-    gameState.gameInterval = null;
+    stopGameLoop(); // Stop the game loop
     finalScoreDisplay.innerText = `Score: ${gameState.score}`;
 
     // Display overlay first to ensure visibility
@@ -2387,9 +2374,6 @@ function levelUp() {
     // Clear shields when level changes
     gameState.shields = [];
 
-    clearInterval(gameState.gameInterval);
-    gameState.gameInterval = null;
-
     let levelBoost = 0; // Number of extra segments to add to snake
     // Grant levels based on super-pellet streak
     if (gameState.superPelletEaten) {
@@ -2463,11 +2447,7 @@ function resetGame(level = 1) {
     // Clear shields when game resets
     gameState.shields = [];
 
-    // FIX: Clear any existing game interval when resetting the game
-    if (gameState.gameInterval) {
-        clearInterval(gameState.gameInterval);
-        gameState.gameInterval = null; // Clear the interval ID
-    }
+    stopGameLoop(); // Stop game loop
     gameState.snake = [{ x: 10, y: 10 }];
     gameState.dx = 0;
     gameState.dy = 0;
@@ -2894,10 +2874,7 @@ function calculateGameSpeed() {
 
 // Restart the game loop timer with current speed settings
 function restartGameLoop() {
-    if (gameState.gameInterval) {
-        clearInterval(gameState.gameInterval);
-        gameState.gameInterval = setInterval(update, calculateGameSpeed());
-    }
+    // No longer needed; game loop automatically adjusts speed each frame.
 }
 
 function resetPowerupTimestamps() {
@@ -2910,19 +2887,13 @@ function resetPowerupTimestamps() {
 }
 
 function startGame() {
-    // FIX: Clear any existing game interval before starting a new one
-    if (gameState.gameInterval) {
-        clearInterval(gameState.gameInterval);
-        gameState.gameInterval = null; // Clear the interval ID
-    }
     if (gameState.gameRunning) return;
-    // Reset power-up timestamps to prevent timer from counting idle time
     resetPowerupTimestamps();
     gameState.gameRunning = true;
-    startRefreshSaving(); // Start periodic refresh state saves
-    passwordSystem.resetSequence(); // Clear typed password when snake starts moving
+    startRefreshSaving();
+    passwordSystem.resetSequence();
     updatePasswordDisplay();
-    gameState.gameInterval = setInterval(update, calculateGameSpeed()); // Dynamic speed based on snake length
+    startGameLoop();
 }
 
 // Refresh penalty handling functions
@@ -2960,6 +2931,48 @@ function stopRefreshSaving() {
     }
 }
 
+// Game loop state
+let gameLoopId = null;
+let lastFrameTime = 0;
+let accumulator = 0;
+
+function startGameLoop() {
+    if (gameLoopId !== null) return; // Already running
+    lastFrameTime = performance.now();
+    accumulator = 0;
+    gameLoopId = window.requestAnimationFrame(gameLoop);
+}
+
+function stopGameLoop() {
+    if (gameLoopId !== null) {
+        window.cancelAnimationFrame(gameLoopId);
+        gameLoopId = null;
+    }
+}
+
+function gameLoop(timestamp) {
+    if (!lastFrameTime) lastFrameTime = timestamp;
+    const delta = timestamp - lastFrameTime;
+    lastFrameTime = timestamp;
+
+    if (!gameState.paused && gameState.gameRunning) {
+        accumulator += delta;
+        const movementInterval = calculateGameSpeed();
+        while (accumulator >= movementInterval) {
+            tick();
+            accumulator -= movementInterval;
+        }
+    }
+
+    drawGame();
+
+    if (gameState.gameRunning) {
+        gameLoopId = window.requestAnimationFrame(gameLoop);
+    } else {
+        gameLoopId = null;
+    }
+}
+
 // Helper to create a snake of a given length with safe placement
 function createSnakeOfLength(length) {
     if (length < 1) length = 1;
@@ -2991,6 +3004,12 @@ function createSnakeOfLength(length) {
         snake.push({ x, y });
     }
     return snake;
+}
+
+// Compatibility wrapper - maintains original API
+function update() {
+    tick();
+    drawGame();
 }
 
 // Initial setup
