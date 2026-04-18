@@ -62,6 +62,10 @@ const MUSHROOM_POWERUP_DURATION = 8000;
 const SHIELD_POWERUP_DURATION = 12000; // 12 seconds in milliseconds
 const SPEED_BOOST_DURATION = 6000;
 const SCORE_MULTIPLIER_DURATION = 10000; // 10 seconds in milliseconds
+// Refresh penalty system constants
+const REFRESH_STALENESS_THRESHOLD = 3600000; // 1 hour in milliseconds
+const REFRESH_STATE_KEY = 'snakeGameRefreshState';
+const REFRESH_SAVE_INTERVAL = 1000; // 1 second for periodic saves
 
 // Speed modifiers
 
@@ -551,6 +555,7 @@ const gameState = {
     level: 1,
     lastMilestoneLevel: 0, // Track the last milestone level reached
     gameRunning: false,
+    hasGameEverMoved: false,
     gameInterval: null,
     maze: [],
     pellets: [],
@@ -588,6 +593,9 @@ const gameState = {
     ignoreNextClick: false, // After auto-unpause from password blur, ignore next mouse click to prevent accidental turn
     disabledLevel: null, // If set, super-pellets are disabled on this exact level (loading from storage)
 };
+
+// Refresh state saving interval management
+let refreshSaveIntervalId = null;
 
 // Password system for level progression
 const passwordSystem = {
@@ -668,6 +676,7 @@ function tryPasswordTeleport() {
     const typedSequence = passwordSystem.keySequence.join('');
     if (typedSequence.toUpperCase() === 'RESTART') {
         passwordSystem.resetSequence();
+        clearRefreshState();
         resetGame(1);
         updatePasswordDisplay();
         return;
@@ -695,6 +704,9 @@ function tryPasswordTeleport() {
 
             // Reset snake position and clear trail
             gameState.snake = [{ x: 10, y: 10 }];
+            // Clear any pending refresh penalty on manual reset
+            clearRefreshState();
+            gameState.hasGameEverMoved = false;
             gameState.dx = 0;
             gameState.dy = 0;
             gameState.directionQueue = [];
@@ -1826,6 +1838,11 @@ function update() {
 
         gameState.snake.unshift(head);
 
+        // Mark that the snake has moved at least once (for refresh penalty detection)
+        if (!gameState.hasGameEverMoved) {
+            gameState.hasGameEverMoved = true;
+        }
+
         // Check for pellet eating
         // Check for item collection
         let shouldGrow = false; // Only pellets and mushrooms cause growth
@@ -2277,6 +2294,7 @@ function gameOver() {
 }
 
 function realGameOver() {
+    stopRefreshSaving(); // Stop periodic refresh state saves on death
     gameState.gameRunning = false;
     clearInterval(gameState.gameInterval);
     gameState.gameInterval = null;
@@ -2441,6 +2459,7 @@ function levelUp() {
 }
 
 function resetGame(level = 1) {
+    stopRefreshSaving(); // Stop periodic refresh state saves
     // Clear shields when game resets
     gameState.shields = [];
 
@@ -2609,7 +2628,10 @@ function handleDirectionChange(e) {
     }
 }
 
-restartButton.addEventListener('click', resetGame);
+restartButton.addEventListener('click', () => {
+    clearRefreshState();
+    resetGame(1);
+});
 
 // Mouse/touch click control - click anywhere to change snake direction
 // Mouse click: allows clicking anywhere on screen to steer
@@ -2897,9 +2919,78 @@ function startGame() {
     // Reset power-up timestamps to prevent timer from counting idle time
     resetPowerupTimestamps();
     gameState.gameRunning = true;
+    startRefreshSaving(); // Start periodic refresh state saves
     passwordSystem.resetSequence(); // Clear typed password when snake starts moving
     updatePasswordDisplay();
     gameState.gameInterval = setInterval(update, calculateGameSpeed()); // Dynamic speed based on snake length
+}
+
+// Refresh penalty handling functions
+function saveRefreshState() {
+    // Only save if game was running and had moved (active gameplay)
+    if (gameState.gameRunning && gameState.hasGameEverMoved) {
+        const refreshState = {
+            level: gameState.level,
+            score: gameState.score,
+            snakeLength: gameState.snake.length,
+            timestamp: Date.now(),
+            hadMoved: true,
+        };
+        localStorage.setItem(REFRESH_STATE_KEY, JSON.stringify(refreshState));
+    } else {
+        // If game not running or never moved, clear any stale refresh state
+        localStorage.removeItem(REFRESH_STATE_KEY);
+    }
+}
+
+function clearRefreshState() {
+    localStorage.removeItem(REFRESH_STATE_KEY);
+}
+
+function startRefreshSaving() {
+    if (refreshSaveIntervalId === null) {
+        refreshSaveIntervalId = setInterval(saveRefreshState, REFRESH_SAVE_INTERVAL);
+    }
+}
+
+function stopRefreshSaving() {
+    if (refreshSaveIntervalId !== null) {
+        clearInterval(refreshSaveIntervalId);
+        refreshSaveIntervalId = null;
+    }
+}
+
+// Helper to create a snake of a given length with safe placement
+function createSnakeOfLength(length) {
+    if (length < 1) length = 1;
+    const head = getRandomPosition();
+    const snake = [{ x: head.x, y: head.y }];
+    if (length === 1) return snake;
+    // Choose a random direction for body extension
+    const directions = [
+        { dx: 0, dy: -1 }, // up
+        { dx: 1, dy: 0 }, // right
+        { dx: 0, dy: 1 }, // down
+        { dx: -1, dy: 0 }, // left
+    ];
+    // Shuffle directions to randomize
+    for (let i = directions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [directions[i], directions[j]] = [directions[j], directions[i]];
+    }
+    const dir = directions[0];
+    for (let i = 1; i < length; i++) {
+        const prev = snake[i - 1];
+        const x = prev.x + dir.dx;
+        const y = prev.y + dir.dy;
+        // Check boundaries and walls
+        if (x < 1 || x >= gameState.tileCount - 1 || y < 1 || y >= gameState.tileCount - 1) {
+            break;
+        }
+        if (gameState.maze[y][x] === 1) break;
+        snake.push({ x, y });
+    }
+    return snake;
 }
 
 // Initial setup
@@ -2923,7 +3014,76 @@ if (savedMilestone !== null) {
     }
 }
 
-resetGame(initialLevel);
+// Check for pending refresh penalty before resetting
+const savedRefreshStr = localStorage.getItem(REFRESH_STATE_KEY);
+let applyPenalty = false;
+let refreshData = null;
+
+if (savedRefreshStr) {
+    try {
+        const state = JSON.parse(savedRefreshStr);
+        const now = Date.now();
+        if (now - state.timestamp <= REFRESH_STALENESS_THRESHOLD && state.hadMoved) {
+            applyPenalty = true;
+            refreshData = state;
+        }
+    } catch (e) {
+        // Invalid state, ignore
+    }
+    // Clear the saved state now (processed or invalid)
+    localStorage.removeItem(REFRESH_STATE_KEY);
+}
+
+if (applyPenalty) {
+    // Compute penalties based on stored state
+    const { level: originalLevel, score: originalScore, snakeLength: originalLength } = refreshData;
+    const newScore = Math.floor(originalScore / SCORE_REDUCTION_FACTOR);
+    // Determine new level after reduction
+    let newLevel = originalLevel;
+    if (originalLevel >= 600) {
+        if (newScore < originalLevel) {
+            newLevel = Math.max(1, originalLevel - 1);
+        }
+    } else {
+        newLevel = Math.max(1, originalLevel - 1);
+    }
+    const newLength = Math.max(1, Math.floor(originalLength / SNAKE_LENGTH_REDUCTION_FACTOR));
+
+    // Reset game to the new level (this sets up maze, pellets, etc. with default snake length 1)
+    resetGame(newLevel);
+
+    // Save new level to localStorage (resetGame does not save when level > 1)
+    if (newLevel === 1) {
+        localStorage.removeItem('snakeGameCurrentLevel');
+    } else {
+        localStorage.setItem('snakeGameCurrentLevel', newLevel);
+    }
+
+    // Override score
+    gameState.score = newScore;
+    document.getElementById('score').innerText = `Score: ${gameState.score}`;
+
+    // Adjust snake to the penalized length
+    gameState.snake = createSnakeOfLength(newLength);
+
+    // After adjusting snake, regenerate spatial grid and items to avoid overlap
+    initializeSpatialGrid();
+    generatePellets();
+    generateLightningBolts();
+    generateHourglasses();
+    generateMushrooms();
+    generateShields();
+
+    // Ensure game is not running
+    gameState.gameRunning = false;
+    drawGame();
+} else {
+    // No penalty, normal reset with saved level (or 1)
+    resetGame(initialLevel);
+}
+
+// Set up beforeunload handler to save refresh state
+window.addEventListener('beforeunload', saveRefreshState);
 
 // Expose gameState object for testing purposes
 window.gameState = gameState;
