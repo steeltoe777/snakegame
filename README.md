@@ -15,7 +15,9 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **🐍 Grow and Survive**: Collect pellets to grow, but watch out—your own tail is your biggest enemy.
 - **💙 Tron Trails**: Your movement leaves a blue trail that acts as a solid wall. Use it to trap yourself or navigate carefully.
 - **🟡 Pac-Man Pellets**: Clear the entire board of pellets to advance. No more random spawns; every pellet counts.
-- **🔐 Secret Passwords**: Every 10 levels, you'll uncover a secret code. Type it in anytime (even while paused!) to jump back to that milestone. **Important:** Write these down! They are not saved between browser sessions.
+- **🔐 Secret Passwords**: Every 10 levels, you'll uncover a secret code. Type it in anytime (even while paused!) to jump back to that milestone.
+    - **Management**: `FORGET` clears stored password; `HIDEPWD` hides the hint; `SHOWPWD` shows it; `RESTART` preserves hide/show state.
+    - **Important:** Write these down! They are not saved between browser sessions.
 - **🍄 Dynamic Power-Ups**: From speed boosts to invincibility, collect random spawns to gain the upper hand.
 - **🗺️ Minimap Navigation**: Keep an eye on the radar to locate that last elusive pellet or a distant power-up.
 - **⏸️ Pause Anywhere**: On mobile, focusing the password input field automatically pauses the game; unfocusing (tapping away) unpauses. Press **Space** or **Escape** to pause/resume manually.

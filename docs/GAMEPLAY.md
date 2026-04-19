@@ -21,6 +21,7 @@ Every 10 levels (10, 20, 30...), the game generates a **Secret Code**.
 - **Entry**: You can type a password at any time—even while the game is **paused**—using either your physical keyboard or the on-screen input field.
 - **Persistence**: Once you've reached a milestone level (like Level 10), the game will remember its password. This behaves like a **"High Score"**—if you die, regress, or even restart the game from Level 1, your best achieved password remains visible on the screen for instant recovery.
 - **Behavior**: Entering a password for Level 10 will teleport you to **Level 9**, resetting your score but allowing you to continue from that point.
+- **Management**: `FORGET` clears stored password; `HIDEPWD` hides the hint; `SHOWPWD` shows it; `RESTART` preserves hide/show state.
 
 ---
 

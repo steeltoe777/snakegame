@@ -435,6 +435,7 @@ const gameState = {
     deathImminent: false, // Flag for 1-tick grace period before death in mouse mode
     pausedByPasswordInput: false, // Tracks whether the pause state was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
     ignoreNextClick: false, // After auto-unpause from password blur, ignore next mouse click to prevent accidental turn
+    passwordForgotten: false, // When true, hides the milestone password hint (activated by 'forget' command)
     disabledLevel: null, // If set, super-pellets are disabled on this exact level (loading from storage)
     // Spawn throttling: track last spawn time for each powerup type
     lastSpawnTime: {
@@ -497,14 +498,21 @@ function updatePasswordDisplay() {
     if (!passwordElement) return;
 
     // Update last milestone level ONLY if it's a new personal best for this session
-    if (gameState.level % 10 === 0 && gameState.level > gameState.lastMilestoneLevel) {
+    // But skip if password has been forgotten (user doesn't want to see it)
+    if (
+        !gameState.passwordForgotten &&
+        gameState.level % 10 === 0 &&
+        gameState.level > gameState.lastMilestoneLevel
+    ) {
         gameState.lastMilestoneLevel = gameState.level;
         localStorage.setItem('snakeGameLastMilestone', gameState.lastMilestoneLevel);
+        // When a new milestone is reached, clear forgotten state to show new password
+        gameState.passwordForgotten = false;
     }
 
     let levelStr = '\u00A0'; // Use non-breaking space as empty line placeholder
-    // Show the last reached milestone password if it exists
-    if (gameState.lastMilestoneLevel > 0) {
+    // Show the last reached milestone password if it exists and not forgotten
+    if (!gameState.passwordForgotten && gameState.lastMilestoneLevel > 0) {
         const milestoneLevel = gameState.lastMilestoneLevel;
         const levelPassword = passwordSystem.generatePassword(milestoneLevel);
         levelStr = `Level ${milestoneLevel - 1} password: ${levelPassword}`;
@@ -530,6 +538,33 @@ function tryPasswordTeleport() {
         passwordSystem.resetSequence();
         clearRefreshState();
         resetGame(1);
+        // Preserve passwordForgotten flag state
+        updatePasswordDisplay();
+        return;
+    }
+
+    // Check for "forget" command (clears password and resets milestone)
+    if (typedSequence.toUpperCase() === 'FORGET') {
+        passwordSystem.resetSequence();
+        gameState.lastMilestoneLevel = 0;
+        localStorage.removeItem('snakeGameLastMilestone');
+        gameState.passwordForgotten = false;
+        updatePasswordDisplay();
+        return;
+    }
+
+    // Check for "hidepwd" command (hides milestone password hint)
+    if (typedSequence.toUpperCase() === 'HIDEPWD') {
+        passwordSystem.resetSequence();
+        gameState.passwordForgotten = true;
+        updatePasswordDisplay();
+        return;
+    }
+
+    // Check for "showpwd" command (shows milestone password hint)
+    if (typedSequence.toUpperCase() === 'SHOWPWD') {
+        passwordSystem.resetSequence();
+        gameState.passwordForgotten = false;
         updatePasswordDisplay();
         return;
     }
