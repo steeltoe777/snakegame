@@ -62,6 +62,10 @@ const MUSHROOM_POWERUP_DURATION = 8000;
 const SHIELD_POWERUP_DURATION = 12000; // 12 seconds in milliseconds
 const SPEED_BOOST_DURATION = 6000;
 const SCORE_MULTIPLIER_DURATION = 10000; // 10 seconds in milliseconds
+
+// Spawn throttling constant (250-400ms range)
+const SPAWN_INTERVAL_MS = 300; // Minimum time between powerup spawns
+
 // Refresh penalty system constants
 const REFRESH_STALENESS_THRESHOLD = 3600000; // 1 hour in milliseconds
 const REFRESH_STATE_KEY = 'snakeGameRefreshState';
@@ -314,167 +318,6 @@ function generateShields() {
     }
 }
 
-// Random mushroom spawning during gameplay
-function spawnRandomMushroom() {
-    // Only spawn mushrooms on higher levels with 0.3% probability
-    if (gameState.level >= 5 && Math.random() < 0.003 + (gameState.level > 10 ? 0.002 : 0)) {
-        // 0.3% chance per update
-        const availableTiles = getAvailableTiles(gameState);
-        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms)
-        for (let y = 1; y < gameState.tileCount - 1; y++) {
-            for (let x = 1; x < gameState.tileCount - 1; x++) {
-                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
-                    // Check if tile is not occupied by snake, pellets, or existing mushrooms
-                    let occupied = false;
-
-                    // Check snake
-                    for (let j = 0; j < gameState.snake.length; j++) {
-                        const segment = gameState.snake[j];
-                        if (segment.x === x && segment.y === y) {
-                            occupied = true;
-                            break;
-                        }
-                    }
-
-                    // Check pellets
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.pellets.length; j++) {
-                            const pellet = gameState.pellets[j];
-                            if (pellet.x === x && pellet.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check existing mushrooms
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.mushrooms.length; j++) {
-                            const mushroom = gameState.mushrooms[j];
-                            if (mushroom.x === x && mushroom.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!occupied) {
-                        availableTiles.push({ x, y });
-                    }
-                }
-            }
-        }
-
-        // Spawn 1 mushroom if available tiles exist
-        if (availableTiles.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableTiles.length);
-            gameState.mushrooms.push(availableTiles[randomIndex]);
-        }
-    }
-}
-// Random shield spawning during gameplay
-function spawnRandomShield() {
-    // Only spawn shields on level 6+ with 0.5% probability
-    if (gameState.level >= 6 && Math.random() < 0.005 + (gameState.level > 15 ? 0.003 : 0)) {
-        // 0.5% chance per update
-        const availableTiles = getAvailableTiles(gameState);
-        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars/shields)
-        for (let y = 1; y < gameState.tileCount - 1; y++) {
-            for (let x = 1; x < gameState.tileCount - 1; x++) {
-                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
-                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, hourglasses, stars, or existing shields
-                    let occupied = false;
-
-                    // Check snake
-                    for (let j = 0; j < gameState.snake.length; j++) {
-                        const segment = gameState.snake[j];
-                        if (segment.x === x && segment.y === y) {
-                            occupied = true;
-                            break;
-                        }
-                    }
-
-                    // Check pellets
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.pellets.length; j++) {
-                            const pellet = gameState.pellets[j];
-                            if (pellet.x === x && pellet.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check mushrooms
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.mushrooms.length; j++) {
-                            const mushroom = gameState.mushrooms[j];
-                            if (mushroom.x === x && mushroom.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check lightning bolts
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
-                            const bolt = gameState.lightningBolts[j];
-                            if (bolt.x === x && bolt.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check hourglasses
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.hourglasses.length; j++) {
-                            const hourglass = gameState.hourglasses[j];
-                            if (hourglass.x === x && hourglass.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check stars
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.stars.length; j++) {
-                            const star = gameState.stars[j];
-                            if (star.x === x && star.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check existing shields
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.shields.length; j++) {
-                            const shield = gameState.shields[j];
-                            if (shield.x === x && shield.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!occupied) {
-                        availableTiles.push({ x, y });
-                    }
-                }
-            }
-        }
-
-        // Spawn 1 shield if available tiles exist
-        if (availableTiles.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableTiles.length);
-            gameState.shields.push(availableTiles[randomIndex]);
-        }
-    }
-}
-
 function getRandomPosition() {
     const tileCount = gameState.tileCount || GRID_SIZE;
     let attempts = 0;
@@ -592,6 +435,14 @@ const gameState = {
     pausedByPasswordInput: false, // Tracks whether the pause state was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
     ignoreNextClick: false, // After auto-unpause from password blur, ignore next mouse click to prevent accidental turn
     disabledLevel: null, // If set, super-pellets are disabled on this exact level (loading from storage)
+    // Spawn throttling: track last spawn time for each powerup type
+    lastSpawnTime: {
+        mushroom: 0,
+        shield: 0,
+        lightningBolt: 0,
+        hourglass: 0,
+        star: 0,
+    },
 };
 
 // Refresh state saving interval management
@@ -1097,6 +948,167 @@ function trySpawnSuperPellet() {
         // If still no tiles, the board is completely full - super-pellet won't spawn this frame
         // It will retry on next frame since snake will have moved
     }
+}
+
+// Unified powerup spawning with throttling and efficient tile scanning
+function trySpawnPowerup(type) {
+    const now = performance.now();
+    // Throttle: don't spawn more often than SPAWN_INTERVAL_MS
+    if (now - gameState.lastSpawnTime[type] < SPAWN_INTERVAL_MS) {
+        return;
+    }
+
+    // Determine if we should spawn based on level and probability
+    let shouldSpawn = false;
+    switch (type) {
+        case 'mushroom':
+            if (
+                gameState.level >= 5 &&
+                Math.random() < 0.003 + (gameState.level > 10 ? 0.002 : 0)
+            ) {
+                shouldSpawn = true;
+            }
+            break;
+        case 'shield':
+            if (
+                gameState.level >= 6 &&
+                Math.random() < 0.005 + (gameState.level > 15 ? 0.003 : 0)
+            ) {
+                shouldSpawn = true;
+            }
+            break;
+        case 'lightningBolt':
+            if (gameState.level >= 3 && Math.random() < 0.006) {
+                shouldSpawn = true;
+            }
+            break;
+        case 'hourglass':
+            if (gameState.level >= 5 && Math.random() < 0.008) {
+                shouldSpawn = true;
+            }
+            break;
+        case 'star':
+            if (gameState.level >= 4 && Math.random() < 0.012) {
+                shouldSpawn = true;
+            }
+            break;
+        default:
+            // Unsupported powerup type
+            break;
+    }
+    if (!shouldSpawn) return;
+
+    // Get base available tiles (non-wall, non-snake)
+    let availableTiles = getAvailableTiles(gameState);
+    if (availableTiles.length === 0) return;
+
+    // Filter out additional occupied tiles specific to this powerup type
+    availableTiles = availableTiles.filter((tile) => {
+        // All types exclude pellets
+        for (let i = 0; i < gameState.pellets.length; i++) {
+            const p = gameState.pellets[i];
+            if (tile.x === p.x && tile.y === p.y) return false;
+        }
+
+        // Type-specific exclusions
+        if (
+            type === 'mushroom' ||
+            type === 'shield' ||
+            type === 'lightningBolt' ||
+            type === 'hourglass' ||
+            type === 'star'
+        ) {
+            for (let i = 0; i < gameState.mushrooms.length; i++) {
+                const m = gameState.mushrooms[i];
+                if (tile.x === m.x && tile.y === m.y) return false;
+            }
+        }
+
+        if (type === 'shield') {
+            for (let i = 0; i < gameState.lightningBolts.length; i++) {
+                const bolt = gameState.lightningBolts[i];
+                if (tile.x === bolt.x && tile.y === bolt.y) return false;
+            }
+            for (let i = 0; i < gameState.hourglasses.length; i++) {
+                const h = gameState.hourglasses[i];
+                if (tile.x === h.x && tile.y === h.y) return false;
+            }
+            for (let i = 0; i < gameState.stars.length; i++) {
+                const s = gameState.stars[i];
+                if (tile.x === s.x && tile.y === s.y) return false;
+            }
+            for (let i = 0; i < gameState.shields.length; i++) {
+                const sh = gameState.shields[i];
+                if (tile.x === sh.x && tile.y === sh.y) return false;
+            }
+        }
+
+        if (type === 'lightningBolt') {
+            for (let i = 0; i < gameState.lightningBolts.length; i++) {
+                const b = gameState.lightningBolts[i];
+                if (tile.x === b.x && tile.y === b.y) return false;
+            }
+        }
+
+        if (type === 'hourglass') {
+            for (let i = 0; i < gameState.lightningBolts.length; i++) {
+                const b = gameState.lightningBolts[i];
+                if (tile.x === b.x && tile.y === b.y) return false;
+            }
+            for (let i = 0; i < gameState.hourglasses.length; i++) {
+                const h = gameState.hourglasses[i];
+                if (tile.x === h.x && tile.y === h.y) return false;
+            }
+        }
+
+        if (type === 'star') {
+            for (let i = 0; i < gameState.lightningBolts.length; i++) {
+                const b = gameState.lightningBolts[i];
+                if (tile.x === b.x && tile.y === b.y) return false;
+            }
+            for (let i = 0; i < gameState.hourglasses.length; i++) {
+                const h = gameState.hourglasses[i];
+                if (tile.x === h.x && tile.y === h.y) return false;
+            }
+            for (let i = 0; i < gameState.stars.length; i++) {
+                const s = gameState.stars[i];
+                if (tile.x === s.x && tile.y === s.y) return false;
+            }
+        }
+
+        return true;
+    });
+
+    if (availableTiles.length === 0) return;
+
+    // Choose random tile
+    const randomIndex = Math.floor(Math.random() * availableTiles.length);
+    const tile = availableTiles[randomIndex];
+
+    // Spawn the powerup
+    switch (type) {
+        case 'mushroom':
+            gameState.mushrooms.push(tile);
+            break;
+        case 'shield':
+            gameState.shields.push(tile);
+            break;
+        case 'lightningBolt':
+            gameState.lightningBolts.push(tile);
+            break;
+        case 'hourglass':
+            gameState.hourglasses.push(tile);
+            break;
+        case 'star':
+            gameState.stars.push(tile);
+            break;
+        default:
+            // Unsupported powerup type
+            break;
+    }
+
+    // Update last spawn time
+    gameState.lastSpawnTime[type] = now;
 }
 
 function drawSuperPellets() {
@@ -2060,11 +2072,11 @@ function tick() {
         }
     } // end skipMovement block
 
-    spawnRandomMushroom(); // Random mushroom spawning during game
-    spawnRandomShield(); // Random shield spawning during gameplayplay
-    spawnRandomLightningBolt(); // Random lightning bolt spawning during gameplay
-    spawnRandomHourglass();
-    spawnRandomStar();
+    trySpawnPowerup('mushroom');
+    trySpawnPowerup('shield');
+    trySpawnPowerup('lightningBolt');
+    trySpawnPowerup('hourglass');
+    trySpawnPowerup('star');
     trySpawnSuperPellet(); // Try to spawn super-pellet when 1 pellet remains
 }
 
@@ -3346,245 +3358,6 @@ function generateStars() {
 
     // Only spawn stars on level 4+
     if (gameState.level >= 4 && Math.random() < 0.2 - (gameState.level > 10 ? 0.05 : 0)) {
-        const availableTiles = getAvailableTiles(gameState);
-        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
-        for (let y = 1; y < gameState.tileCount - 1; y++) {
-            for (let x = 1; x < gameState.tileCount - 1; x++) {
-                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
-                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, hourglasses, or existing stars
-                    let occupied = false;
-
-                    // Check snake
-                    for (let j = 0; j < gameState.snake.length; j++) {
-                        const segment = gameState.snake[j];
-                        if (segment.x === x && segment.y === y) {
-                            occupied = true;
-                            break;
-                        }
-                    }
-
-                    // Check pellets
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.pellets.length; j++) {
-                            const pellet = gameState.pellets[j];
-                            if (pellet.x === x && pellet.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check mushrooms
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.mushrooms.length; j++) {
-                            const mushroom = gameState.mushrooms[j];
-                            if (mushroom.x === x && mushroom.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check lightning bolts
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
-                            const bolt = gameState.lightningBolts[j];
-                            if (bolt.x === x && bolt.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check hourglasses
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.hourglasses.length; j++) {
-                            const hourglass = gameState.hourglasses[j];
-                            if (hourglass.x === x && hourglass.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check existing stars
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.stars.length; j++) {
-                            const star = gameState.stars[j];
-                            if (star.x === x && star.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!occupied) {
-                        availableTiles.push({ x, y });
-                    }
-                }
-            }
-        }
-
-        // Spawn 1 star if available tiles exist
-        if (availableTiles.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableTiles.length);
-            gameState.stars.push(availableTiles[randomIndex]);
-        }
-    }
-}
-
-// Random lightning bolt spawning during gameplay
-function spawnRandomLightningBolt() {
-    // Only spawn lightning bolts on level 3+ with 0.6% probability
-    if (gameState.level >= 3 && Math.random() < 0.006) {
-        // 0.6% chance per update
-        const availableTiles = getAvailableTiles(gameState);
-        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts)
-        for (let y = 1; y < gameState.tileCount - 1; y++) {
-            for (let x = 1; x < gameState.tileCount - 1; x++) {
-                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
-                    // Check if tile is not occupied by snake, pellets, mushrooms, or existing lightning bolts
-                    let occupied = false;
-
-                    // Check snake
-                    for (let j = 0; j < gameState.snake.length; j++) {
-                        const segment = gameState.snake[j];
-                        if (segment.x === x && segment.y === y) {
-                            occupied = true;
-                            break;
-                        }
-                    }
-
-                    // Check pellets
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.pellets.length; j++) {
-                            const pellet = gameState.pellets[j];
-                            if (pellet.x === x && pellet.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check mushrooms
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.mushrooms.length; j++) {
-                            const mushroom = gameState.mushrooms[j];
-                            if (mushroom.x === x && mushroom.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check existing lightning bolts
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
-                            const bolt = gameState.lightningBolts[j];
-                            if (bolt.x === x && bolt.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!occupied) {
-                        availableTiles.push({ x, y });
-                    }
-                }
-            }
-        }
-
-        // Spawn 1 lightning bolt if available tiles exist
-        if (availableTiles.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableTiles.length);
-            gameState.lightningBolts.push(availableTiles[randomIndex]);
-        }
-    }
-}
-
-function spawnRandomHourglass() {
-    // Only spawn hourglasses on higher levels and with some probability
-    if (gameState.level >= 5 && Math.random() < 0.008) {
-        const availableTiles = getAvailableTiles(gameState);
-        // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses)
-        for (let y = 1; y < gameState.tileCount - 1; y++) {
-            for (let x = 1; x < gameState.tileCount - 1; x++) {
-                if (gameState.maze && gameState.maze[y] && gameState.maze[y][x] !== 1) {
-                    // Check if tile is not occupied by snake, pellets, mushrooms, lightning bolts, or existing hourglasses
-                    let occupied = false;
-
-                    // Check snake
-                    for (let j = 0; j < gameState.snake.length; j++) {
-                        const segment = gameState.snake[j];
-                        if (segment.x === x && segment.y === y) {
-                            occupied = true;
-                            break;
-                        }
-                    }
-
-                    // Check pellets
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.pellets.length; j++) {
-                            const pellet = gameState.pellets[j];
-                            if (pellet.x === x && pellet.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check mushrooms
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.mushrooms.length; j++) {
-                            const mushroom = gameState.mushrooms[j];
-                            if (mushroom.x === x && mushroom.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check lightning bolts
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.lightningBolts.length; j++) {
-                            const bolt = gameState.lightningBolts[j];
-                            if (bolt.x === x && bolt.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Check existing hourglasses
-                    if (!occupied) {
-                        for (let j = 0; j < gameState.hourglasses.length; j++) {
-                            const hourglass = gameState.hourglasses[j];
-                            if (hourglass.x === x && hourglass.y === y) {
-                                occupied = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!occupied) {
-                        availableTiles.push({ x, y });
-                    }
-                }
-            }
-        }
-
-        // Spawn 1 hourglass if available tiles exist
-        if (availableTiles.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableTiles.length);
-            gameState.hourglasses.push(availableTiles[randomIndex]);
-        }
-    }
-}
-
-function spawnRandomStar() {
-    // Only spawn stars on level 4+ with 1.2% probability
-    if (gameState.level >= 4 && Math.random() < 0.012) {
         const availableTiles = getAvailableTiles(gameState);
         // Find all available tiles (not walls, not occupied by snake/pellets/mushrooms/lightning bolts/hourglasses/stars)
         for (let y = 1; y < gameState.tileCount - 1; y++) {
