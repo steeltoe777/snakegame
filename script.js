@@ -55,6 +55,7 @@ const HUE_FULL_CIRCLE = 360;
 const GRID_SIZE = 20;
 const BASE_SPEED = 100; // Base movement speed in ms
 const MIN_SPEED = 225; // Minimum movement speed in ms
+const MAX_DIRECTION_QUEUE = 10; // Prevent unbounded growth of direction queue
 // Probability constants for power-up spawning
 
 // Timing constants for power-ups in milliseconds
@@ -1718,52 +1719,6 @@ function tick() {
             }
         }
 
-        // Helper function to check if collision should be ignored due to active shield
-
-        // Update shield timer if active
-        if (gameState.shieldPowerupActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.shieldLastUpdate;
-            gameState.shieldTimer -= deltaTime;
-            gameState.shieldLastUpdate = currentTime;
-
-            // Deactivate shield when timer expires
-            if (gameState.shieldTimer <= 0) {
-                gameState.shieldPowerupActive = false;
-                gameState.shieldTimer = 0;
-            }
-        }
-
-        // Helper function to handle collisions with shield logic
-
-        // Update shield timer if active
-        if (gameState.shieldPowerupActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.shieldLastUpdate;
-            gameState.shieldTimer -= deltaTime;
-            gameState.shieldLastUpdate = currentTime;
-
-            // Deactivate shield when timer expires
-            if (gameState.shieldTimer <= 0) {
-                gameState.shieldPowerupActive = false;
-                gameState.shieldTimer = 0;
-            }
-        }
-
-        // Update shield timer if active
-        if (gameState.shieldPowerupActive) {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - gameState.shieldLastUpdate;
-            gameState.shieldTimer -= deltaTime;
-            gameState.shieldLastUpdate = currentTime;
-
-            // Deactivate shield when timer expires
-            if (gameState.shieldTimer <= 0) {
-                gameState.shieldPowerupActive = false;
-                gameState.shieldTimer = 0;
-            }
-        }
-
         // REMEDY: Check for collisions BEFORE wrapping for more accurate detection
         // Check for collisions with walls and trail BEFORE wrapping
         if (shouldBlockMovement(head)) {
@@ -2080,6 +2035,99 @@ function tick() {
     trySpawnSuperPellet(); // Try to spawn super-pellet when 1 pellet remains
 }
 
+// Draw the minimap showing the entire game board
+function drawMinimap() {
+    // Only draw if minimap context exists and it's time to update
+    if (!window.minimapCtx) return;
+
+    const ctx = window.minimapCtx;
+    const minimapSize = BASE_SPEED; // Should match CSS
+    const tileCount = gameState.tileCount || GRID_SIZE;
+    const scale = minimapSize / tileCount;
+
+    // Clear the minimap
+    ctx.clearRect(0, 0, minimapSize, minimapSize);
+
+    // Draw background
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(0, 0, minimapSize, minimapSize);
+
+    // Draw maze walls
+    if (gameState.maze && Array.isArray(gameState.maze)) {
+        ctx.fillStyle = '#FFFFFF'; // White for walls
+        for (let y = 0; y < gameState.maze.length; y++) {
+            for (let x = 0; x < gameState.maze[y].length; x++) {
+                if (gameState.maze[y][x] === 1) {
+                    ctx.fillRect(x * scale, y * scale, scale, scale);
+                }
+            }
+        }
+    }
+
+    // Draw pellets
+    if (gameState.pellets && Array.isArray(gameState.pellets)) {
+        ctx.fillStyle = '#FF0000'; // Red for pellets
+        for (let i = 0; i < gameState.pellets.length; i++) {
+            const pellet = gameState.pellets[i];
+            ctx.fillRect(pellet.x * scale, pellet.y * scale, scale, scale);
+        }
+    }
+
+    // Draw powerups
+    // Mushrooms
+    if (gameState.mushrooms && Array.isArray(gameState.mushrooms)) {
+        ctx.fillStyle = '#00FF00'; // Green for mushrooms
+        for (let i = 0; i < gameState.mushrooms.length; i++) {
+            const mushroom = gameState.mushrooms[i];
+            ctx.fillRect(mushroom.x * scale, mushroom.y * scale, scale, scale);
+        }
+    }
+
+    // Lightning bolts
+    if (gameState.lightningBolts && Array.isArray(gameState.lightningBolts)) {
+        ctx.fillStyle = '#FFC107'; // Yellow for lightning bolts
+        for (let i = 0; i < gameState.lightningBolts.length; i++) {
+            const bolt = gameState.lightningBolts[i];
+            ctx.fillRect(bolt.x * scale, bolt.y * scale, scale, scale);
+        }
+    }
+
+    // Hourglasses
+    if (gameState.hourglasses && Array.isArray(gameState.hourglasses)) {
+        ctx.fillStyle = '#00FFFF'; // Cyan for hourglasses
+        for (let i = 0; i < gameState.hourglasses.length; i++) {
+            const hourglass = gameState.hourglasses[i];
+            ctx.fillRect(hourglass.x * scale, hourglass.y * scale, scale, scale);
+        }
+    }
+
+    // Stars
+    if (gameState.stars && Array.isArray(gameState.stars)) {
+        ctx.fillStyle = '#FF00FF'; // Magenta for stars
+        for (let i = 0; i < gameState.stars.length; i++) {
+            const star = gameState.stars[i];
+            ctx.fillRect(star.x * scale, star.y * scale, scale, scale);
+        }
+    }
+
+    // Draw snake
+    if (gameState.snake && Array.isArray(gameState.snake)) {
+        // Draw snake body
+        ctx.fillStyle = '#00AA00'; // Darker green for snake body
+        for (let i = 1; i < gameState.snake.length; i++) {
+            const segment = gameState.snake[i];
+            ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);
+        }
+
+        // Draw snake head
+        if (gameState.snake.length > 0) {
+            const head = gameState.snake[0];
+            ctx.fillStyle = '#00FF00'; // Bright green for snake head
+            ctx.fillRect(head.x * scale, head.y * scale, scale, scale);
+        }
+    }
+}
+
 function drawGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Change background color when score multiplier is active
@@ -2121,99 +2169,6 @@ function drawGame() {
         const timerWidth = (gameState.shieldTimer / SHIELD_POWERUP_DURATION) * 20;
         ctx.fillStyle = '#00BFFF';
         ctx.fillRect(10, 75, timerWidth, 5);
-    }
-
-    // Draw the minimap showing the entire game board
-    function drawMinimap() {
-        // Only draw if minimap context exists and it's time to update
-        if (!window.minimapCtx) return;
-
-        const ctx = window.minimapCtx;
-        const minimapSize = BASE_SPEED; // Should match CSS
-        const tileCount = gameState.tileCount || GRID_SIZE;
-        const scale = minimapSize / tileCount;
-
-        // Clear the minimap
-        ctx.clearRect(0, 0, minimapSize, minimapSize);
-
-        // Draw background
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(0, 0, minimapSize, minimapSize);
-
-        // Draw maze walls
-        if (gameState.maze && Array.isArray(gameState.maze)) {
-            ctx.fillStyle = '#FFFFFF'; // White for walls
-            for (let y = 0; y < gameState.maze.length; y++) {
-                for (let x = 0; x < gameState.maze[y].length; x++) {
-                    if (gameState.maze[y][x] === 1) {
-                        ctx.fillRect(x * scale, y * scale, scale, scale);
-                    }
-                }
-            }
-        }
-
-        // Draw pellets
-        if (gameState.pellets && Array.isArray(gameState.pellets)) {
-            ctx.fillStyle = '#FF0000'; // Red for pellets
-            for (let i = 0; i < gameState.pellets.length; i++) {
-                const pellet = gameState.pellets[i];
-                ctx.fillRect(pellet.x * scale, pellet.y * scale, scale, scale);
-            }
-        }
-
-        // Draw powerups
-        // Mushrooms
-        if (gameState.mushrooms && Array.isArray(gameState.mushrooms)) {
-            ctx.fillStyle = '#00FF00'; // Green for mushrooms
-            for (let i = 0; i < gameState.mushrooms.length; i++) {
-                const mushroom = gameState.mushrooms[i];
-                ctx.fillRect(mushroom.x * scale, mushroom.y * scale, scale, scale);
-            }
-        }
-
-        // Lightning bolts
-        if (gameState.lightningBolts && Array.isArray(gameState.lightningBolts)) {
-            ctx.fillStyle = '#FFC107'; // Yellow for lightning bolts
-            for (let i = 0; i < gameState.lightningBolts.length; i++) {
-                const bolt = gameState.lightningBolts[i];
-                ctx.fillRect(bolt.x * scale, bolt.y * scale, scale, scale);
-            }
-        }
-
-        // Hourglasses
-        if (gameState.hourglasses && Array.isArray(gameState.hourglasses)) {
-            ctx.fillStyle = '#00FFFF'; // Cyan for hourglasses
-            for (let i = 0; i < gameState.hourglasses.length; i++) {
-                const hourglass = gameState.hourglasses[i];
-                ctx.fillRect(hourglass.x * scale, hourglass.y * scale, scale, scale);
-            }
-        }
-
-        // Stars
-        if (gameState.stars && Array.isArray(gameState.stars)) {
-            ctx.fillStyle = '#FF00FF'; // Magenta for stars
-            for (let i = 0; i < gameState.stars.length; i++) {
-                const star = gameState.stars[i];
-                ctx.fillRect(star.x * scale, star.y * scale, scale, scale);
-            }
-        }
-
-        // Draw snake
-        if (gameState.snake && Array.isArray(gameState.snake)) {
-            // Draw snake body
-            ctx.fillStyle = '#00AA00'; // Darker green for snake body
-            for (let i = 1; i < gameState.snake.length; i++) {
-                const segment = gameState.snake[i];
-                ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);
-            }
-
-            // Draw snake head
-            if (gameState.snake.length > 0) {
-                const head = gameState.snake[0];
-                ctx.fillStyle = '#00FF00'; // Bright green for snake head
-                ctx.fillRect(head.x * scale, head.y * scale, scale, scale);
-            }
-        }
     }
 
     // Draw speed boost powerup indicator if active
@@ -2615,7 +2570,7 @@ function handleDirectionChange(e) {
 
     // Add to queue with generous limit to capture fast sequences
     gameState.directionQueue.push({ dx: newDx, dy: newDy });
-    if (gameState.directionQueue.length > 10) {
+    if (gameState.directionQueue.length > MAX_DIRECTION_QUEUE) {
         gameState.directionQueue.shift(); // Remove oldest if queue gets too large
     }
 }
