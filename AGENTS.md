@@ -19,8 +19,8 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 - Check for linting issues: `npm run lint`
 - Linting command: `eslint . --ext .js --fix`
-- ESLint config extends: airbnb-base, prettier
-- Custom rules in .eslintrc.json: no-undef (error), no-unused-vars (warn), no-const-assign (error)
+- ESLint config: Minimal custom rules in .eslintrc.json (no-undef: error, no-unused-vars: warn, no-const-assign: error)
+- Prettier config: .prettierrc.js (semicolons, single quotes, 100 char width, 4 spaces)
 
 ### Project Scripts
 
@@ -50,18 +50,11 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 ### ESLint Configuration
 
-- Extends: airbnb-base, prettier
+- Minimal custom rules only (does NOT extend airbnb-base or prettier):
+    - no-undef: error
+    - no-unused-vars: warn
+    - no-const-assign: error
 - Environment: browser, es2021, node, jest
-- Disabled rules (allowed in this codebase):
-    - no-alert: alerts are used for game feedback
-    - no-plusplus: ++ operators are permitted
-    - no-param-reassign: parameter reassignment is acceptable
-    - no-shadow: variable shadowing is permitted
-    - no-use-before-define: hoisting is permitted
-    - import/prefer-default-export: named exports are allowed
-    - no-empty-function: empty functions allowed for mocks
-    - global-require: require() allowed in tests
-    - import/extensions: .js extensions allowed in imports
 
 ### Naming Conventions
 
@@ -89,20 +82,19 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 ### Imports and Modules
 
-- Use ES modules (import/export) with .js extensions
+- No ES modules used - all code in single script.js file for file:// protocol compatibility
 - Group related constants together at the top of files
 - Use module patterns for game systems (e.g., passwordSystem object in script.js)
-- Import external modules first, then local modules
-- Use named exports for utility functions
+- Use named exports for utility functions (for testing only)
 
 ### Game State Management
 
 - Use the centralized gameState object for all game variables
 - Group related state properties together (position, dimensions, timing)
 - Initialize state in a resetGame or levelUp function when needed
-- Use performance.now() for accurate timing (see updatePowerupTimers)
-- Properties to include: snake array, direction, score, level, powerups, maze configuration
-- **New state properties**:
+- Use performance.now() for accurate timer management
+- Properties include: snake array, direction, score, level, powerups, maze configuration
+- State properties:
     - `consecutiveMouseClicks: 0` - Tracks consecutive mouse/touch inputs to apply skip-turn precision mechanics at 2+ clicks. Reset to 0 when arrow keys or Space/Escape are used.
     - `skipNextMovement: false` - When true, the snake will not move on the next game tick. Set automatically after a direction change in mouse mode (consecutiveMouseClicks >= 2) to improve steering precision. Cleared when arrow keys or Space/Escape are used, or after the skip occurs.
     - `deathImminent: false` - When a collision would normally cause death in mouse mode (consecutiveMouseClicks >= 2), this flag is set to true and the death is delayed by one turn, allowing the player a final steering chance. If still colliding on the next tick, the game ends.
@@ -119,13 +111,13 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 ### Common Patterns in This Codebase
 
-- Helper functions: getAvailableTiles(), getRandomPosition(), isValidPosition()
-- Generator functions: generateMaze(), generatePellets(), generatePowerups()
-- Draw functions: drawSnake(), drawMaze(), drawPellets(), drawUI()
-- Update functions: updateSnake(), updatePowerupTimers(), checkCollisions()
+- Helper functions: getAvailableTiles(), getRandomPosition(), shouldBlockMovement(), tryRandomMovement()
+- Generator functions: generateMaze(), generatePellets(), generateMushrooms(), generateShields(), generateLightningBolts(), generateHourglasses(), generateStars(), trySpawnPowerup()
+- Draw functions: drawSnake(), drawMaze(), drawPellets(), drawTrail(), drawMushrooms(), drawShields(), drawLightningBolts(), drawHourglasses(), drawStars(), drawSuperPellets(), drawShieldEffect(), drawGame(), drawMinimap()
+- Update functions: tick(), updatePowerupTimers(), updateSpatialGrid()
 - Event listener management with add/remove pattern for cleanup
 - Grid-based positioning with coordinate objects {x, y}
-- Input handling: Keyboard (arrow keys) resets mouse penalty; mouse/touch input increments counter that slows game after 2+ clicks. See `handleMouseInput()`, `handleTouchInput()`, and `handleDirectionChange()`.
+- Input handling: `handleDirectionChange()` (keyboard) resets mouse penalty; `handleMouseInput()` and `handleTouchInput()` increment counter that slows game after 2+ clicks.
 - Password system: `updatePasswordDisplay()` syncs both the text display and the `#passwordInput` field. `handlePasswordInputChange()` processes on-screen input. `tryPasswordTeleport()` centralizes password matching logic.
 - Special password commands: `RESTART` (case-insensitive) resets the game to level 1; `FORGET` (case-insensitive) clears the current password input and resets the stored milestone level; `HIDEPWD` (case-insensitive) hides the milestone password hint without clearing the milestone; `SHOWPWD` (case-insensitive) shows the milestone password hint if a milestone exists.
 - Password input field: Clicks on it are ignored by the game to avoid accidental steering. Auto-pauses on focus; auto-unpauses on blur and sets `ignoreNextClick` to prevent the next click (the one that caused the blur) from turning the snake.
@@ -161,3 +153,85 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - Throttle frequent operations like keyboard input handling
 - Minimize canvas draw calls by batching similar operations
 - Use spatial data structures for collision detection in larger grids
+
+## Important Implementation Notes
+
+- **No ES Modules**: The codebase intentionally avoids ES modules to maintain compatibility with the `file://` protocol. All code lives in `script.js`.
+- **Single Global State**: The entire game state is managed by the global `window.gameState` object.
+- **Spatial Grid**: Collision detection uses a 2D spatial grid (`gameState.spatialGrid`) for O(1) lookups instead of O(n²) searches.
+- **Game Loop**: Uses `requestAnimationFrame` with a fixed timestep accumulator in `tick()` for consistent movement.
+- **Power-up System**: Each powerup type (mushroom, shield, lightningBolt, hourglass, star) has its own generation function and collision logic. Spawning is throttled via `trySpawnPowerup()` with `lastSpawnTime` tracking.
+
+## Key Functions Reference
+
+### Core Game Loop
+
+- `tick()` - Main update function called each game tick
+- `drawGame()` - Renders all game elements to canvas
+- `gameLoop(timestamp)` - RequestAnimationFrame loop with accumulator
+- `calculateGameSpeed()` - Computes movement interval based on level, length, powerups
+
+### Input Handling
+
+- `handleDirectionChange(e)` - Keyboard arrow keys and pause (Space/Escape)
+- `handleMouseInput(e)` - Mouse click anywhere on page (except buttons)
+- `handleTouchInput(e)` - Touch on canvas only
+- `handlePasswordKey(e)` - Alphanumeric keys for password entry
+- `handlePasswordInputChange()` - On-screen password input field changes
+
+### State Management
+
+- `resetGame(level = 1)` - Full game reset
+- `levelUp()` - Advance to next level, regenerate maze/pellets
+- `gameOver()` / `realGameOver()` - Death handling with respawn logic
+- `startGame()` / `stopGameLoop()` / `restartGameLoop()` - Game loop control
+
+### Generation Functions
+
+- `generateMaze()` - Create maze walls based on level
+- `generatePellets()` - Spawn regular pellets
+- `trySpawnSuperPellet()` - Spawn super-pellet when 1 pellet remains
+- `generateMushrooms()` / `generateShields()` / `generateLightningBolts()` / `generateHourglasses()` / `generateStars()` - Powerup spawners
+- `trySpawnPowerup(type)` - Unified throttled spawner for most powerups
+
+### Collision & Movement
+
+- `shouldBlockMovement(head)` - Checks walls/trail collisions with shield/mushroom handling
+- `tryRandomMovement()` - AI fallback when snake is trapped but has shield
+- `updateSpatialGrid()` - Maintain spatial grid for efficient collision
+
+### Rendering
+
+- `drawSnake()` / `drawTrail()` / `drawMaze()` / `drawPellets()`
+- `drawMushrooms()` / `drawShields()` / `drawShieldEffect()` / `drawLightningBolts()` / `drawHourglasses()` / `drawStars()` / `drawSuperPellets`
+- `drawMinimap()` - Radar in corner
+- `updatePasswordDisplay()` - Sync password hint text and input field
+
+### Password System (`passwordSystem` object)
+
+- `generatePassword(level)` - Deterministic 6-char alphanumeric code
+- `checkPassword(sequence, password)` - Validate typed sequence
+- `addKey(key)` / `resetSequence()` - Manage typed buffer
+- `tryPasswordTeleport()` - Handles teleportation and special commands (RESTART, FORGET, HIDEPWD, SHOWPWD)
+
+### Utility
+
+- `getAvailableTiles(gameState)` - Returns non-occupied tiles for spawning
+- `getRandomPosition()` - Get random valid position with direction bias
+- `calculateTileCount()` - Compute grid size from canvas dimensions
+- `initializeSpatialGrid()` - Create spatial collision grid
+- `resetPowerupTimestamps()` - Sync all powerup timers on unpause
+- `saveRefreshState()` / `clearRefreshState()` / `startRefreshSaving()` / `stopRefreshSaving()` - Refresh penalty persistence
+
+## Test Files
+
+- `script.test.js` - Core game logic tests (initialization, level progression, game over, power-ups, timers)
+- `password_system.test.js` - Password generation and validation tests
+- `jest.setup.js` - mocks DOM environment (canvas, document, window)
+
+## Current Configuration
+
+- **ESLint**: Minimal custom rules (no external configs)
+- **Prettier**: semi: true, singleQuote: true, printWidth: 100, tabWidth: 4, trailingComma: es5
+- **Jest**: jsdom environment with setup file
+- **No build step** - direct browser execution

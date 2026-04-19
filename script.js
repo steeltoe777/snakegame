@@ -2184,7 +2184,7 @@ function drawGame() {
 
     // Draw mushroom powerup indicator if active
     if (gameState.mushroomPowerupActive) {
-        ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
         ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('MUSHROOM POWER!', 10, GRID_SIZE);
 
@@ -2208,7 +2208,7 @@ function drawGame() {
 
     // Draw speed boost powerup indicator if active
     if (gameState.speedBoostActive) {
-        ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, COLOR_MAX_VALUE, 0, 0.5)';
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
         ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('SPEED BOOST!', 10, 45);
 
@@ -2232,7 +2232,7 @@ function drawGame() {
 
     // Draw score multiplier powerup indicator if active
     if (gameState.scoreMultiplierActive) {
-        ctx.fillStyle = 'rgba(COLOR_MAX_VALUE, 30, 0, 0.7)'; // Gold color with transparency
+        ctx.fillStyle = 'rgba(255, 165, 0, 0.7)'; // Gold color with transparency
         ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
         ctx.fillText('SCORE X2', 10, 65);
 
