@@ -1845,14 +1845,22 @@ function tick() {
 
         // Check for pellet eating
         // Check for item collection
-        let shouldGrow = false; // Only pellets and mushrooms cause growth
+        let growthCount = 0; // Number of extra segments to add this tick (0 = none, 1 = normal, 2+ = bonus)
         for (let i = 0; i < gameState.pellets.length; i++) {
             if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
                 gameState.pellets.splice(i, 1);
                 const points = gameState.scoreMultiplierActive ? GRID_SIZE : 10;
                 gameState.score += points;
                 document.getElementById('score').innerText = `Score: ${gameState.score}`;
-                shouldGrow = true;
+                if (gameState.level < 1500) {
+                    growthCount = 1;
+                } else if (gameState.level < 5000) {
+                    // Pellets give 2x growth on level >= 1500
+                    growthCount = 2;
+                } else {
+                    // Pellets give 3x growth on level >= 5000
+                    growthCount = 3;
+                }
                 // Update game speed based on increased snake length
                 break;
             }
@@ -1874,7 +1882,7 @@ function tick() {
         for (let i = 0; i < gameState.mushrooms.length; i++) {
             if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
                 gameState.mushrooms.splice(i, 1);
-                shouldGrow = true;
+                growthCount = 1; // Mushroom always gives 1 segment growth
                 // Activate mushroom powerup for 8 seconds and make snake grow
                 gameState.mushroomPowerupActive = true;
                 gameState.mushroomTimer = MUSHROOM_POWERUP_DURATION;
@@ -2049,8 +2057,19 @@ function tick() {
                 gameState.scoreMultiplierTimer = 0;
             }
         }
-        if (!shouldGrow) {
-            gameState.snake.pop(); // Only remove tail if snake didn't eat something that causes growth
+        // Apply growth: after adding the new head, adjust tail length based on growthCount
+        if (growthCount > 0) {
+            // Keep existing tail (no pop), and add extra segments if needed
+            if (growthCount > 1) {
+                // Duplicate the last segment to increase length by additional segments
+                const tailSegment = gameState.snake[gameState.snake.length - 1];
+                for (let i = 0; i < growthCount - 1; i++) {
+                    gameState.snake.push({ ...tailSegment });
+                }
+            }
+        } else {
+            // No growth: remove tail to maintain length
+            gameState.snake.pop();
         }
 
         if (gameState.pellets.length === 0) {
