@@ -56,6 +56,7 @@ const GRID_SIZE = 20;
 const BASE_SPEED = 100; // Base movement speed in ms
 const MIN_SPEED = 225; // Minimum movement speed in ms
 const MAX_DIRECTION_QUEUE = 10; // Prevent unbounded growth of direction queue
+const MAX_TICKS_PER_FRAME = 1; // Limit catch-up ticks to prevent jumping during lag
 // Probability constants for power-up spawning
 
 // Timing constants for power-ups in milliseconds
@@ -2997,10 +2998,14 @@ function gameLoop(timestamp) {
     if (!gameState.paused && gameState.gameRunning) {
         accumulator += delta;
         const movementInterval = calculateGameSpeed();
-        while (accumulator >= movementInterval) {
+        let ticksThisFrame = 0;
+        while (accumulator >= movementInterval && ticksThisFrame < MAX_TICKS_PER_FRAME) {
             tick();
             accumulator -= movementInterval;
+            ticksThisFrame++;
         }
+        // If accumulator still has time left after max ticks, we discard it to prevent
+        // the snake from jumping ahead during prolonged lag. The game continues from there.
     }
 
     drawGame();
