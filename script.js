@@ -216,6 +216,7 @@ function generateMushrooms() {
 }
 // Generate shields for powerups
 function generateShields() {
+    gameState.shields = [];
     // Only spawn shields on level 6+ with some probability
     if (
         gameState.level >= 6 &&
@@ -2449,6 +2450,23 @@ function resetGame(level = 1) {
     // Clear shields when game resets
     gameState.shields = [];
 
+    // Reset all power-up states and timers
+    gameState.mushroomPowerupActive = false;
+    gameState.mushroomTimer = 0;
+    gameState.mushroomLastUpdate = 0;
+    gameState.shieldPowerupActive = false;
+    gameState.shieldTimer = 0;
+    gameState.shieldLastUpdate = 0;
+    gameState.speedBoostActive = false;
+    gameState.speedBoostTimer = 0;
+    gameState.speedBoostLastUpdate = 0;
+    gameState.timeSlowActive = false;
+    gameState.timeSlowTimer = 0;
+    gameState.timeSlowLastUpdate = 0;
+    gameState.scoreMultiplierActive = false;
+    gameState.scoreMultiplierTimer = 0;
+    gameState.scoreMultiplierLastUpdate = 0;
+
     stopGameLoop(); // Stop game loop
     gameState.snake = [{ x: 10, y: 10 }];
     gameState.dx = 0;
@@ -2909,15 +2927,15 @@ function saveRefreshState() {
             timestamp: Date.now(),
             hadMoved: true,
         };
-        localStorage.setItem(REFRESH_STATE_KEY, JSON.stringify(refreshState));
+        sessionStorage.setItem(REFRESH_STATE_KEY, JSON.stringify(refreshState));
     } else {
         // If game not running or never moved, clear any stale refresh state
-        localStorage.removeItem(REFRESH_STATE_KEY);
+        sessionStorage.removeItem(REFRESH_STATE_KEY);
     }
 }
 
 function clearRefreshState() {
-    localStorage.removeItem(REFRESH_STATE_KEY);
+    sessionStorage.removeItem(REFRESH_STATE_KEY);
 }
 
 function startRefreshSaving() {
@@ -3036,7 +3054,7 @@ if (savedMilestone !== null) {
 }
 
 // Check for pending refresh penalty before resetting
-const savedRefreshStr = localStorage.getItem(REFRESH_STATE_KEY);
+const savedRefreshStr = sessionStorage.getItem(REFRESH_STATE_KEY);
 let applyPenalty = false;
 let refreshData = null;
 
@@ -3052,7 +3070,7 @@ if (savedRefreshStr) {
         // Invalid state, ignore
     }
     // Clear the saved state now (processed or invalid)
-    localStorage.removeItem(REFRESH_STATE_KEY);
+    sessionStorage.removeItem(REFRESH_STATE_KEY);
 }
 
 if (applyPenalty) {
