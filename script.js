@@ -766,15 +766,25 @@ function generateMaze() {
             ); // More walls for higher levels, max WALL_COUNT_LIMIT
         }
 
+        const allowBorderWalls = gameState.level >= 2000;
         for (let k = 0; k < numInternalWalls; k++) {
             let placed = false;
             let attempts = 0;
             while (!placed && attempts < BASE_SPEED) {
                 // Limit attempts to prevent infinite loops
-                const wallX =
-                    Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1; // Avoid outer walls
-                const wallY =
-                    Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) + 1;
+                let wallX;
+                let wallY;
+                if (allowBorderWalls) {
+                    wallX = Math.floor(Math.random() * gameState.tileCount);
+                    wallY = Math.floor(Math.random() * gameState.tileCount);
+                } else {
+                    wallX =
+                        Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) +
+                        1; // Avoid outer walls
+                    wallY =
+                        Math.floor(Math.random() * (gameState.tileCount - SCORE_REDUCTION_FACTOR)) +
+                        1;
+                }
                 const wallLength = Math.floor(Math.random() * 5) + 1; // Wall length 1-6
                 const isHorizontal = Math.random() > 0.5;
 
@@ -785,17 +795,27 @@ function generateMaze() {
                     const segmentX = isHorizontal ? wallX + i : wallX;
                     const segmentY = isHorizontal ? wallY : wallY + i;
 
-                    // Check boundaries and existing walls (FIXED: segmentX < 1 and segmentY < 1)
-                    if (
-                        segmentX < 1 ||
-                        segmentX >= gameState.tileCount - 1 ||
-                        segmentY < 1 ||
-                        segmentY >= gameState.tileCount - 1 ||
-                        gameState.maze[segmentY][segmentX] === 1
-                    ) {
+                    // Check boundaries based on level
+                    let outOfBounds;
+                    if (allowBorderWalls) {
+                        outOfBounds =
+                            segmentX < 0 ||
+                            segmentX >= gameState.tileCount ||
+                            segmentY < 0 ||
+                            segmentY >= gameState.tileCount;
+                    } else {
+                        outOfBounds =
+                            segmentX < 1 ||
+                            segmentX >= gameState.tileCount - 1 ||
+                            segmentY < 1 ||
+                            segmentY >= gameState.tileCount - 1;
+                    }
+
+                    if (outOfBounds || gameState.maze[segmentY][segmentX] === 1) {
                         canPlace = false;
                         break;
                     }
+
                     // Avoid placing walls directly on snake's initial spawn point
                     if (segmentX === gameState.snake[0].x && segmentY === gameState.snake[0].y) {
                         canPlace = false;
