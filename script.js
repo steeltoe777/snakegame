@@ -715,10 +715,8 @@ if (passwordInput) {
     // Auto-unpause when password input loses focus, but only if we were the ones who paused it
     passwordInput.addEventListener('blur', () => {
         if (gameState.pausedByPasswordInput) {
-            gameState.ignoreNextClick = true; // The click that triggered blur will be ignored
-            gameState.paused = false;
-            gameState.pausedByPasswordInput = false;
-            drawGame();
+            gameState.ignoreNextClick = true; // The next input (click/touch) will be ignored for steering
+            // Do not unpause here; unpause will be handled by the input handler based on click position
         }
     });
 }
@@ -2618,6 +2616,9 @@ function handleDirectionChange(e) {
                 resetPowerupTimestamps();
                 passwordSystem.resetSequence();
                 updatePasswordDisplay();
+                // Clear password-input pause markers and ignore flag
+                gameState.pausedByPasswordInput = false;
+                gameState.ignoreNextClick = false;
             }
             drawGame(); // Redraw to show/hide pause indicator
             return;
@@ -2656,26 +2657,48 @@ restartButton.addEventListener('click', () => {
 // Mouse/touch click control - click anywhere to change snake direction
 // Mouse click: allows clicking anywhere on screen to steer
 function handleMouseInput(e) {
-    // If we just unpaused from password blur, ignore this click to avoid accidental turn
-    if (gameState.ignoreNextClick) {
-        gameState.ignoreNextClick = false;
-        return;
-    }
-    if (gameState.paused) return;
-
     const canvas = document.getElementById('gameCanvas');
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-
-    const { clientX } = e;
-    const { clientY } = e;
-
-    // Check if click is on canvas (only needed for starting the game)
+    const { clientX, clientY } = e;
     const isClickOnCanvas =
         clientX >= rect.left &&
         clientX <= rect.right &&
         clientY >= rect.top &&
         clientY <= rect.bottom;
+
+    // Check if this input should be ignored for steering (due to password blur)
+    const wasIgnored = gameState.ignoreNextClick;
+    if (wasIgnored) {
+        gameState.ignoreNextClick = false;
+        // We may still need to handle unpause based on click position, but steering will be ignored later
+    }
+
+    // Handle pause state: if paused, check if we can unpause
+    if (gameState.paused) {
+        if (gameState.pausedByPasswordInput) {
+            if (isClickOnCanvas) {
+                // Unpause because click is on canvas
+                gameState.paused = false;
+                gameState.pausedByPasswordInput = false;
+                resetPowerupTimestamps();
+                passwordSystem.resetSequence();
+                updatePasswordDisplay();
+                drawGame();
+            } else {
+                // Click outside canvas, keep paused and ignore input
+                return;
+            }
+        } else {
+            // Paused for other reasons (manual pause via space/esc), ignore click
+            return;
+        }
+    }
+
+    // If the input was marked as ignored, skip steering logic
+    if (wasIgnored) {
+        return;
+    }
 
     if (!gameState.gameRunning) {
         if (!gameOverOverlay.classList.contains('hidden')) return;
@@ -2744,21 +2767,13 @@ function handleMouseInput(e) {
 // Touch input: only active on canvas, with bounds check
 function handleTouchInput(e) {
     e.preventDefault();
-    if (gameState.paused) return;
-    if (!gameState.gameRunning) {
-        if (!gameOverOverlay.classList.contains('hidden')) return;
-        // Starting via touch counts as 2 clicks for slowdown
-        gameState.consecutiveMouseClicks = 2;
-        startGame();
-    }
 
     const canvas = e.target;
     const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
     if (!touch) return;
 
-    const { clientX } = touch;
-    const { clientY } = touch;
+    const { clientX, clientY } = touch;
 
     // Bounds check: only process if touch started on canvas
     if (
@@ -2768,6 +2783,40 @@ function handleTouchInput(e) {
         clientY > rect.bottom
     ) {
         return;
+    }
+
+    // Check if this input should be ignored for steering (due to password blur)
+    const wasIgnored = gameState.ignoreNextClick;
+    if (wasIgnored) {
+        gameState.ignoreNextClick = false;
+    }
+
+    // Handle pause state: if paused, check if we can unpause
+    if (gameState.paused) {
+        if (gameState.pausedByPasswordInput) {
+            // Unpause because touch is on canvas
+            gameState.paused = false;
+            gameState.pausedByPasswordInput = false;
+            resetPowerupTimestamps();
+            passwordSystem.resetSequence();
+            updatePasswordDisplay();
+            drawGame();
+        } else {
+            // Paused for other reasons, ignore touch
+            return;
+        }
+    }
+
+    // If the input was marked as ignored, skip steering logic
+    if (wasIgnored) {
+        return;
+    }
+
+    if (!gameState.gameRunning) {
+        if (!gameOverOverlay.classList.contains('hidden')) return;
+        // Starting via touch counts as 2 clicks for slowdown
+        gameState.consecutiveMouseClicks = 2;
+        startGame();
     }
 
     const scaleX = canvas.width / rect.width;
