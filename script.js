@@ -634,6 +634,11 @@ function tryPasswordTeleport() {
 }
 
 function handlePasswordKey(e) {
+    // Allow standard shortcuts to pass through: Ctrl, Cmd/Meta, and Alt (Option)
+    if (e.ctrlKey || e.metaKey || e.altKey) {
+        return;
+    }
+
     // If password input field is focused, ignore to avoid duplication
     if (passwordInput && document.activeElement === passwordInput) {
         return;
