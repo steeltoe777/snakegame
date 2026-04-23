@@ -1722,6 +1722,13 @@ function tick() {
             x: gameState.snake[0].x + gameState.dx,
             y: gameState.snake[0].y + gameState.dy,
         };
+
+        // Apply wrap-around to the new head position first, before any collision checks
+        if (head.x < 0) head.x = gameState.tileCount - 1;
+        if (head.x >= gameState.tileCount) head.x = 0;
+        if (head.y < 0) head.y = gameState.tileCount - 1;
+        if (head.y >= gameState.tileCount) head.y = 0;
+
         for (let i = 1; i < gameState.snake.length; i++) {
             if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
                 if (
