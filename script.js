@@ -1883,13 +1883,14 @@ function tick() {
                 const points = gameState.scoreMultiplierActive ? GRID_SIZE : 10;
                 gameState.score += points;
                 document.getElementById('score').innerText = `Score: ${gameState.score}`;
-                if (gameState.level < 1500) {
+                if (gameState.level < 1500 || gameState.level >= 20000) {
+                    // Pellets give 1x growth on level < 1500 or >= 20000
                     growthCount = 1;
-                } else if (gameState.level < 5000) {
+                } else if (gameState.level < 5000 || gameState.level >= 5500) {
                     // Pellets give 2x growth on level >= 1500
                     growthCount = 2;
                 } else {
-                    // Pellets give 3x growth on level >= 5000
+                    // Pellets give 3x growth on level >= 5000 and < 5500
                     growthCount = 3;
                 }
                 // Update game speed based on increased snake length
