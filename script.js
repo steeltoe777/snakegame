@@ -502,6 +502,7 @@ const gameState = {
     consecutiveMouseClicks: 0, // Count consecutive mouse/touch clicks for slowdown
     skipNextMovement: false, // Flag to skip movement on next tick after mouse direction change
     deathImminent: false, // Flag for 1-tick grace period before death in mouse mode
+    cooldownUntil: 0, // Timestamp until which input is blocked (death or level-up on high levels)
     pausedByPasswordInput: false, // Tracks whether the pause state was auto-triggered by the password input field gaining focus; used to selectively unpause when the input loses focus without overriding manual pauses.
     ignoreNextClick: false, // After auto-unpause from password blur, ignore next mouse click to prevent accidental turn
     passwordForgotten: false, // When true, hides the milestone password hint (activated by 'forget' command)
@@ -518,6 +519,37 @@ const gameState = {
 
 // Refresh state saving interval management
 let refreshSaveIntervalId = null;
+
+// Input cooldown display management
+let cooldownIntervalId = null;
+
+function startCooldownDisplay() {
+    clearCooldownDisplay();
+    // Immediate update to show the indicator without waiting for first interval tick
+    updateCooldownDisplay();
+    cooldownIntervalId = setInterval(updateCooldownDisplay, 100);
+}
+
+function clearCooldownDisplay() {
+    if (cooldownIntervalId !== null) {
+        clearInterval(cooldownIntervalId);
+        cooldownIntervalId = null;
+    }
+}
+
+function updateCooldownDisplay() {
+    const now = performance.now();
+    if (gameState.cooldownUntil && now < gameState.cooldownUntil) {
+        drawGame();
+    } else {
+        // Cooldown ended
+        if (gameState.cooldownUntil) {
+            gameState.cooldownUntil = 0;
+            clearCooldownDisplay();
+            drawGame(); // redraw without indicator
+        }
+    }
+}
 
 // Password system for level progression
 const passwordSystem = {
@@ -2262,6 +2294,21 @@ function drawGame() {
         ctx.fillStyle = '#FFA000'; // Gold color
         ctx.fillRect(10, 70, timerWidth, 5);
     }
+
+    // Draw cooldown indicator if active
+    if (gameState.cooldownUntil && performance.now() < gameState.cooldownUntil) {
+        const remaining = gameState.cooldownUntil - performance.now();
+        const percent = remaining / 2000; // 2000ms cooldown
+        ctx.fillStyle = 'rgba(0, 191, 255, 0.5)'; // Cyan with transparency
+        ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
+        ctx.fillText('COOLDOWN!', 10, 120);
+
+        // Draw timer bar
+        const timerWidth = percent * BASE_SPEED;
+        ctx.fillStyle = '#00BFFF'; // Deep sky blue for bar
+        ctx.fillRect(10, 125, timerWidth, 5);
+    }
+
     drawMinimap(); // Draw the minimap
 
     // Draw pause indicator if game is paused
@@ -2385,6 +2432,11 @@ function realGameOver() {
         } else {
             startGame(); // Start game loop after respawn on levels below 100
         }
+        // Apply death cooldown for level >= 700: block input for 2 seconds
+        if (level >= 700) {
+            gameState.cooldownUntil = performance.now() + 2000;
+            startCooldownDisplay();
+        }
     } else {
         // Game over on level 1, truly end the game
         gameState.gameRunning = false;
@@ -2456,6 +2508,11 @@ function levelUp() {
     generateLightningBolts(); // Generate lightning bolts for speed boost powerups
     generateHourglasses();
     generateStars();
+    // Apply input cooldown for high levels (>=1700) after leveling up
+    if (gameState.level >= 1700) {
+        gameState.cooldownUntil = performance.now() + 2000;
+        startCooldownDisplay();
+    }
     drawGame();
     gameState.gameRunning = false; // Set game to idle after level up
     gameState.deathImminent = false; // Reset death grace flag on level up
@@ -2523,6 +2580,8 @@ function resetGame(level = 1) {
     gameState.deathImminent = false; // Reset death grace flag
     gameState.pausedByPasswordInput = false; // Reset password pause flag
     gameState.ignoreNextClick = false; // Reset click ignore flag
+    gameState.cooldownUntil = 0; // Reset cooldown
+    clearCooldownDisplay(); // Stop cooldown display updates
     passwordSystem.resetSequence(); // Clear typed password on game reset
     updatePasswordDisplay(); // Update password display
     gameOverOverlay.classList.add('hidden'); // Hide overlay on reset
@@ -2559,6 +2618,11 @@ function handleDirectionChange(e) {
         // In this state, ignore arrow keys to prevent accidental restart
         // This prevents the bug where arrow keys restart the game during game over state
         if (!gameOverOverlay.classList.contains('hidden')) {
+            return;
+        }
+        // Check cooldown for death/level-up
+        if (gameState.cooldownUntil && performance.now() < gameState.cooldownUntil) {
+            drawGame();
             return;
         }
         // Otherwise, start the game (initial start or resume after respawn)
@@ -2706,6 +2770,11 @@ function handleMouseInput(e) {
         if (!gameOverOverlay.classList.contains('hidden')) return;
         // Only start game if click is on the canvas
         if (!isClickOnCanvas) return;
+        // Check cooldown for death/level-up
+        if (gameState.cooldownUntil && performance.now() < gameState.cooldownUntil) {
+            drawGame();
+            return;
+        }
         // Starting via mouse click counts as 2 clicks for slowdown
         gameState.consecutiveMouseClicks = 2;
         startGame();
@@ -2816,6 +2885,11 @@ function handleTouchInput(e) {
 
     if (!gameState.gameRunning) {
         if (!gameOverOverlay.classList.contains('hidden')) return;
+        // Check cooldown for death/level-up
+        if (gameState.cooldownUntil && performance.now() < gameState.cooldownUntil) {
+            drawGame();
+            return;
+        }
         // Starting via touch counts as 2 clicks for slowdown
         gameState.consecutiveMouseClicks = 2;
         startGame();
@@ -2980,6 +3054,8 @@ function resetPowerupTimestamps() {
 function startGame() {
     if (gameState.gameRunning) return;
     resetPowerupTimestamps();
+    gameState.cooldownUntil = 0; // Clear cooldown
+    clearCooldownDisplay(); // Stop cooldown display updates
     gameState.gameRunning = true;
     startRefreshSaving();
     passwordSystem.resetSequence();
