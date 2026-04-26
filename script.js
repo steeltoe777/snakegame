@@ -1601,6 +1601,19 @@ function tryRandomMovement() {
     return false; // Failed to move
 }
 
+// Returns the current score multiplier factor.
+// If the score multiplier powerup is inactive, returns 1 (no multiplication).
+// If active, returns 2 + number of other active powerups (shield, mushroom, speedBoost, timeSlow).
+function getCurrentScoreMultiplier() {
+    if (!gameState.scoreMultiplierActive) return 1;
+    let count = 0;
+    if (gameState.shieldPowerupActive) count++;
+    if (gameState.mushroomPowerupActive) count++;
+    if (gameState.speedBoostActive) count++;
+    if (gameState.timeSlowActive) count++;
+    return 2 + count;
+}
+
 function tick() {
     if (gameState.paused) return;
     if (!gameState.gameRunning) return;
@@ -1936,7 +1949,8 @@ function tick() {
         for (let i = 0; i < gameState.pellets.length; i++) {
             if (head.x === gameState.pellets[i].x && head.y === gameState.pellets[i].y) {
                 gameState.pellets.splice(i, 1);
-                const points = gameState.scoreMultiplierActive ? GRID_SIZE : 10;
+                const multiplier = getCurrentScoreMultiplier();
+                const points = 10 * multiplier;
                 gameState.score += points;
                 document.getElementById('score').innerText = `Score: ${gameState.score}`;
                 if (gameState.level < 1500 || gameState.level >= 20000) {
@@ -2240,7 +2254,8 @@ function drawGame() {
     if (gameState.scoreMultiplierActive) {
         ctx.fillStyle = 'rgba(255, 165, 0, 0.7)'; // Gold color with transparency
         ctx.font = 'normal normal 12px Arial, Helvetica, sans-serif';
-        ctx.fillText('SCORE X2', 10, 65);
+        const multiplier = getCurrentScoreMultiplier();
+        ctx.fillText(`SCORE X${multiplier}`, 10, 65);
 
         // Draw timer bar
         const timerWidth = (gameState.scoreMultiplierTimer / SCORE_MULTIPLIER_DURATION) * 100;
