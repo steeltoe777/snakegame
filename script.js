@@ -674,8 +674,8 @@ function tryPasswordTeleport() {
     for (let level = 10; level <= PASSWORD_LEVEL_MAX; level += 10) {
         const levelPassword = passwordSystem.generatePassword(level);
         if (passwordSystem.checkPassword(passwordSystem.keySequence, levelPassword)) {
-            // Reset to PREVIOUS level (level - 1)
-            const targetLevel = Math.max(1, level - 1);
+            // For levels >= 5500, teleport to the exact level (no decrement); otherwise to previous level
+            const targetLevel = level >= 5500 ? level : Math.max(1, level - 1);
             gameState.level = targetLevel;
             // Penalty: teleporting via password means this level wasn't earned through normal play
             gameState.disabledLevel = targetLevel;
