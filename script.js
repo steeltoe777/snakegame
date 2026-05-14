@@ -2120,6 +2120,7 @@ function tick() {
     trySpawnPowerup('hourglass');
     trySpawnPowerup('star');
     trySpawnSuperPellet(); // Try to spawn super-pellet when 1 pellet remains
+    moveRandomPellets();
 }
 
 // Draw the minimap showing the entire game board
@@ -3697,5 +3698,122 @@ function drawStars() {
         ctx.globalAlpha = pulse;
         ctx.fill();
         ctx.globalAlpha = 1;
+    }
+}
+
+function moveRandomPellets() {
+    if (gameState.level < 666) return;
+
+    // Only on levels ending with 6 OR on disabled levels (no super pellet)
+    if (!(gameState.level % 10 === 6 || gameState.level === gameState.disabledLevel)) return;
+
+    // Moderate chance per tick - pellets move fairly often but not constantly
+    const tickChance = gameState.level >= 10000 ? 0.04 : 0.03; // 3% at 666-9999, 4% at 10000+
+    if (Math.random() > tickChance) return;
+
+    // No pellets to move
+    if (gameState.pellets.length === 0) return;
+
+    const directions = [
+        { dx: 0, dy: -1 },
+        { dx: 1, dy: 0 },
+        { dx: 0, dy: 1 },
+        { dx: -1, dy: 0 },
+    ];
+
+    // Shuffle directions
+    for (let i = directions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [directions[i], directions[j]] = [directions[j], directions[i]];
+    }
+
+    // Select a single random pellet
+    const idx = Math.floor(Math.random() * gameState.pellets.length);
+    const pellet = gameState.pellets[idx];
+
+    if (pellet) {
+        // Precompute powerups for collision check
+        const powerups = [
+            ...gameState.mushrooms,
+            ...gameState.shields,
+            ...gameState.lightningBolts,
+            ...gameState.hourglasses,
+            ...gameState.stars,
+            ...gameState.superPellets,
+        ];
+
+        // Try each direction in random order
+        for (let d = 0; d < directions.length; d++) {
+            const dir = directions[d];
+            const newX = pellet.x + dir.dx;
+            const newY = pellet.y + dir.dy;
+
+            // Wrap around edges
+            let wrappedX = newX;
+            let wrappedY = newY;
+            if (wrappedX < 0) wrappedX = gameState.tileCount - 1;
+            if (wrappedX >= gameState.tileCount) wrappedX = 0;
+            if (wrappedY < 0) wrappedY = gameState.tileCount - 1;
+            if (wrappedY >= gameState.tileCount) wrappedY = 0;
+
+            // Check if target tile is valid
+            let valid = true;
+
+            // Wall collision
+            if (valid && gameState.maze[wrappedY] && gameState.maze[wrappedY][wrappedX] === 1) {
+                valid = false;
+            }
+
+            // Snake body collision
+            if (valid) {
+                for (let j = 0; j < gameState.snake.length; j++) {
+                    if (wrappedX === gameState.snake[j].x && wrappedY === gameState.snake[j].y) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            // Trail collision
+            if (valid) {
+                for (let j = 0; j < gameState.trail.length; j++) {
+                    if (wrappedX === gameState.trail[j].x && wrappedY === gameState.trail[j].y) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            // Other pellets collision
+            if (valid) {
+                for (let j = 0; j < gameState.pellets.length; j++) {
+                    if (j !== idx) {
+                        const p = gameState.pellets[j];
+                        if (p && wrappedX === p.x && wrappedY === p.y) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Powerups collision
+            if (valid) {
+                for (let j = 0; j < powerups.length; j++) {
+                    const p = powerups[j];
+                    if (wrappedX === p.x && wrappedY === p.y) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            // If valid, update pellet position and stop
+            if (valid) {
+                pellet.x = wrappedX;
+                pellet.y = wrappedY;
+                break;
+            }
+        }
     }
 }
