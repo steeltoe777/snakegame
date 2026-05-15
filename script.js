@@ -3188,7 +3188,7 @@ function update() {
 
 // Load saved current level from localStorage
 const savedLevel = localStorage.getItem('snakeGameCurrentLevel');
-let initialLevel = 666;
+let initialLevel = 1;
 if (savedLevel !== null) {
     const parsed = parseInt(savedLevel, 10);
     if (!Number.isNaN(parsed) && parsed >= 1) {
