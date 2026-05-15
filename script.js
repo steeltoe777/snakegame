@@ -3188,7 +3188,7 @@ function update() {
 
 // Load saved current level from localStorage
 const savedLevel = localStorage.getItem('snakeGameCurrentLevel');
-let initialLevel = 1;
+let initialLevel = 666;
 if (savedLevel !== null) {
     const parsed = parseInt(savedLevel, 10);
     if (!Number.isNaN(parsed) && parsed >= 1) {
@@ -3707,8 +3707,16 @@ function moveRandomPellets() {
     // Only on levels ending with 6 OR on disabled levels (no super pellet)
     if (!(gameState.level % 10 === 6 || gameState.level === gameState.disabledLevel)) return;
 
-    // Moderate chance per tick - pellets move fairly often but not constantly
-    const tickChance = gameState.level >= 10000 ? 0.04 : 0.03; // 3% at 666-9999, 4% at 10000+
+    // Higher chance on levels containing "666"
+    const has666 = gameState.level.toString().includes('666');
+    let tickChance;
+    if (has666) {
+        tickChance = 0.66; // 66% - very frequent
+    } else if (gameState.level >= 10000) {
+        tickChance = 0.04; // 4% at 10000+
+    } else {
+        tickChance = 0.03; // 3% at 666-9999
+    }
     if (Math.random() > tickChance) return;
 
     // No pellets to move
