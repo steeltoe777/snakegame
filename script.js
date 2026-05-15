@@ -539,15 +539,15 @@ function clearCooldownDisplay() {
 
 function updateCooldownDisplay() {
     const now = performance.now();
-    if (gameState.cooldownUntil && now < gameState.cooldownUntil) {
+    if (!gameState.cooldownUntil) return;
+
+    if (now < gameState.cooldownUntil) {
         drawGame();
     } else {
         // Cooldown ended
-        if (gameState.cooldownUntil) {
-            gameState.cooldownUntil = 0;
-            clearCooldownDisplay();
-            drawGame(); // redraw without indicator
-        }
+        gameState.cooldownUntil = 0;
+        clearCooldownDisplay();
+        drawGame(); // redraw without indicator
     }
 }
 
