@@ -3704,20 +3704,22 @@ function drawStars() {
 function moveRandomPellets() {
     if (gameState.level < 666) return;
 
-    // Only on levels ending with 6 OR on disabled levels (no super pellet)
-    if (!(gameState.level % 10 === 6 || gameState.level === gameState.disabledLevel)) return;
+    // Only move pellets on level >= 666 with increased frequency based on number of '6' digits
+    if (gameState.level < 666) return;
 
-    // Higher chance on levels containing "666"
-    const has666 = gameState.level.toString().includes('666');
-    let tickChance;
-    if (has666) {
-        tickChance = 0.66; // 66% - very frequent
-    } else if (gameState.level >= 10000) {
-        tickChance = 0.04; // 4% at 10000+
-    } else {
-        tickChance = 0.03; // 3% at 666-9999
+    // Count occurrences of digit '6' in the level number
+    const levelStr = gameState.level.toString();
+    let sixCount = 0;
+    for (let i = 0; i < levelStr.length; i++) {
+        if (levelStr[i] === '6') {
+            sixCount++;
+        }
     }
-    if (Math.random() > tickChance) return;
+
+    // Base movement chance: 22% per '6' digit, minimum 22%, maximum 100%
+    const moveChance = Math.min(sixCount * 0.22, 1.00);
+
+    if (Math.random() > moveChance) return;
 
     // No pellets to move
     if (gameState.pellets.length === 0) return;
