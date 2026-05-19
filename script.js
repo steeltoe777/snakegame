@@ -3716,8 +3716,8 @@ function moveRandomPellets() {
         }
     }
 
-    // Base movement chance: 22% per '6' digit, minimum 22%, maximum 100%
-    const moveChance = Math.min(sixCount * 0.22, 1.00);
+    // Base movement chance: 15% per '6' digit, minimum 15%, maximum 100%
+    const moveChance = Math.min(sixCount * 0.15, 1.00);
 
     if (Math.random() > moveChance) return;
 
