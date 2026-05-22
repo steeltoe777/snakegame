@@ -6,9 +6,16 @@ function finalizePowerupTimers(delta, moved) {
     if (gameState.timeSlowActive && !moved) {
         return false;
     }
+    // When time slow is active and snake moves, other powerup timers count down slower.
+    // Speed boost does NOT cancel this effect.
+    let effectiveDelta = delta;
+    if (gameState.timeSlowActive && moved) {
+        effectiveDelta = delta / TIME_SLOW_POWERUP_MULTIPLIER;
+    }
+
     // Update shield timer
     if (gameState.shieldPowerupActive) {
-        gameState.shieldTimer -= delta;
+        gameState.shieldTimer -= effectiveDelta;
         if (gameState.shieldTimer <= 0) {
             gameState.shieldPowerupActive = false;
             gameState.shieldTimer = 0;
@@ -17,7 +24,7 @@ function finalizePowerupTimers(delta, moved) {
 
     // Update mushroom timer with safety logic
     if (gameState.mushroomPowerupActive) {
-        gameState.mushroomTimer -= delta;
+        gameState.mushroomTimer -= effectiveDelta;
         if (gameState.mushroomTimer <= 0) {
             gameState.mushroomPowerupActive = false;
             gameState.mushroomTimer = 0;
@@ -69,7 +76,7 @@ function finalizePowerupTimers(delta, moved) {
 
     // Update speed boost timer
     if (gameState.speedBoostActive) {
-        gameState.speedBoostTimer -= delta;
+        gameState.speedBoostTimer -= effectiveDelta;
         if (gameState.speedBoostTimer <= 0) {
             gameState.speedBoostActive = false;
             gameState.speedBoostTimer = 0;
@@ -87,7 +94,7 @@ function finalizePowerupTimers(delta, moved) {
 
     // Update score multiplier timer
     if (gameState.scoreMultiplierActive) {
-        gameState.scoreMultiplierTimer -= delta;
+        gameState.scoreMultiplierTimer -= effectiveDelta;
         if (gameState.scoreMultiplierTimer <= 0) {
             gameState.scoreMultiplierActive = false;
             gameState.scoreMultiplierTimer = 0;
@@ -141,6 +148,8 @@ const REFRESH_STATE_KEY = 'snakeGameRefreshState';
 const REFRESH_SAVE_INTERVAL = 1000; // 1 second for periodic saves
 
 // Speed modifiers
+const TIME_SLOW_MOVEMENT_MULTIPLIER = 1.25; // Movement speed reduction when time slow active
+const TIME_SLOW_POWERUP_MULTIPLIER = 5; // Powerup timer reduction when time slow active
 
 // Position bias constants
 
@@ -3027,7 +3036,7 @@ function calculateGameSpeed() {
         speed *= 0.75;
     } else if (gameState.timeSlowActive) {
         // Only time slow active
-        speed *= 1.25;
+        speed *= TIME_SLOW_MOVEMENT_MULTIPLIER;
     }
 
     // Apply mouse-only slowdown: if player used only mouse/touch for 2+ consecutive clicks
@@ -3717,7 +3726,7 @@ function moveRandomPellets() {
     }
 
     // Base movement chance: 15% per '6' digit, minimum 15%, maximum 100%
-    const moveChance = Math.min(sixCount * 0.15, 1.00);
+    const moveChance = Math.min(sixCount * 0.15, 1.0);
 
     if (Math.random() > moveChance) return;
 
