@@ -1163,7 +1163,7 @@ function trySpawnPowerup(type) {
             if (gameState.level >= 4) {
                 let spawnChance = 0.012;
                 if (gameState.level >= 4000) {
-                    spawnChance += 0.020; // extra spawns from level 4000+
+                    spawnChance += 0.02; // extra spawns from level 4000+
                 }
                 if (Math.random() < spawnChance) {
                     shouldSpawn = true;
@@ -1653,45 +1653,38 @@ function tryRandomMovement() {
 
 // Returns the current score multiplier factor.
 // If the score multiplier powerup is inactive, returns 1 (no multiplication).
-// If active, returns 2 + number of other active powerups (shield, mushroom, speedBoost, timeSlow).
+// If active, returns 2^(1 + number of other active powerups + stacking extras).
 function getCurrentScoreMultiplier() {
     if (!gameState.scoreMultiplierActive) return 1;
 
-    // Base multiplier: 2 + number of other active powerups
-    let count = 0;
-    if (gameState.shieldPowerupActive) count++;
-    if (gameState.mushroomPowerupActive) count++;
-    if (gameState.speedBoostActive) count++;
-    if (gameState.timeSlowActive) count++;
-    let multiplier = 2 + count;
-
-    // Additional bonus: For each active powerup, add extra based on stacked durations
+    // Count active powerups (including star itself) and stacking extras.
+    // Each active powerup contributes at least 1 to the exponent.
+    let exponent = 0;
     const addExtra = (remaining, baseDuration) => {
         if (remaining <= 0) return 0;
         const stacks = Math.ceil(remaining / baseDuration);
         return Math.max(0, stacks - 1);
     };
 
+    // Star itself always active here
+    exponent += 1 + addExtra(gameState.scoreMultiplierTimer, SCORE_MULTIPLIER_DURATION);
+
     if (gameState.shieldPowerupActive) {
-        multiplier += addExtra(gameState.shieldTimer, SHIELD_POWERUP_DURATION);
+        exponent += 1 + addExtra(gameState.shieldTimer, SHIELD_POWERUP_DURATION);
     }
     if (gameState.mushroomPowerupActive) {
-        multiplier += addExtra(gameState.mushroomTimer, MUSHROOM_POWERUP_DURATION);
+        exponent += 1 + addExtra(gameState.mushroomTimer, MUSHROOM_POWERUP_DURATION);
     }
     if (gameState.speedBoostActive) {
-        multiplier += addExtra(gameState.speedBoostTimer, SPEED_BOOST_DURATION);
+        exponent += 1 + addExtra(gameState.speedBoostTimer, SPEED_BOOST_DURATION);
     }
     if (gameState.timeSlowActive) {
         // time slow uses MUSHROOM_POWERUP_DURATION for its timer
-        multiplier += addExtra(gameState.timeSlowTimer, MUSHROOM_POWERUP_DURATION);
+        exponent += 1 + addExtra(gameState.timeSlowTimer, MUSHROOM_POWERUP_DURATION);
     }
 
-    // Extra for stacking score multiplier powerup itself
-    if (gameState.scoreMultiplierActive) {
-        multiplier += addExtra(gameState.scoreMultiplierTimer, SCORE_MULTIPLIER_DURATION);
-    }
-
-    return multiplier;
+    // Multiplier is 2 raised to the exponent
+    return 2**exponent;
 }
 
 function tick() {

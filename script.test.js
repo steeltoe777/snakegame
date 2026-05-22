@@ -595,23 +595,23 @@ describe('Power-Up Features', () => {
         expect(multiplier).toBe(2); // Verify multiplier is 2 when only score powerup active
     });
 
-    test('Score multiplier should stack with other powerups (2+N rule)', () => {
+    test('Score multiplier should stack with other powerups (exponential)', () => {
         // Reset state and activate score multiplier + one other powerup (shield)
         window.gameState.scoreMultiplierActive = true;
         window.gameState.scoreMultiplierTimer = 10000;
         window.gameState.shieldPowerupActive = true;
         const initialScore = window.gameState.score;
 
-        // Check multiplier: score active (2) + shield (1) = 3
+        // Check multiplier: 2^(1 star + 1 shield) = 4
         const multiplier = window.getCurrentScoreMultiplier();
         const points = 10 * multiplier;
 
-        expect(multiplier).toBe(3); // 2 + 1 other powerup
-        expect(points).toBe(30); // 10 * 3
+        expect(multiplier).toBe(4); // 2^2 = 4
+        expect(points).toBe(40); // 10 * 4
 
         // Simulate eating a pellet
         window.gameState.score += points;
-        expect(window.gameState.score).toBe(initialScore + 30);
+        expect(window.gameState.score).toBe(initialScore + 40);
     });
 
     test('Score multiplier should stack with multiple other powerups', () => {
@@ -624,15 +624,15 @@ describe('Power-Up Features', () => {
         window.gameState.timeSlowActive = true; // All four other powerups active
         const initialScore = window.gameState.score;
 
-        // Check multiplier: 2 + 4 = 6
+        // Check multiplier: 2^(1 star + 4 others) = 2^5 = 32
         const multiplier = window.getCurrentScoreMultiplier();
         const points = 10 * multiplier;
 
-        expect(multiplier).toBe(6); // 2 + 4 other powerups
-        expect(points).toBe(60); // 10 * 6
+        expect(multiplier).toBe(32); // 2^5 = 32
+        expect(points).toBe(320); // 10 * 32
 
         window.gameState.score += points;
-        expect(window.gameState.score).toBe(initialScore + 60);
+        expect(window.gameState.score).toBe(initialScore + 320);
     });
 
     test('Score multiplier should return 1 when inactive', () => {
