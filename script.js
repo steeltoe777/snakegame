@@ -1160,8 +1160,14 @@ function trySpawnPowerup(type) {
             }
             break;
         case 'star':
-            if (gameState.level >= 4 && Math.random() < 0.012) {
-                shouldSpawn = true;
+            if (gameState.level >= 4) {
+                let spawnChance = 0.012;
+                if (gameState.level >= 4000) {
+                    spawnChance += 0.020; // extra spawns from level 4000+
+                }
+                if (Math.random() < spawnChance) {
+                    shouldSpawn = true;
+                }
             }
             break;
         default:
