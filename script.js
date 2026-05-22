@@ -142,6 +142,9 @@ const SCORE_MULTIPLIER_DURATION = 10000; // 10 seconds in milliseconds
 // Spawn throttling constant (250-400ms range)
 const SPAWN_INTERVAL_MS = 300; // Minimum time between powerup spawns
 
+// Time slow stacking bonus: when stacking, extra time = remaining * ratio
+const TIME_SLOW_STACK_BONUS_RATIO = 0.5;
+
 // Refresh penalty system constants
 const REFRESH_STALENESS_THRESHOLD = 3600000; // 1 hour in milliseconds
 const REFRESH_STATE_KEY = 'snakeGameRefreshState';
@@ -1647,12 +1650,42 @@ function tryRandomMovement() {
 // If active, returns 2 + number of other active powerups (shield, mushroom, speedBoost, timeSlow).
 function getCurrentScoreMultiplier() {
     if (!gameState.scoreMultiplierActive) return 1;
+
+    // Base multiplier: 2 + number of other active powerups
     let count = 0;
     if (gameState.shieldPowerupActive) count++;
     if (gameState.mushroomPowerupActive) count++;
     if (gameState.speedBoostActive) count++;
     if (gameState.timeSlowActive) count++;
-    return 2 + count;
+    let multiplier = 2 + count;
+
+    // Additional bonus: For each active powerup, add extra based on stacked durations
+    const addExtra = (remaining, baseDuration) => {
+        if (remaining <= 0) return 0;
+        const stacks = Math.ceil(remaining / baseDuration);
+        return Math.max(0, stacks - 1);
+    };
+
+    if (gameState.shieldPowerupActive) {
+        multiplier += addExtra(gameState.shieldTimer, SHIELD_POWERUP_DURATION);
+    }
+    if (gameState.mushroomPowerupActive) {
+        multiplier += addExtra(gameState.mushroomTimer, MUSHROOM_POWERUP_DURATION);
+    }
+    if (gameState.speedBoostActive) {
+        multiplier += addExtra(gameState.speedBoostTimer, SPEED_BOOST_DURATION);
+    }
+    if (gameState.timeSlowActive) {
+        // time slow uses MUSHROOM_POWERUP_DURATION for its timer
+        multiplier += addExtra(gameState.timeSlowTimer, MUSHROOM_POWERUP_DURATION);
+    }
+
+    // Extra for stacking score multiplier powerup itself
+    if (gameState.scoreMultiplierActive) {
+        multiplier += addExtra(gameState.scoreMultiplierTimer, SCORE_MULTIPLIER_DURATION);
+    }
+
+    return multiplier;
 }
 
 function tick() {
@@ -2013,9 +2046,11 @@ function tick() {
         for (let i = 0; i < gameState.shields.length; i++) {
             if (head.x === gameState.shields[i].x && head.y === gameState.shields[i].y) {
                 gameState.shields.splice(i, 1);
-                // Activate shield powerup for 6 seconds
+                // Activate shield powerup - add time if already active
+                const wasActive = gameState.shieldPowerupActive;
                 gameState.shieldPowerupActive = true;
-                gameState.shieldTimer = SHIELD_POWERUP_DURATION;
+                gameState.shieldTimer =
+                    (wasActive ? gameState.shieldTimer : 0) + SHIELD_POWERUP_DURATION;
                 gameState.shieldLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
@@ -2026,9 +2061,11 @@ function tick() {
             if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
                 gameState.mushrooms.splice(i, 1);
                 growthCount = 1; // Mushroom always gives 1 segment growth
-                // Activate mushroom powerup for 8 seconds and make snake grow
+                // Activate mushroom powerup - add time if already active
+                const wasActive = gameState.mushroomPowerupActive;
                 gameState.mushroomPowerupActive = true;
-                gameState.mushroomTimer = MUSHROOM_POWERUP_DURATION;
+                gameState.mushroomTimer =
+                    (wasActive ? gameState.mushroomTimer : 0) + MUSHROOM_POWERUP_DURATION;
                 gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
@@ -2050,10 +2087,10 @@ function tick() {
                     gameState.snake.splice(-actualReduction);
                 }
 
-                // Activate speed boost powerup for PASSWORD_LENGTH seconds
+                // Activate speed boost powerup (non-additive: reset to base duration)
                 gameState.speedBoostActive = true;
-                // Immediately update game speed for instant boost effect
                 gameState.speedBoostTimer = SPEED_BOOST_DURATION;
+                // Immediately update game speed for instant boost effect
                 gameState.speedBoostLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
@@ -2063,24 +2100,29 @@ function tick() {
         for (let i = 0; i < gameState.hourglasses.length; i++) {
             if (head.x === gameState.hourglasses[i].x && head.y === gameState.hourglasses[i].y) {
                 gameState.hourglasses.splice(i, 1);
-
-                // Activate time slow powerup for 8 seconds
+                // Activate time slow powerup - add time if already active, plus stacking bonus
+                const wasActive = gameState.timeSlowActive;
                 gameState.timeSlowActive = true;
-                gameState.timeSlowTimer = MUSHROOM_POWERUP_DURATION;
+                if (wasActive) {
+                    const remaining = gameState.timeSlowTimer;
+                    const bonus = remaining * TIME_SLOW_STACK_BONUS_RATIO;
+                    gameState.timeSlowTimer = remaining + MUSHROOM_POWERUP_DURATION + bonus;
+                } else {
+                    gameState.timeSlowTimer = MUSHROOM_POWERUP_DURATION;
+                }
                 gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
-
-                // Immediately update game speed for instant slow effect
                 break;
             }
         }
-
         // Check for star eating
         for (let i = 0; i < gameState.stars.length; i++) {
             if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
                 gameState.stars.splice(i, 1);
-                // Activate score multiplier powerup for 10 seconds
+                // Activate score multiplier powerup - add time if already active
+                const wasActive = gameState.scoreMultiplierActive;
                 gameState.scoreMultiplierActive = true;
-                gameState.scoreMultiplierTimer = SCORE_MULTIPLIER_DURATION;
+                gameState.scoreMultiplierTimer =
+                    (wasActive ? gameState.scoreMultiplierTimer : 0) + SCORE_MULTIPLIER_DURATION;
                 gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
