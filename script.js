@@ -9,7 +9,7 @@ function finalizePowerupTimers(delta, moved) {
     // When time slow is active and snake moves, other powerup timers count down slower.
     // Speed boost does NOT cancel this effect.
     let effectiveDelta = delta;
-    if (gameState.timeSlowActive && moved) {
+    if (gameState.timeSlowActive && moved && gameState.level >= 2700) {
         effectiveDelta = delta / TIME_SLOW_POWERUP_MULTIPLIER;
     }
 
@@ -2052,8 +2052,10 @@ function tick() {
                 // Activate shield powerup - add time if already active
                 const wasActive = gameState.shieldPowerupActive;
                 gameState.shieldPowerupActive = true;
-                gameState.shieldTimer =
-                    (wasActive ? gameState.shieldTimer : 0) + SHIELD_POWERUP_DURATION;
+                const canStackShield = gameState.level >= 3300;
+                gameState.shieldTimer = canStackShield
+                    ? (wasActive ? gameState.shieldTimer : 0) + SHIELD_POWERUP_DURATION
+                    : SHIELD_POWERUP_DURATION;
                 gameState.shieldLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
@@ -2064,11 +2066,13 @@ function tick() {
             if (head.x === gameState.mushrooms[i].x && head.y === gameState.mushrooms[i].y) {
                 gameState.mushrooms.splice(i, 1);
                 growthCount = 1; // Mushroom always gives 1 segment growth
-                // Activate mushroom powerup - add time if already active
+                // Activate mushroom powerup - add time if already active (stacking at level >= 3300)
                 const wasActive = gameState.mushroomPowerupActive;
                 gameState.mushroomPowerupActive = true;
-                gameState.mushroomTimer =
-                    (wasActive ? gameState.mushroomTimer : 0) + MUSHROOM_POWERUP_DURATION;
+                const canStackMushroom = gameState.level >= 3300;
+                gameState.mushroomTimer = canStackMushroom
+                    ? (wasActive ? gameState.mushroomTimer : 0) + MUSHROOM_POWERUP_DURATION
+                    : MUSHROOM_POWERUP_DURATION;
                 gameState.mushroomLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
@@ -2106,13 +2110,17 @@ function tick() {
                 // Activate time slow powerup - add time if already active, plus stacking bonus
                 const wasActive = gameState.timeSlowActive;
                 gameState.timeSlowActive = true;
-                if (wasActive) {
+                const canStackTime = gameState.level >= 3300;
+                if (wasActive && canStackTime) {
                     const remaining = gameState.timeSlowTimer;
                     const bonus = remaining * TIME_SLOW_STACK_BONUS_RATIO;
                     gameState.timeSlowTimer = remaining + MUSHROOM_POWERUP_DURATION + bonus;
                 } else {
                     gameState.timeSlowTimer = MUSHROOM_POWERUP_DURATION;
                 }
+                const maxTimeSlow =
+                    Math.max(2, Math.floor(gameState.level / 100)) * MUSHROOM_POWERUP_DURATION;
+                gameState.timeSlowTimer = Math.min(gameState.timeSlowTimer, maxTimeSlow);
                 gameState.timeSlowLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
@@ -2121,11 +2129,13 @@ function tick() {
         for (let i = 0; i < gameState.stars.length; i++) {
             if (head.x === gameState.stars[i].x && head.y === gameState.stars[i].y) {
                 gameState.stars.splice(i, 1);
-                // Activate score multiplier powerup - add time if already active
+                // Activate score multiplier powerup - add time if already active (stacking at level >= 3300)
                 const wasActive = gameState.scoreMultiplierActive;
                 gameState.scoreMultiplierActive = true;
-                gameState.scoreMultiplierTimer =
-                    (wasActive ? gameState.scoreMultiplierTimer : 0) + SCORE_MULTIPLIER_DURATION;
+                const canStackStar = gameState.level >= 3300;
+                gameState.scoreMultiplierTimer = canStackStar
+                    ? (wasActive ? gameState.scoreMultiplierTimer : 0) + SCORE_MULTIPLIER_DURATION
+                    : SCORE_MULTIPLIER_DURATION;
                 const maxScoreTimer =
                     Math.max(2, Math.floor(gameState.level / 1000)) * SCORE_MULTIPLIER_DURATION;
                 gameState.scoreMultiplierTimer = Math.min(
