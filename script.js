@@ -2126,6 +2126,12 @@ function tick() {
                 gameState.scoreMultiplierActive = true;
                 gameState.scoreMultiplierTimer =
                     (wasActive ? gameState.scoreMultiplierTimer : 0) + SCORE_MULTIPLIER_DURATION;
+                const maxScoreTimer =
+                    Math.max(2, Math.floor(gameState.level / 1000)) * SCORE_MULTIPLIER_DURATION;
+                gameState.scoreMultiplierTimer = Math.min(
+                    gameState.scoreMultiplierTimer,
+                    maxScoreTimer
+                );
                 gameState.scoreMultiplierLastUpdate = performance.now(); // Store start time for accurate timer
                 break;
             }
