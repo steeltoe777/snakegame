@@ -1683,9 +1683,12 @@ function getCurrentScoreMultiplier() {
         exponent += 1 + addExtra(gameState.timeSlowTimer, MUSHROOM_POWERUP_DURATION);
     }
 
-    // Multiplier is 2 raised to the exponent, capped at 128 to prevent excessive inflation
+    // Multiplier is 2 raised to the exponent, capped based on level to control late-game scaling
     const multiplier = 2 ** exponent;
-    return Math.min(128, multiplier);
+    if (!gameState.scoreMultiplierActive) return 1;
+    // Cap = at least 2, and at most level/100 (integer). For low levels, cap is 2.
+    const cap = Math.max(2, Math.floor(gameState.level / 100));
+    return Math.min(cap, multiplier);
 }
 
 function tick() {

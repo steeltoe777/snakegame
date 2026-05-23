@@ -597,6 +597,7 @@ describe('Power-Up Features', () => {
 
     test('Score multiplier should stack with other powerups (exponential)', () => {
         // Reset state and activate score multiplier + one other powerup (shield)
+        window.gameState.level = 5000; // high level to avoid cap (cap = level/100 = 50)
         window.gameState.scoreMultiplierActive = true;
         window.gameState.scoreMultiplierTimer = 10000;
         window.gameState.shieldPowerupActive = true;
@@ -616,6 +617,7 @@ describe('Power-Up Features', () => {
 
     test('Score multiplier should stack with multiple other powerups', () => {
         // Activate score multiplier + three other powerups
+        window.gameState.level = 5000; // high level to avoid cap
         window.gameState.scoreMultiplierActive = true;
         window.gameState.scoreMultiplierTimer = 10000;
         window.gameState.shieldPowerupActive = true;
