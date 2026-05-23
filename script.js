@@ -1683,8 +1683,9 @@ function getCurrentScoreMultiplier() {
         exponent += 1 + addExtra(gameState.timeSlowTimer, MUSHROOM_POWERUP_DURATION);
     }
 
-    // Multiplier is 2 raised to the exponent
-    return 2**exponent;
+    // Multiplier is 2 raised to the exponent, capped at 128 to prevent excessive inflation
+    const multiplier = 2 ** exponent;
+    return Math.min(128, multiplier);
 }
 
 function tick() {
