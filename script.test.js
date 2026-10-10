@@ -1245,3 +1245,44 @@ describe('Shielded death trap', () => {
         expect(gs.gameRunning).toBe(false);
     });
 });
+
+describe('Level-up segment cap', () => {
+    beforeEach(() => {
+        resetGameEnvironment();
+    });
+
+    test('caps super-pellet segment growth at the board cell count', () => {
+        const gs = window.gameState;
+        gs.level = 40;
+        gs.snake = [
+            { x: 10, y: 10 },
+            { x: 11, y: 10 },
+        ];
+        gs.superPelletEaten = true;
+        gs.superPelletStreak = 12; // 2 ** 13 levels, 16384 segments without the cap
+        window.levelUp();
+        expect(gs.snake.length).toBeLessThanOrEqual(gs.tileCount * gs.tileCount);
+    });
+});
+
+describe('Respawn death grace', () => {
+    beforeEach(() => {
+        resetGameEnvironment();
+    });
+
+    test('restores the mouse-mode death grace when the snake respawns', () => {
+        const gs = window.gameState;
+        gs.level = 5;
+        gs.gameRunning = true;
+        gs.paused = false;
+        gs.consecutiveMouseClicks = 2;
+        gs.deathImminent = true; // grace already spent on the death that triggered the respawn
+        gs.snake = [
+            { x: 10, y: 10 },
+            { x: 11, y: 10 },
+            { x: 12, y: 10 },
+        ];
+        window.gameOver();
+        expect(gs.deathImminent).toBe(false);
+    });
+});

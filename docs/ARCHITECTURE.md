@@ -15,7 +15,7 @@ const gameState = {
     snake: [{ x: 10, y: 10 }], // Array of coordinates
     level: 1, // Current progression
     maze: [[]], // 2D array (0=path, 1=wall)
-    spatialGrid: [[]], // Collision-optimized grid (30x30)
+    spatialGrid: [[]], // Grid mirror (30x30); not read by collision paths
     paused: false,
     consecutiveMouseClicks: 0, // Tracks mouse/touch-only mode for slowdown
     // ...other flags and timers
@@ -32,12 +32,12 @@ The game uses a **Hybrid Update-Render Cycle**. While the graphics could run at 
 2. **Update Stage**: `update()` moves the snake, clears old trail segments, and checks for collisions.
 3. **Render Stage**: `drawGame()` clears the canvas and draws the grid, maze, pellets, trail, and finally the snake.
 
-**Dynamic Speed Adjustments**: The game interval is recalculated via `calculateGameSpeed()` and `restartGameLoop()` when:
+**Dynamic Speed Adjustments**: The game interval is computed fresh every frame by `calculateGameSpeed()`. It depends on:
 
-- Snake length changes (automatic)
-- Power-ups activate/deactivate
-- Mouse-only mode threshold is crossed (2+ clicks)
-- Keyboard input resets mouse penalty
+- Snake length (a longer snake is a slower game)
+- Level bands and level multipliers
+- Power-ups active (speed boost, time slow, both together cancel)
+- `MAX_TICK_INTERVAL_MS`, the longest tick interval (the slowest the snake gets)
 
 ---
 
@@ -45,9 +45,9 @@ The game uses a **Hybrid Update-Render Cycle**. While the graphics could run at 
 
 To avoid the performance hit of checking every snake segment against every wall for every frame, the engine uses a **Spatial Grid**.
 
-- **How it works**: A 2D array mirroring the 30x30 tile grid is maintained. When a wall is spawned, its coordinates are marked in the grid.
-- **The Check**: The engine simply checks `gameState.spatialGrid[head.y][head.x]`. If the value is `1`, a collision occurred.
-- **Why it's better**: This turns an $O(n^2)$ search into an $O(1)$ lookup, ensuring the game stays smooth even at Level 1000+.
+- **How it works**: A 2D array mirroring the 30x30 tile grid is filled from the maze at level start and refreshed on respawn.
+- **Current reality**: No collision path reads it. Wall, body, and trail collisions read `gameState.maze`, `gameState.snake`, and `gameState.trail`. The grid is a mirror, not the lookup structure.
+- **Consequence**: Do not add a collision check against `spatialGrid` without first making it authoritative (trail marks are written as `3` and are not cleared by `updateSpatialGrid`).
 
 ---
 
@@ -58,6 +58,8 @@ Passwords are not stored in a database. Instead, they are **generated on the fly
 - **Formula**: `seed = (level * 9301 + 49297) % 233280`.
 - **Result**: The same level always produces the same 6-character alphanumeric code.
 - **Advantage**: Players can "save" their progress using a simple pen and paper, and the game requires zero local storage to function.
+- **Known limit (documented, not fixed)**: the modulus makes the code repeat every 233,280 levels, so level L and level `L + 233280` share a code. Measured over the scan range: 23,328 unique codes for 100,000 levels. `tryPasswordTeleport` scans ascending and stops at the first match, so a code shared by a low level and a high level teleports to the low one (level 233,290 and level 10 both produce `VCS6KZ`). Levels below 233,280 are unaffected.
+- **Scan cost**: the lookup runs only when the typed buffer is exactly 6 characters, which is the only length a code can have.
 
 ---
 
@@ -93,4 +95,4 @@ All inputs are managed in `manageEventListeners`. If you add a new control:
 2.  Ensure you call `e.preventDefault()` to avoid conflicting with browser behavior.
 3.  If the input is not arrow keys, consider whether it should increment `consecutiveMouseClicks` for the slowdown mechanic.
 
-**Mouse/Touch Specifics**: `handleMouseInput` and `handleTouchInput` compute the direction based on the click position relative to the snake head, then push to the `directionQueue`. They also manage the `consecutiveMouseClicks` counter and call `restartGameLoop()` when thresholds change.
+**Mouse/Touch Specifics**: `handleMouseInput` and `handleTouchInput` compute the direction based on the click position relative to the snake head, then push to the `directionQueue`. They also manage the `consecutiveMouseClicks` counter, which arms the skip-turn and death-grace mechanics at 2+ clicks; it does not change the tick interval.

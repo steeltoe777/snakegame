@@ -17,7 +17,7 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 - **🟡 Pac-Man Pellets**: Clear the entire board of pellets to advance. No more random spawns; every pellet counts.
 - **🔐 Secret Passwords**: Every 10 levels, you'll uncover a secret code. Type it in anytime (even while paused!) to jump back to that milestone.
     - **Management**: `FORGET` clears stored password; `HIDEPWD` hides the hint; `SHOWPWD` shows it; `RESTART` preserves hide/show state.
-    - **Important:** Write these down! They are not saved between browser sessions.
+    - **Kept for you**: this browser stores your best milestone, so the code survives a refresh. Write codes down before switching browsers or machines.
 - **🍄 Dynamic Power-Ups**: From speed boosts to invincibility, collect random spawns to gain the upper hand.
 - **🗺️ Minimap Navigation**: Keep an eye on the radar to locate that last elusive pellet or a distant power-up.
 - **⏸️ Pause Anywhere**: On mobile, focusing the password input field automatically pauses the game; unfocusing (tapping away) unpauses. Press **Space** or **Escape** to pause/resume manually.
@@ -44,16 +44,16 @@ Imagine the growth mechanics of **Snake**, the lethal trails of **Tron**, and th
 4. Collect all **Yellow Pellets** to clear the level.
 5. Avoid the **Grey Walls** and your **Blue Trail**.
 6. Watch the top-right for **Secret Passwords** at level 10, 20, etc.
-7. **Important**: Write down your passwords! They are not saved if you refresh the page or change browsers.
+7. **Best milestone kept**: your highest milestone stays in this browser, so a refresh does not lose it. Write codes down before switching browsers or machines.
 
 ## 💡 Quick Pro-Tips
 
-- **Trap Yourself?** Your trail disappears over time, but in tight spots, it's a solid wall. Plan your loops!
+- **Trap Yourself?** Your trail lasts the whole level. It clears only when you level up, respawn, or reset, so plan your loops.
 - **Milestones**: The game remembers your **highest achieved password**. If you die or reset, you can always jump back to your best milestone instantly.
 - **Ghost Mode**: Collecting a **Mushroom** makes you invincible to walls (but not your own tail!).
 - **Pause & Think**: Press **Space** or **Escape** to pause. On mobile, tapping the password input auto-pauses while you type.
 - **Level Progression & Death**: When you die, your score is halved. On **levels below 600**, you will always drop to the previous level (minimum Level 1). On **levels 600+**, you will drop a level **only if** your new score is less than your current level; otherwise you stay on the same level. This means high-level players with very high scores can maintain their level across deaths.
-- **Mouse/Touch Difficulty**: In mouse/touch-only mode (2+ clicks), the snake **skips one turn after direction changes**, and gets a **one-turn grace period before death**. Press any arrow key or Space/Escape to reset to normal speed.
+- **Mouse/Touch Difficulty**: In mouse/touch-only mode (2+ clicks), the snake **skips one turn after direction changes**, and gets a **one-turn grace period before death**. Press any arrow key or Space/Escape to leave mouse mode. Mouse mode does not change the game speed.
 
 ## 🛠️ Development & Philosophy
 
@@ -62,7 +62,7 @@ This project was born from a love for arcade classics and a "fun-first" developm
 ### **Documentation Roadmap**
 
 - **[🕹️ Gameplay Guide](docs/GAMEPLAY.md)**: Deep dive into power-ups, level scaling, and strategies.
-- **[🏗️ Technical Architecture](docs/ARCHITECTURE.md)**: How the engine, spatial grid, and rendering work.
+- **[🏗️ Technical Architecture](docs/ARCHITECTURE.md)**: How the engine, collision checks, and rendering work.
 - **[💻 Development Guide](docs/DEVELOPMENT.md)**: Setup, testing, and contribution instructions.
 - **[📜 Project History](docs/HISTORY.md)**: The evolution of the game and technical improvements.
 

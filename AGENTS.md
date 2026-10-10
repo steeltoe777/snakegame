@@ -19,7 +19,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 - Check for linting issues: `npm run lint`
 - Linting command: `eslint . --ext .js --fix`
-- ESLint config: Minimal custom rules in .eslintrc.json (no-undef: error, no-unused-vars: warn, no-const-assign: error)
+- ESLint config: `.eslintrc.js` (extends airbnb-base and prettier). `.eslintrc.json` is shadowed by it and inert.
 - Prettier config: .prettierrc.js (semicolons, single quotes, 100 char width, 4 spaces)
 
 ### Project Scripts
@@ -50,10 +50,12 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 ### ESLint Configuration
 
-- Minimal custom rules only (does NOT extend airbnb-base or prettier):
-    - no-undef: error
-    - no-unused-vars: warn
-    - no-const-assign: error
+- Active config is `.eslintrc.js`: extends `airbnb-base` and `prettier`, with overrides such as:
+    - no-plusplus: off
+    - no-param-reassign: off
+    - no-use-before-define: off
+    - no-empty-function: off (test mocks)
+- `.eslintrc.json` (no-undef, no-unused-vars, no-const-assign) is never read: ESLint takes the first config file it finds, and `.eslintrc.js` wins.
 - Environment: browser, es2021, node, jest
 
 ### Naming Conventions
@@ -114,10 +116,10 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 - Helper functions: getAvailableTiles(), getRandomPosition(), shouldBlockMovement(), tryRandomMovement()
 - Generator functions: generateMaze(), generatePellets(), generateMushrooms(), generateShields(), generateLightningBolts(), generateHourglasses(), generateStars(), trySpawnPowerup()
 - Draw functions: drawSnake(), drawMaze(), drawPellets(), drawTrail(), drawMushrooms(), drawShields(), drawLightningBolts(), drawHourglasses(), drawStars(), drawSuperPellets(), drawShieldEffect(), drawGame(), drawMinimap()
-- Update functions: tick(), updatePowerupTimers(), updateSpatialGrid()
+- Update functions: tick(), finalizePowerupTimers()
 - Event listener management with add/remove pattern for cleanup
 - Grid-based positioning with coordinate objects {x, y}
-- Input handling: `handleDirectionChange()` (keyboard) resets mouse penalty; `handleMouseInput()` and `handleTouchInput()` increment counter that slows game after 2+ clicks.
+- Input handling: `handleDirectionChange()` (keyboard) resets the mouse counter; `handleMouseInput()` and `handleTouchInput()` increment it, and at 2+ clicks the snake arms the skip-turn and death-grace mechanics. Mouse mode does not change the tick interval.
 - Password system: `updatePasswordDisplay()` syncs both the text display and the `#passwordInput` field. `handlePasswordInputChange()` processes on-screen input. `tryPasswordTeleport()` centralizes password matching logic.
 - Special password commands: `RESTART` (case-insensitive) resets the game to level 1; `FORGET` (case-insensitive) clears the current password input and resets the stored milestone level; `HIDEPWD` (case-insensitive) hides the milestone password hint without clearing the milestone; `SHOWPWD` (case-insensitive) shows the milestone password hint if a milestone exists.
 - Password input field: Clicks on it are ignored by the game to avoid accidental steering. Auto-pauses on focus; auto-unpauses on blur and sets `ignoreNextClick` to prevent the next click (the one that caused the blur) from turning the snake.
@@ -158,7 +160,8 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 - **No ES Modules**: The codebase intentionally avoids ES modules to maintain compatibility with the `file://` protocol. All code lives in `script.js`.
 - **Single Global State**: The entire game state is managed by the global `window.gameState` object.
-- **Spatial Grid**: Collision detection uses a 2D spatial grid (`gameState.spatialGrid`) for O(1) lookups instead of O(n²) searches.
+- **Spatial Grid**: `gameState.spatialGrid` mirrors the maze at level start and is refreshed on respawn. No collision path reads it: walls, body, and trail collisions read `gameState.maze`, `gameState.snake`, and `gameState.trail`.
+- **Snake Length Cap**: The snake can never exceed the number of board cells (`tileCount * tileCount`). Pellet growth surplus and super-pellet segment stacking are both clamped to it, so a streak jump cannot produce a snake longer than the board.
 - **Game Loop**: Uses `requestAnimationFrame` with a fixed timestep accumulator in `tick()` for consistent movement.
 - **Power-up System**: Each powerup type (mushroom, shield, lightningBolt, hourglass, star) has its own generation function and collision logic. Spawning is throttled via `trySpawnPowerup()` with `lastSpawnTime` tracking.
 
@@ -198,7 +201,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 - `shouldBlockMovement(head)` - Checks walls/trail collisions with shield/mushroom handling
 - `tryRandomMovement()` - AI fallback when snake is trapped but has shield
-- `updateSpatialGrid()` - Maintain spatial grid for efficient collision
+- `updateSpatialGrid()` - Refresh grid marks from snake and trail (respawn path only)
 
 ### Rendering
 
@@ -231,7 +234,7 @@ This is a browser-based Snake game built with vanilla JavaScript. The project us
 
 ## Current Configuration
 
-- **ESLint**: Minimal custom rules (no external configs)
+- **ESLint**: `.eslintrc.js` extends airbnb-base and prettier; `.eslintrc.json` is shadowed
 - **Prettier**: semi: true, singleQuote: true, printWidth: 100, tabWidth: 4, trailingComma: es5
 - **Jest**: jsdom environment with setup file
 - **No build step** - direct browser execution

@@ -20,6 +20,8 @@ The original styling was heavily hardcoded. We introduced **CSS Variables** (`:r
 ### **3. Spatial Grid Optimization**
 To maintain performance on complex mazes and very long snakes, we implemented a **2D Spatial Grid**. Instead of iterating through all objects for every collision check, the engine now checks specific grid coordinates—drastically reducing CPU usage.
 
+_Update 2026-10-10: the grid was built and kept current, but no collision path ever read it. Wall, body, and trail collisions read `maze`, `snake`, and `trail`. The per-tick grid refresh has been dropped; the grid remains a mirror built at level start._
+
 ### **4. Advanced Input Handling**
 We moved away from basic event listeners to a **Centralized Input Manager**. This allowed us to:
 - Resolve conflicts between pausing and typing.
@@ -38,10 +40,11 @@ We moved away from cursive fallbacks to a **Standard System Font Stack** (`Arial
 - **Visual Polish**: Adjusted color saturation for better visual comfort during long play sessions.
 - **Documentation**: A complete overhaul to make the project more accessible to both players and developers.
 - **Testing**: Reached significant test coverage for all core game loop edge cases.
+    - _Update 2026-10-10: coverage is real for level progression, respawn, powerup timers, maze and pellet generation, and passwords. Input handlers, speed calculation, the game loop, spawning, and persistence are untested._
 
 ---
 
 ## 🔄 Future Goals
 - **Modularization**: Refactoring the large `script.js` into separate modules (while maintaining offline compatibility).
 - **Sound Effects**: Adding retro-style blips and bloops.
-- **Mobile Support**: Touch controls for playing on the go.
+- **Mobile Support**: Touch controls for playing on the go. (Shipped: canvas touch steering, password field auto-pause.)

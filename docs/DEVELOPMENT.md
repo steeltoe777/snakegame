@@ -29,7 +29,7 @@ npm install
 
 ## 🧪 Testing
 
-We use **Jest** for unit testing. The tests cover game logic, collision detection, and the password system.
+We use **Jest** for unit testing. Coverage sits mainly in level progression, respawn, powerup timers, maze and pellet generation, and the password system. Input handlers, `calculateGameSpeed`, the game loop, powerup spawning, and the persistence paths have no tests yet, so changes there need manual play checks.
 
 ```bash
 # Run all tests
@@ -51,11 +51,12 @@ npm test -- --coverage
 We enforce code standards using **ESLint** and **Prettier**.
 
 ```bash
-# Check for linting errors
-npm run lint
+# Check for linting errors (reports only, changes nothing)
+npx eslint . --ext .js
 
-# Automatically fix linting issues
-npm run lint -- --fix
+# Fix linting issues and format files
+npm run lint
+npx prettier --write script.js
 ```
 
 ---
@@ -76,8 +77,8 @@ Inputs are managed centrally to prevent multiple listeners from accumulating. Th
 
 - **`handleDirectionChange`**: Manages snake movement via arrow keys and the **Space/Escape** pause keys. Also resets `consecutiveMouseClicks` counter and clears `skipNextMovement` to exit mouse precision mode.
 - **`handlePasswordKey`**: Manages all alphanumeric keys and **Backspace** for secret codes.
-- **`handleMouseInput`**: Manages mouse clicks anywhere (except buttons). Starts game only when clicking on canvas. Increments `consecutiveMouseClicks` for slowdown.
-- **`handleTouchInput`**: Manages touch input on canvas only. Also handles start and slowdown.
+- **`handleMouseInput`**: Manages mouse clicks anywhere (except buttons). Starts game only when clicking on canvas. Increments `consecutiveMouseClicks`, which arms the skip-turn and death-grace mechanics at 2+ clicks. It does not change the tick interval.
+- **`handleTouchInput`**: Manages touch input on canvas only. Also handles start and the same mouse precision mode.
 - Both functions use `e.preventDefault()` for whitelisted keys to ensure smooth control without browser side-effects.
 
 ---
