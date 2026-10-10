@@ -1783,87 +1783,12 @@ function tick() {
             }
         }
 
-        // If no escape routes, game over
+        // All four neighbours blocked by wall or trail is the same test the second scan performed,
+        // so the death trap follows from the escape-route count alone. The random-direction
+        // fallback that followed was unreachable: escapeRoutes === 0 means all four are blocked.
         if (escapeRoutes === 0) {
-            // Check if snake is in a death trap (completely surrounded by wall+trail)
-            // If so, and there's no mushroom, the snake should die
-            let wallAndTrailCount = 0;
-            const head = gameState.snake[0];
-
-            // Check all four directions for wall or trail
-            const directions = [
-                { dx: 0, dy: -1 }, // Up
-                { dx: 1, dy: 0 }, // Right
-                { dx: 0, dy: 1 }, // Down
-                { dx: -1, dy: 0 }, // Left
-            ];
-
-            for (let i = 0; i < directions.length; i++) {
-                const nextX = head.x + directions[i].dx;
-                const nextY = head.y + directions[i].dy;
-
-                // Handle wrapping
-                let wrappedX = nextX;
-                let wrappedY = nextY;
-                if (wrappedX < 0) wrappedX = gameState.tileCount - 1;
-                if (wrappedX >= gameState.tileCount) wrappedX = 0;
-                if (wrappedY < 0) wrappedY = gameState.tileCount - 1;
-                if (wrappedY >= gameState.tileCount) wrappedY = 0;
-
-                // Create a test head position
-                const testHead = { x: wrappedX, y: wrappedY };
-
-                // Check if this direction is blocked by wall or trail
-                let blocked = false;
-
-                // Check for maze walls
-                if (gameState.maze[testHead.y] && gameState.maze[testHead.y][testHead.x] === 1) {
-                    blocked = true;
-                }
-
-                // Check for trail
-                for (let j = 0; j < gameState.trail.length; j++) {
-                    if (
-                        testHead.x === gameState.trail[j].x &&
-                        testHead.y === gameState.trail[j].y
-                    ) {
-                        blocked = true;
-                        break;
-                    }
-                }
-
-                // If blocked, increment counter
-                if (blocked) {
-                    wallAndTrailCount++;
-                }
-            }
-
-            // If all directions are blocked by wall/trail and no mushroom, game over
-            if (wallAndTrailCount === 4 && !gameState.mushroomPowerupActive) {
-                gameOver();
-                return;
-            }
-            // If no escape routes, move randomly to prevent standing still
-            const randomDirections = [
-                { dx: 0, dy: -1 }, // Up
-                { dx: 1, dy: 0 }, // Right
-                { dx: 0, dy: 1 }, // Down
-                { dx: -1, dy: 0 }, // Left
-            ];
-
-            // Shuffle directions randomly
-            for (let i = randomDirections.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [randomDirections[i], randomDirections[j]] = [
-                    randomDirections[j],
-                    randomDirections[i],
-                ];
-            }
-
-            // Try the first direction
-            const dir = randomDirections[0];
-            gameState.dx = dir.dx;
-            gameState.dy = dir.dy;
+            gameOver();
+            return;
         }
     }
 
@@ -1887,9 +1812,27 @@ function tick() {
 
         for (let i = 1; i < gameState.snake.length; i++) {
             if (head.x === gameState.snake[i].x && head.y === gameState.snake[i].y) {
+                // The neck grace restores the previous direction, so it is granted only when that
+                // direction leads to a cell the body does not occupy. Restoring a direction that
+                // points back into the body wedges the head on its own segments: every tick takes
+                // this branch, moves nothing, pops nothing, and never reaches gameOver.
+                let neckX = gameState.snake[0].x + gameState.dxPrev;
+                let neckY = gameState.snake[0].y + gameState.dyPrev;
+                if (neckX < 0) neckX = gameState.tileCount - 1;
+                if (neckX >= gameState.tileCount) neckX = 0;
+                if (neckY < 0) neckY = gameState.tileCount - 1;
+                if (neckY >= gameState.tileCount) neckY = 0;
+                let restoredIntoBody = false;
+                for (let k = 1; k < gameState.snake.length; k++) {
+                    if (neckX === gameState.snake[k].x && neckY === gameState.snake[k].y) {
+                        restoredIntoBody = true;
+                        break;
+                    }
+                }
                 if (
                     i <= SCORE_REDUCTION_FACTOR &&
-                    (gameState.dxPrev !== 0 || gameState.dyPrev !== 0)
+                    (gameState.dxPrev !== 0 || gameState.dyPrev !== 0) &&
+                    !restoredIntoBody
                 ) {
                     // Avoid collision with neck segments of self.
                     gameState.dx = gameState.dxPrev;

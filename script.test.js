@@ -1133,3 +1133,115 @@ describe('Power-Up Features', () => {
         expect(window.gameState.scoreMultiplierTimer).toBe(10000);
     });
 });
+
+describe('Self-collision neck grace', () => {
+    beforeEach(() => {
+        resetGameEnvironment();
+        // drawGame touches canvas helpers the shared mock does not define
+        const extras = [
+            'save',
+            'restore',
+            'translate',
+            'rotate',
+            'scale',
+            'strokeText',
+            'setLineDash',
+            'quadraticCurveTo',
+            'bezierCurveTo',
+            'ellipse',
+        ];
+        extras.forEach((name) => {
+            if (typeof window.ctx[name] !== 'function') {
+                window.ctx[name] = jest.fn();
+            }
+        });
+        if (typeof window.ctx.createRadialGradient !== 'function') {
+            window.ctx.createRadialGradient = jest.fn(() => ({ addColorStop: jest.fn() }));
+        }
+    });
+
+    function prepareWedge() {
+        const gs = window.gameState;
+        gs.level = 5882;
+        gs.gameRunning = true;
+        gs.paused = false;
+        gs.skipNextMovement = false;
+        gs.directionQueue = [];
+        gs.trail = [];
+        gs.mushroomPowerupActive = false;
+        gs.shieldPowerupActive = false;
+        gs.timeSlowActive = false;
+        gs.pellets = [{ x: 20, y: 20 }];
+        gs.maze = Array.from({ length: gs.tileCount }, () => new Array(gs.tileCount).fill(0));
+        // Head at (5,5) heading right into its own segment 1; the coil leaves no free cell ahead.
+        gs.snake = [
+            { x: 5, y: 5 },
+            { x: 6, y: 5 },
+            { x: 6, y: 6 },
+            { x: 5, y: 6 },
+        ];
+        gs.dx = 1;
+        gs.dy = 0;
+    }
+
+    test('denies the neck grace when the restored direction points into the body', () => {
+        const gs = window.gameState;
+        prepareWedge();
+        gs.dxPrev = 1; // restoring this aims the head at snake[1]
+        gs.dyPrev = 0;
+
+        const before = gs.snake.length;
+        window.tick();
+
+        // The resolution branch ran: the tail is popped, so the snake cannot stand still forever.
+        expect(gs.snake.length).toBe(before - 1);
+    });
+
+    test('keeps the neck grace when the restored direction is clear', () => {
+        const gs = window.gameState;
+        prepareWedge();
+        gs.dxPrev = 0; // restoring this aims the head at (5,4), which is free
+        gs.dyPrev = -1;
+
+        const before = gs.snake.length;
+        window.tick();
+
+        expect(gs.snake.length).toBe(before);
+        expect(gs.dx).toBe(0);
+        expect(gs.dy).toBe(-1);
+    });
+});
+
+describe('Shielded death trap', () => {
+    beforeEach(() => {
+        resetGameEnvironment();
+    });
+
+    test('ends the run when every neighbour is wall or trail', () => {
+        const gs = window.gameState;
+        gs.level = 5882;
+        gs.gameRunning = true;
+        gs.paused = false;
+        gs.skipNextMovement = false;
+        gs.directionQueue = [];
+        gs.mushroomPowerupActive = false;
+        gs.shieldPowerupActive = true;
+        gs.shieldTimer = 12000;
+        gs.timeSlowActive = false;
+        gs.pellets = [{ x: 20, y: 20 }];
+        gs.maze = Array.from({ length: gs.tileCount }, () => new Array(gs.tileCount).fill(0));
+        gs.snake = [{ x: 10, y: 10 }];
+        gs.trail = [
+            { x: 10, y: 9 },
+            { x: 11, y: 10 },
+            { x: 10, y: 11 },
+            { x: 9, y: 10 },
+        ];
+        gs.dx = 0;
+        gs.dy = -1;
+
+        window.tick();
+
+        expect(gs.gameRunning).toBe(false);
+    });
+});
